@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import { supabase } from "@/lib/supabase"
-import { generateAssessmentSession, allQuestions, LEVEL_CONFIG, type Question, type CandidateLevel } from "@/lib/questions"
+import { generateAssessmentSession, allQuestions, LEVEL_CONFIG, TRACKS, type Question, type CandidateLevel, type TrackId } from "@/lib/questions"
 import { calculateDomainScores, overallLevel, engineeringPersonality, type AnswerRecord } from "@/lib/scoring"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -152,7 +152,7 @@ export default function AssessmentPage() {
 
   function actuallyBeginQuiz() {
     if (!selectedLevel) return
-    const q = generateAssessmentSession(selectedLevel, 40)
+    const q = generateAssessmentSession(selectedLevel, 40, onboardTrack as TrackId)
     setQuestions(q)
     setTimeLeft(q[0]?.time_seconds ?? 15)
     questionStartRef.current = Date.now()
@@ -248,6 +248,7 @@ export default function AssessmentPage() {
         selectedLevel,
         tabSwitches,
         questionIds: questions.map(q => q.id),
+        track: onboardTrack,
         savedAt: Date.now(),
       }))
     } catch { /* ignore quota errors */ }
@@ -262,10 +263,10 @@ export default function AssessmentPage() {
       const questionMap = new Map(allQuestions.map((qq) => [qq.id, qq]))
       q = idOrder.map(id => questionMap.get(id)).filter(Boolean) as Question[]
       if (q.length < idOrder.length) {
-        q = generateAssessmentSession(resumableData.selectedLevel, 40)
+        q = generateAssessmentSession(resumableData.selectedLevel, 40, (resumableData as Record<string, unknown>).track as TrackId || 'devops')
       }
     } else {
-      q = generateAssessmentSession(resumableData.selectedLevel, 40)
+      q = generateAssessmentSession(resumableData.selectedLevel, 40, (resumableData as Record<string, unknown>).track as TrackId || 'devops')
     }
     setQuestions(q)
     setAnswers(resumableData.answers || [])
@@ -450,9 +451,9 @@ export default function AssessmentPage() {
           >
             {[
               { key: "devops", label: "DevOps / SRE / Platform", icon: "🛠️", active: true },
-              { key: "frontend", label: "Frontend Engineering", icon: "🎨", active: false },
-              { key: "backend", label: "Backend Engineering", icon: "⚡", active: false },
-              { key: "qa", label: "QA / Testing", icon: "🧪", active: false },
+              { key: "frontend", label: "Frontend Engineering", icon: "🎨", active: true },
+              { key: "backend", label: "Backend Engineering", icon: "⚡", active: true },
+              { key: "qa", label: "QA / Testing", icon: "🧪", active: true },
             ].map(track => (
               <button
                 key={track.key}

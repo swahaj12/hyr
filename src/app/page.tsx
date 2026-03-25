@@ -21,32 +21,32 @@ const tracks = [
   {
     name: "Frontend",
     tagline: "React, TypeScript, CSS, Performance & Accessibility",
-    domains: null,
-    questions: null,
-    status: "coming" as const,
+    domains: 10,
+    questions: "120+",
+    status: "active" as const,
     gradient: "from-violet-500 to-purple-400",
-    href: null,
-    skills: ["React", "TypeScript", "CSS", "Next.js", "Testing", "Performance", "Accessibility", "State Mgmt"],
+    href: "/assessment",
+    skills: ["React", "TypeScript", "CSS", "JavaScript", "Testing", "Performance", "Accessibility", "State Mgmt"],
   },
   {
     name: "Backend",
     tagline: "APIs, Databases, System Design, Auth & Scaling",
-    domains: null,
-    questions: null,
-    status: "coming" as const,
+    domains: 10,
+    questions: "120+",
+    status: "active" as const,
     gradient: "from-emerald-500 to-green-400",
-    href: null,
-    skills: ["Node.js", "APIs", "SQL", "NoSQL", "Auth", "Caching", "System Design", "Microservices"],
+    href: "/assessment",
+    skills: ["APIs", "Databases", "Architecture", "Security", "Caching", "Messaging", "Concurrency", "Observability"],
   },
   {
     name: "QA / Testing",
     tagline: "Automation, Test Strategy, CI, Quality & Tools",
-    domains: null,
-    questions: null,
-    status: "coming" as const,
+    domains: 10,
+    questions: "120+",
+    status: "active" as const,
     gradient: "from-amber-500 to-orange-400",
-    href: null,
-    skills: ["Selenium", "Cypress", "Jest", "API Testing", "CI/CD", "Test Strategy", "Performance", "Security"],
+    href: "/assessment",
+    skills: ["Test Strategy", "Automation", "API Testing", "Performance", "Security", "Mobile", "Bug Tracking", "CI/CD"],
   },
 ]
 
@@ -252,31 +252,6 @@ function useRecentAssessments() {
   return { items }
 }
 
-function useWaitlistCounts() {
-  const [counts, setCounts] = useState<Record<string, number>>({})
-
-  useEffect(() => {
-    async function load() {
-      try {
-        const { data } = await supabase
-          .from("waitlist")
-          .select("domain")
-
-        if (data) {
-          const map: Record<string, number> = {}
-          for (const row of data) {
-            map[row.domain] = (map[row.domain] || 0) + 1
-          }
-          setCounts(map)
-        }
-      } catch { /* ignore */ }
-    }
-    load()
-  }, [])
-
-  return counts
-}
-
 function LiveTicker({ items }: { items: TickerItem[] }) {
   if (items.length === 0) return null
 
@@ -302,65 +277,8 @@ function LiveTicker({ items }: { items: TickerItem[] }) {
   )
 }
 
-function WaitlistButton({ domain }: { domain: string }) {
-  const [email, setEmail] = useState("")
-  const [open, setOpen] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
-
-  async function handleSubmit() {
-    if (!email) return
-    setLoading(true)
-    try {
-      await supabase.from("waitlist").insert({ email, domain })
-    } catch { /* ignore */ }
-    setSubmitted(true)
-    setLoading(false)
-  }
-
-  if (submitted) {
-    return (
-      <p className="text-xs text-green-400 font-medium mt-3">
-        We&apos;ll notify you when {domain} launches!
-      </p>
-    )
-  }
-
-  if (!open) {
-    return (
-      <button
-        onClick={() => setOpen(true)}
-        className="mt-3 text-xs font-medium text-gray-400 hover:text-white transition-colors underline underline-offset-4 decoration-gray-600"
-      >
-        Notify me when it&apos;s ready
-      </button>
-    )
-  }
-
-  return (
-    <div className="mt-3 flex gap-2">
-      <input
-        type="email"
-        placeholder="your@email.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-        className="flex-1 rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-      />
-      <button
-        onClick={handleSubmit}
-        disabled={loading || !email}
-        className="rounded-lg bg-white text-gray-950 px-3 py-1.5 text-xs font-semibold hover:bg-gray-200 disabled:opacity-50 transition-colors"
-      >
-        {loading ? "..." : "Notify"}
-      </button>
-    </div>
-  )
-}
-
 export default function Home() {
   const { items: tickerItems } = useRecentAssessments()
-  const waitlistCounts = useWaitlistCounts()
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -488,23 +406,12 @@ export default function Home() {
                 key={track.name}
                 variants={staggerChild}
                 whileHover={{ y: -6 }}
-                className={`relative rounded-2xl border p-6 transition-all ${
-                  track.status === "active"
-                    ? "border-blue-500/50 bg-gray-900/80 shadow-lg shadow-blue-500/5"
-                    : "border-gray-800 bg-gray-900/40"
-                }`}
+                className="relative rounded-2xl border p-6 transition-all border-blue-500/50 bg-gray-900/80 shadow-lg shadow-blue-500/5"
               >
-                {track.status === "active" && (
-                  <span className="absolute -top-3 left-6 inline-flex items-center gap-1.5 rounded-full bg-blue-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                    Live Now
-                  </span>
-                )}
-                {track.status === "coming" && (
-                  <span className="absolute -top-3 left-6 inline-flex items-center rounded-full bg-gray-700 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-300">
-                    Coming Soon
-                  </span>
-                )}
+                <span className="absolute -top-3 left-6 inline-flex items-center gap-1.5 rounded-full bg-blue-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  Live Now
+                </span>
 
                 <div className="pt-2">
                   <h3 className={`text-xl font-bold bg-gradient-to-r ${track.gradient} bg-clip-text text-transparent`}>
@@ -524,11 +431,7 @@ export default function Home() {
                     {track.skills.slice(0, 6).map((skill) => (
                       <span
                         key={skill}
-                        className={`text-[10px] px-2 py-0.5 rounded-full border ${
-                          track.status === "active"
-                            ? "border-gray-600 text-gray-300"
-                            : "border-gray-700 text-gray-500"
-                        }`}
+                        className="text-[10px] px-2 py-0.5 rounded-full border border-gray-600 text-gray-300"
                       >
                         {skill}
                       </span>
@@ -538,25 +441,14 @@ export default function Home() {
                     )}
                   </div>
 
-                  {track.status === "active" && track.href ? (
-                    <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="mt-5">
-                      <Link
-                        href={track.href}
-                        className="block w-full rounded-lg bg-white text-gray-950 text-center py-2.5 text-sm font-semibold hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
-                      >
-                        Start Assessment
-                      </Link>
-                    </motion.div>
-                  ) : (
-                    <div className="mt-4 space-y-1">
-                      {(waitlistCounts[track.name] ?? 0) > 0 && (
-                        <p className="text-xs text-gray-500">
-                          <span className="text-gray-300 font-medium">{waitlistCounts[track.name]}</span> engineer{waitlistCounts[track.name] > 1 ? "s" : ""} waiting
-                        </p>
-                      )}
-                      <WaitlistButton domain={track.name} />
-                    </div>
-                  )}
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="mt-5">
+                    <Link
+                      href={track.href}
+                      className="block w-full rounded-lg bg-white text-gray-950 text-center py-2.5 text-sm font-semibold hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
+                    >
+                      Start Assessment
+                    </Link>
+                  </motion.div>
                 </div>
               </motion.div>
             ))}

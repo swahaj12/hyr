@@ -264,6 +264,71 @@ export default function DashboardPage() {
               </Card>
             )}
 
+            {/* Progress Chart */}
+            {assessments.length >= 2 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Score Progression</CardTitle>
+                  <CardDescription>Your assessment scores over time</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const sorted = [...assessments].reverse()
+                    const points = sorted.map((a, i) => ({
+                      pct: Math.round((a.total_score / a.total_questions) * 100),
+                      date: new Date(a.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+                      index: i,
+                    }))
+
+                    const W = 100
+                    const H = 40
+                    const pad = { top: 4, bottom: 8, left: 2, right: 2 }
+                    const chartW = W - pad.left - pad.right
+                    const chartH = H - pad.top - pad.bottom
+
+                    const minPct = Math.max(0, Math.min(...points.map(p => p.pct)) - 10)
+                    const maxPct = Math.min(100, Math.max(...points.map(p => p.pct)) + 10)
+                    const range = maxPct - minPct || 1
+
+                    const coords = points.map((p, i) => ({
+                      x: pad.left + (points.length > 1 ? (i / (points.length - 1)) * chartW : chartW / 2),
+                      y: pad.top + chartH - ((p.pct - minPct) / range) * chartH,
+                      ...p,
+                    }))
+
+                    const pathD = coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.x} ${c.y}`).join(" ")
+                    const areaD = `${pathD} L ${coords[coords.length - 1].x} ${pad.top + chartH} L ${coords[0].x} ${pad.top + chartH} Z`
+
+                    return (
+                      <div className="w-full">
+                        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40 sm:h-48" preserveAspectRatio="none">
+                          <defs>
+                            <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
+                              <stop offset="100%" stopColor="#10b981" stopOpacity="0.02" />
+                            </linearGradient>
+                          </defs>
+                          <path d={areaD} fill="url(#chartGrad)" />
+                          <path d={pathD} fill="none" stroke="#10b981" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round" />
+                          {coords.map((c) => (
+                            <circle key={c.index} cx={c.x} cy={c.y} r="1" fill="#10b981" stroke="#fff" strokeWidth="0.3" />
+                          ))}
+                        </svg>
+                        <div className="flex justify-between mt-1">
+                          {points.map((p, i) => (
+                            <div key={i} className="text-center" style={{ width: `${100 / points.length}%` }}>
+                              <p className="text-xs font-semibold text-gray-950">{p.pct}%</p>
+                              <p className="text-[10px] text-muted-foreground">{p.date}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })()}
+                </CardContent>
+              </Card>
+            )}
+
             {/* All Assessments */}
             <Card>
               <CardHeader>

@@ -1,0 +1,1934 @@
+{
+  "bank_version": "1.0.0",
+  "last_updated": "2026-03-25",
+  "total_questions": 120,
+  "questions_per_session": 40,
+  "estimated_session_minutes": 14,
+  "difficulty_distribution": {
+    "easy": { "count": 40, "pct": 33 },
+    "medium": { "count": 50, "pct": 42 },
+    "hard": { "count": 30, "pct": 25 }
+  },
+  "questions": [
+    {
+      "id": "BE01",
+      "domain": "databases",
+      "skill": "db-sql",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your analytics dashboard is showing duplicate user entries. You discover the users table allows the same email to be inserted multiple times. What is the most appropriate fix?",
+      "options": [
+        { "id": "A", "text": "Add a UNIQUE constraint on the email column so the database rejects any insert that would create a duplicate." },
+        { "id": "B", "text": "Add application-level validation to check for existing emails before inserting, since database constraints slow down writes." },
+        { "id": "C", "text": "Create a scheduled job that periodically scans for and removes duplicate email entries from the table." },
+        { "id": "D", "text": "Use a BEFORE INSERT trigger that silently skips the row if the email already exists in the table." }
+      ],
+      "correct": "A",
+      "explanation": "A UNIQUE constraint enforces data integrity at the database level, preventing duplicates regardless of which application or process inserts data."
+    },
+    {
+      "id": "BE02",
+      "domain": "databases",
+      "skill": "db-indexing",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "A product search query that filters by category_id and sorts by created_at is taking 8 seconds on a table with 5 million rows. EXPLAIN shows a full table scan. What should you try first?",
+      "options": [
+        { "id": "A", "text": "Partition the table by category_id so each query only scans the relevant partition instead of the full table." },
+        { "id": "B", "text": "Create a composite index on (category_id, created_at) to cover both the filter and the sort in one index lookup." },
+        { "id": "C", "text": "Increase the database server's memory allocation so the full table can be cached in the buffer pool." },
+        { "id": "D", "text": "Rewrite the query to use a subquery that fetches category_id matches first, then sorts in the outer query." }
+      ],
+      "correct": "B",
+      "explanation": "A composite index on (category_id, created_at) allows the database to quickly filter by category and return results already sorted, eliminating both the scan and the sort."
+    },
+    {
+      "id": "BE03",
+      "domain": "databases",
+      "skill": "db-transactions",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your e-commerce checkout creates an order row and then deducts inventory in two separate queries. Occasionally, the server crashes between them, leaving orders with no inventory deduction. What should you do?",
+      "options": [
+        { "id": "A", "text": "Wrap both operations in a single database transaction so they either both succeed or both roll back on failure." },
+        { "id": "B", "text": "Add a retry loop around the inventory deduction so it keeps attempting until it succeeds after a crash." },
+        { "id": "C", "text": "Run a nightly reconciliation script that compares orders against inventory and fixes any mismatches." },
+        { "id": "D", "text": "Insert the order and inventory change into a staging table first, then move them to production tables together." }
+      ],
+      "correct": "A",
+      "explanation": "A database transaction guarantees atomicity — both operations commit together or neither does, preventing the partial-update problem."
+    },
+    {
+      "id": "BE04",
+      "domain": "databases",
+      "skill": "db-modeling",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "You're designing a schema for a blog where each post can have multiple tags and each tag can belong to multiple posts. How should you model this relationship?",
+      "options": [
+        { "id": "A", "text": "Store tag names as a comma-separated string in a tags column on the posts table for simplicity." },
+        { "id": "B", "text": "Create a separate post_tags junction table with foreign keys to both the posts and tags tables." },
+        { "id": "C", "text": "Add a post_id column to the tags table so each tag row references the post it belongs to." },
+        { "id": "D", "text": "Use a JSON array column on the posts table to store tag objects with their metadata." }
+      ],
+      "correct": "B",
+      "explanation": "A many-to-many relationship is properly modeled with a junction table that holds foreign keys to both related tables, enabling efficient queries and referential integrity."
+    },
+    {
+      "id": "BE05",
+      "domain": "databases",
+      "skill": "db-sql",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "A reporting query joins orders, customers, and shipments tables. It runs fine in staging (10K rows) but times out in production (50M rows). The query uses SELECT * and has no WHERE clause. What is the most impactful optimization?",
+      "options": [
+        { "id": "A", "text": "Replace SELECT * with only the columns needed and add a WHERE clause to limit the result set, reducing I/O and join overhead." },
+        { "id": "B", "text": "Increase the query timeout to 5 minutes so the join has enough time to complete on the larger dataset." },
+        { "id": "C", "text": "Switch the join order so the smallest table is listed first, since databases always join tables in the order specified." },
+        { "id": "D", "text": "Add indexes on every column in all three tables so the query optimizer has maximum flexibility." }
+      ],
+      "correct": "A",
+      "explanation": "Selecting only needed columns and filtering with WHERE dramatically reduces the data volume the database must read, join, and transfer."
+    },
+    {
+      "id": "BE06",
+      "domain": "databases",
+      "skill": "db-indexing",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "You have an index on (status, created_at) but a query filtering WHERE created_at > '2025-01-01' AND status = 'active' is still doing a full scan. What is the likely reason?",
+      "options": [
+        { "id": "A", "text": "The query optimizer determined the index selectivity is too low because most rows have status 'active', so a scan is cheaper." },
+        { "id": "B", "text": "Composite indexes can only be used when columns are queried in alphabetical order, and 'created_at' comes before 'status'." },
+        { "id": "C", "text": "The range condition on created_at prevents the index from being used because B-tree indexes don't support range queries." },
+        { "id": "D", "text": "The WHERE clause lists created_at before status, and composite indexes require the columns in the exact SQL order." }
+      ],
+      "correct": "A",
+      "explanation": "When the leading column has low selectivity (most rows match 'active'), the optimizer may decide a full scan is cheaper than an index lookup followed by many row fetches."
+    },
+    {
+      "id": "BE07",
+      "domain": "databases",
+      "skill": "db-transactions",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Two users simultaneously try to book the last available seat. Both read availability as 1, both proceed to book, and now availability shows -1. Which isolation level would prevent this?",
+      "options": [
+        { "id": "A", "text": "READ COMMITTED, because it ensures each transaction reads only committed data, preventing one from seeing the other's uncommitted write." },
+        { "id": "B", "text": "SERIALIZABLE, because it ensures transactions execute as if they ran one after another, so the second booking would see updated availability." },
+        { "id": "C", "text": "READ UNCOMMITTED, because it allows transactions to see each other's in-progress changes, so the second user would see the pending booking." },
+        { "id": "D", "text": "REPEATABLE READ, because it locks the rows read by the first transaction, preventing the second from reading availability until the first commits." }
+      ],
+      "correct": "B",
+      "explanation": "SERIALIZABLE isolation prevents this lost-update anomaly by ensuring the second transaction detects the conflict and retries with the updated availability."
+    },
+    {
+      "id": "BE08",
+      "domain": "databases",
+      "skill": "db-modeling",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your application stores user preferences as a wide table with 200 nullable columns (theme, language, timezone, etc.). Adding a new preference requires a schema migration. What's a better design?",
+      "options": [
+        { "id": "A", "text": "Use an EAV (entity-attribute-value) pattern or a JSONB column to store preferences as key-value pairs, allowing new preferences without migrations." },
+        { "id": "B", "text": "Split the table into 10 smaller tables grouped by preference category, each with 20 columns, to reduce the number of nulls." },
+        { "id": "C", "text": "Keep the wide table but use ALTER TABLE ... ADD COLUMN with a default value, which is instant in most databases." },
+        { "id": "D", "text": "Store each preference as a separate row in a normalized preferences table with one column per data type (int_value, string_value, bool_value)." }
+      ],
+      "correct": "A",
+      "explanation": "A JSONB column or EAV pattern allows flexible, schema-less storage of preferences, eliminating migrations when new preferences are added."
+    },
+    {
+      "id": "BE09",
+      "domain": "databases",
+      "skill": "db-sql",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "A dashboard query counts orders per region using GROUP BY region with a HAVING COUNT(*) > 100. Moving the filter to a WHERE clause instead doesn't work. Why does HAVING work here but WHERE does not?",
+      "options": [
+        { "id": "A", "text": "WHERE filters individual rows before aggregation, so it can't reference COUNT(*). HAVING filters groups after aggregation, so it can evaluate aggregate results." },
+        { "id": "B", "text": "WHERE and HAVING are interchangeable, but WHERE requires you to alias the COUNT first, so the syntax is slightly different." },
+        { "id": "C", "text": "WHERE can only filter on indexed columns, and since COUNT(*) isn't indexed, only HAVING can process it." },
+        { "id": "D", "text": "HAVING is optimized for aggregate functions and runs after ORDER BY, while WHERE runs before GROUP BY and can't see computed values." }
+      ],
+      "correct": "A",
+      "explanation": "WHERE operates on individual rows before grouping occurs, so it cannot reference aggregate functions; HAVING operates on grouped results after aggregation."
+    },
+    {
+      "id": "BE10",
+      "domain": "databases",
+      "skill": "db-indexing",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your PostgreSQL table has a partial index CREATE INDEX idx ON orders (customer_id) WHERE status = 'pending'. A query SELECT * FROM orders WHERE customer_id = 5 AND status = 'shipped' is slow. Why doesn't the index help?",
+      "options": [
+        { "id": "A", "text": "Partial indexes only include rows matching the WHERE clause of the index definition. Since the query filters on status = 'shipped', those rows aren't in the index." },
+        { "id": "B", "text": "PostgreSQL can't combine a partial index with a different WHERE condition in the same query plan, so it falls back to a sequential scan." },
+        { "id": "C", "text": "The index only stores customer_id values, and since the query also filters on status, the planner needs a composite index on both columns." },
+        { "id": "D", "text": "Partial indexes are only used for INSERT and UPDATE operations to speed up constraint checks, not for SELECT queries." }
+      ],
+      "correct": "A",
+      "explanation": "A partial index only indexes rows that satisfy its predicate (status = 'pending'), so queries filtering on a different status value cannot use it."
+    },
+    {
+      "id": "BE11",
+      "domain": "databases",
+      "skill": "db-transactions",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your system processes financial transfers using SELECT ... FOR UPDATE to lock the sender's row, then updates the balance. Under heavy load, you observe frequent deadlocks between two concurrent transfers where User A sends to User B and User B sends to User A. What's the root cause?",
+      "options": [
+        { "id": "A", "text": "Each transaction locks its sender's row first, creating a cycle: T1 locks A and waits for B, while T2 locks B and waits for A. Ordering lock acquisition by user ID prevents this." },
+        { "id": "B", "text": "FOR UPDATE is too aggressive and escalates to table-level locks under high concurrency. Using FOR SHARE instead would allow both transactions to proceed." },
+        { "id": "C", "text": "The deadlocks are caused by the database's lock timeout being too short. Increasing the lock_timeout parameter would give transactions enough time to complete." },
+        { "id": "D", "text": "PostgreSQL's MVCC model creates snapshot conflicts when two transactions modify related rows. Switching to READ COMMITTED isolation eliminates the deadlock." }
+      ],
+      "correct": "A",
+      "explanation": "The circular wait (T1 holds A, wants B; T2 holds B, wants A) is a classic deadlock scenario solved by always acquiring locks in a consistent order."
+    },
+    {
+      "id": "BE12",
+      "domain": "databases",
+      "skill": "db-modeling",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "You're designing a multi-tenant SaaS database. Option A uses a shared table with a tenant_id column. Option B uses a separate schema per tenant. Your app has 10,000 tenants with varying data sizes. Which trade-off is most accurate?",
+      "options": [
+        { "id": "A", "text": "Shared tables are simpler to maintain and migrate but require careful RLS/query scoping. Per-schema gives isolation but makes schema migrations across 10K schemas operationally painful." },
+        { "id": "B", "text": "Per-schema is always preferred for multi-tenancy because it guarantees data isolation, and modern migration tools handle thousands of schemas efficiently." },
+        { "id": "C", "text": "Shared tables perform worse because every query must filter by tenant_id. Per-schema avoids this overhead and scales linearly with tenant count." },
+        { "id": "D", "text": "The choice doesn't matter at 10K tenants because connection poolers like PgBouncer abstract the physical layout from the application layer." }
+      ],
+      "correct": "A",
+      "explanation": "Shared tables simplify operations and migrations but need rigorous tenant scoping; per-schema isolates data but creates massive operational overhead at 10,000 tenants."
+    },
+    {
+      "id": "BE13",
+      "domain": "apis-design",
+      "skill": "api-rest-design",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "A mobile client calls POST /users to create an account, but the network drops before receiving the response. The client retries, and now two accounts exist for the same user. How should you prevent this?",
+      "options": [
+        { "id": "A", "text": "Have the client generate a unique idempotency key and send it with the request. The server checks if that key was already processed before creating a new user." },
+        { "id": "B", "text": "Switch from POST to PUT /users/{email} so the second request overwrites the first one instead of creating a duplicate." },
+        { "id": "C", "text": "Add a 5-second delay on the client before retrying to ensure the first request has been fully processed by the server." },
+        { "id": "D", "text": "Return the response faster by removing validation logic so the client receives it before the network can drop." }
+      ],
+      "correct": "A",
+      "explanation": "An idempotency key lets the server detect duplicate requests and return the original result instead of processing the operation again."
+    },
+    {
+      "id": "BE14",
+      "domain": "apis-design",
+      "skill": "api-versioning",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "You need to change the response shape of GET /products (renaming 'price' to 'unit_price') but existing mobile apps depend on the old field name. What approach avoids breaking those clients?",
+      "options": [
+        { "id": "A", "text": "Rename the field and push an urgent app update. Mobile apps should always stay on the latest API contract." },
+        { "id": "B", "text": "Return both 'price' and 'unit_price' in the response temporarily, then remove 'price' after clients have migrated." },
+        { "id": "C", "text": "Introduce a new versioned endpoint (e.g., /v2/products) with the new field, while keeping /v1/products unchanged for existing clients." },
+        { "id": "D", "text": "Use a query parameter like ?field_name=unit_price to let clients opt in to the new name on the same endpoint." }
+      ],
+      "correct": "C",
+      "explanation": "API versioning lets you evolve the contract without breaking existing consumers; old clients continue using v1 while new clients adopt v2."
+    },
+    {
+      "id": "BE15",
+      "domain": "apis-design",
+      "skill": "api-pagination",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your GET /notifications endpoint returns all 50,000 notifications for a user in one response, causing timeouts on mobile devices. What's the standard solution?",
+      "options": [
+        { "id": "A", "text": "Implement cursor-based or offset-based pagination so the client requests a manageable page of results at a time." },
+        { "id": "B", "text": "Compress the response with gzip so the 50,000 records transfer faster over the mobile network." },
+        { "id": "C", "text": "Switch from JSON to a binary format like Protocol Buffers to reduce the payload size by 60-70%." },
+        { "id": "D", "text": "Set a hard limit of 100 notifications per user in the database so the endpoint never returns too many results." }
+      ],
+      "correct": "A",
+      "explanation": "Pagination breaks large result sets into smaller pages, reducing response time, memory usage, and bandwidth for both server and client."
+    },
+    {
+      "id": "BE16",
+      "domain": "apis-design",
+      "skill": "api-auth",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your API currently sends the user's password in a Base64-encoded Authorization header over HTTP. A security audit flags this. Why is this insecure even though the password is encoded?",
+      "options": [
+        { "id": "A", "text": "Base64 is an encoding, not encryption. Anyone intercepting the HTTP traffic can decode it instantly to get the plaintext password." },
+        { "id": "B", "text": "Base64 uses a weak hashing algorithm that can be brute-forced in seconds with modern hardware." },
+        { "id": "C", "text": "The Authorization header is not encrypted by browsers, but the request body is, so the password should be sent in the body instead." },
+        { "id": "D", "text": "Base64 encoding adds overhead that slows down authentication. Using plain text over HTTPS would be both faster and more secure." }
+      ],
+      "correct": "A",
+      "explanation": "Base64 is a reversible encoding (not encryption), so credentials sent over unencrypted HTTP can be trivially intercepted and decoded."
+    },
+    {
+      "id": "BE17",
+      "domain": "apis-design",
+      "skill": "api-rest-design",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "A client sends DELETE /users/123 and gets a 200 OK. They send the same request again and get a 404 Not Found. Another developer argues the second call should also return 200. Who is correct and why?",
+      "options": [
+        { "id": "A", "text": "The 404 is correct. DELETE is not idempotent, so the second request is a new operation that should fail because the resource is gone." },
+        { "id": "B", "text": "Returning 200 or 204 on the second call is more correct. DELETE should be idempotent — the end state (resource doesn't exist) is the same regardless of how many times you call it." },
+        { "id": "C", "text": "The 404 is correct because the HTTP spec requires DELETE to return the current resource state, and a missing resource must produce 404." },
+        { "id": "D", "text": "Neither is correct. The server should return 409 Conflict on the second call to indicate the resource was already deleted by a previous request." }
+      ],
+      "correct": "B",
+      "explanation": "DELETE should be idempotent per the HTTP specification — calling it multiple times should produce the same outcome (resource gone), so returning 200/204 is the more correct approach."
+    },
+    {
+      "id": "BE18",
+      "domain": "apis-design",
+      "skill": "api-versioning",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your team debates API versioning strategies: URL path (/v2/users), query param (?version=2), and Accept header (Accept: application/vnd.api.v2+json). A key concern is cacheability. Which approach has the best caching characteristics?",
+      "options": [
+        { "id": "A", "text": "URL path versioning, because each version has a distinct URL that CDNs and proxies cache independently without any special configuration." },
+        { "id": "B", "text": "Accept header versioning, because HTTP caches use the Vary header to cache different representations of the same URL efficiently." },
+        { "id": "C", "text": "Query parameter versioning, because cache keys naturally include query strings so each version is cached separately." },
+        { "id": "D", "text": "All three have identical caching behavior because modern CDNs normalize all forms of versioning into a single cache key." }
+      ],
+      "correct": "A",
+      "explanation": "URL path versioning produces distinct URLs that are trivially cached by any HTTP cache, CDN, or proxy without needing Vary headers or special configuration."
+    },
+    {
+      "id": "BE19",
+      "domain": "apis-design",
+      "skill": "api-pagination",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "You use offset-based pagination (page=5&limit=20) on an orders feed. Users report seeing duplicate orders when new orders are inserted while they're paging through results. What pagination approach fixes this?",
+      "options": [
+        { "id": "A", "text": "Switch to cursor-based pagination using the last seen order's ID or timestamp as the cursor, so new inserts don't shift the result window." },
+        { "id": "B", "text": "Lock the table while a user is paginating to prevent inserts from affecting the result set during their session." },
+        { "id": "C", "text": "Cache the full result set on the first request and serve subsequent pages from the cache to maintain a consistent snapshot." },
+        { "id": "D", "text": "Use a descending sort order so new orders appear at the beginning rather than shifting older pages." }
+      ],
+      "correct": "A",
+      "explanation": "Cursor-based pagination uses a stable reference point (like an ID), so rows inserted before or after the cursor don't cause duplicates or gaps in subsequent pages."
+    },
+    {
+      "id": "BE20",
+      "domain": "apis-design",
+      "skill": "api-auth",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your SPA stores a JWT access token in localStorage and sends it via the Authorization header. A security review recommends switching to httpOnly cookies. What attack does this mitigate?",
+      "options": [
+        { "id": "A", "text": "Cross-Site Scripting (XSS). If an attacker injects JavaScript, they can read localStorage but cannot access httpOnly cookies, preventing token theft." },
+        { "id": "B", "text": "Cross-Site Request Forgery (CSRF). Cookies are automatically sent with requests, but localStorage tokens are not, so cookies are inherently safer against CSRF." },
+        { "id": "C", "text": "Man-in-the-middle attacks. httpOnly cookies are encrypted at the transport layer, while localStorage values are sent in plaintext headers." },
+        { "id": "D", "text": "Brute-force attacks. httpOnly cookies have built-in rate limiting that prevents repeated authentication attempts." }
+      ],
+      "correct": "A",
+      "explanation": "httpOnly cookies cannot be accessed by JavaScript, so XSS attacks cannot steal the token — unlike localStorage which is fully accessible to any script on the page."
+    },
+    {
+      "id": "BE21",
+      "domain": "apis-design",
+      "skill": "api-rest-design",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "A client needs to update only the user's email without sending the entire user object. Using PUT /users/123 with just {email: 'new@example.com'} would null out all other fields. What's the correct approach?",
+      "options": [
+        { "id": "A", "text": "Use PATCH /users/123 with {email: 'new@example.com'} since PATCH is designed for partial updates and only modifies the specified fields." },
+        { "id": "B", "text": "Use POST /users/123/email with the new value, since each field should have its own sub-resource endpoint for granular updates." },
+        { "id": "C", "text": "Use PUT /users/123 but have the server merge the partial payload with existing data instead of replacing it, since PUT is the standard update method." },
+        { "id": "D", "text": "Use DELETE /users/123/email followed by POST /users/123/email to replace the value, following CRUD semantics strictly." }
+      ],
+      "correct": "A",
+      "explanation": "PATCH is the HTTP method specifically designed for partial resource updates, applying only the changes specified in the request body."
+    },
+    {
+      "id": "BE22",
+      "domain": "apis-design",
+      "skill": "api-pagination",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your API paginates search results using cursor-based pagination. A product manager asks for a 'jump to page 50' feature. You find this is difficult with cursors. Why?",
+      "options": [
+        { "id": "A", "text": "Cursor-based pagination traverses sequentially from a reference point. Jumping to an arbitrary page requires knowing the cursor value at that offset, which means scanning all preceding rows." },
+        { "id": "B", "text": "Cursors encode the current page number, so jumping to page 50 just means creating a cursor with that page number embedded, but browsers don't support this." },
+        { "id": "C", "text": "Cursor pagination doesn't support more than 100 pages because the cursor token exceeds the URL length limit beyond that point." },
+        { "id": "D", "text": "The database can't seek to page 50 with a cursor because B-tree indexes don't support random access by position." }
+      ],
+      "correct": "A",
+      "explanation": "Cursors point to a specific record, not a page number, so reaching an arbitrary page requires scanning through all prior records to find the correct cursor position."
+    },
+    {
+      "id": "BE23",
+      "domain": "apis-design",
+      "skill": "api-auth",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your API issues JWTs with a 1-hour expiry. A user's account is compromised and you need to revoke all their sessions immediately. Why is this challenging with stateless JWTs?",
+      "options": [
+        { "id": "A", "text": "JWTs are self-contained and validated without a server lookup, so there's no central session store to delete. You'd need a token blacklist or to rotate the signing key." },
+        { "id": "B", "text": "JWTs can be revoked by removing them from the client's cookie jar, but mobile apps cache tokens in memory which makes deletion unreliable." },
+        { "id": "C", "text": "The JWT spec doesn't include a 'revoked' claim. Adding custom claims requires updating the signing algorithm, which invalidates all existing tokens." },
+        { "id": "D", "text": "JWTs are encrypted and the server can't read the payload to identify which tokens belong to the compromised user without the client's public key." }
+      ],
+      "correct": "A",
+      "explanation": "Stateless JWTs require no server-side storage for validation, which means there's no central record to revoke — you must add a revocation mechanism like a blacklist."
+    },
+    {
+      "id": "BE24",
+      "domain": "apis-design",
+      "skill": "api-versioning",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your API has grown to 5 active versions (v1 through v5). Each version has its own controller layer. Bug fixes must be backported to all supported versions. What design pattern reduces this maintenance burden?",
+      "options": [
+        { "id": "A", "text": "Use a single internal service layer with version-specific request/response transformers at the API boundary, so business logic is shared and only serialization differs." },
+        { "id": "B", "text": "Automatically generate older API versions from the latest one using code generation tools that strip new fields from responses." },
+        { "id": "C", "text": "Deprecate all versions except the latest and give clients a 30-day migration window, since supporting multiple versions is an anti-pattern." },
+        { "id": "D", "text": "Use feature flags instead of API versions so all clients hit the same endpoint and get different behaviors based on their registered version." }
+      ],
+      "correct": "A",
+      "explanation": "A shared service layer with version-specific transformers means business logic and bug fixes live in one place, while each API version only defines its input/output mapping."
+    },
+    {
+      "id": "BE25",
+      "domain": "architecture",
+      "skill": "arch-patterns",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your application has controller methods that directly contain database queries, business validation, email sending, and response formatting all in one function. What architectural pattern would improve this?",
+      "options": [
+        { "id": "A", "text": "Separate the code into layers (controller, service, repository) so each layer has a single responsibility and can be tested and modified independently." },
+        { "id": "B", "text": "Move all the logic into database stored procedures so the controller only calls one procedure and stays thin." },
+        { "id": "C", "text": "Split each controller method into its own microservice so the responsibilities are distributed across the network." },
+        { "id": "D", "text": "Add a middleware pipeline that handles validation, database access, and emails before the request reaches the controller." }
+      ],
+      "correct": "A",
+      "explanation": "Layered architecture (controller/service/repository) separates concerns, making the codebase easier to test, maintain, and reason about."
+    },
+    {
+      "id": "BE26",
+      "domain": "architecture",
+      "skill": "arch-microservices",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your monolithic app is being split into microservices. The team proposes having the Orders service directly query the Users database to get customer details. Why is this problematic?",
+      "options": [
+        { "id": "A", "text": "It creates tight coupling between services through a shared database. If the Users schema changes, the Orders service breaks. Services should communicate through APIs." },
+        { "id": "B", "text": "Cross-service database queries are slow because they go over the network. Using a shared cache between services would be faster." },
+        { "id": "C", "text": "Direct database access is fine between microservices as long as the Orders service only has read permissions on the Users database." },
+        { "id": "D", "text": "The problem is transaction isolation — cross-database queries can't participate in the same transaction, so data consistency is lost." }
+      ],
+      "correct": "A",
+      "explanation": "Shared databases couple services at the schema level, violating the microservices principle that each service owns its data and exposes it only through its API."
+    },
+    {
+      "id": "BE27",
+      "domain": "architecture",
+      "skill": "arch-monolith",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your team of 3 developers maintains a small CRUD application. The CTO wants to rewrite it as microservices for 'scalability.' What is the strongest argument against this?",
+      "options": [
+        { "id": "A", "text": "Microservices add operational complexity (networking, deployment, monitoring per service) that outweighs the benefits for a small team with a simple application." },
+        { "id": "B", "text": "Microservices require Kubernetes, which has a steep learning curve and high infrastructure costs for a 3-person team." },
+        { "id": "C", "text": "A monolith can't be scaled horizontally, but at the current traffic level that doesn't matter, so microservices are premature." },
+        { "id": "D", "text": "Microservices require different programming languages for each service, which is impractical with only 3 developers." }
+      ],
+      "correct": "A",
+      "explanation": "Microservices introduce significant operational overhead (distributed tracing, service discovery, network failures) that is unjustified for a small team with a simple application."
+    },
+    {
+      "id": "BE28",
+      "domain": "architecture",
+      "skill": "arch-event-driven",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "When a user places an order, the system must send a confirmation email, update inventory, and notify the warehouse. Currently, the order endpoint does all three synchronously, making it slow. What pattern decouples these?",
+      "options": [
+        { "id": "A", "text": "Publish an 'OrderPlaced' event to a message broker. Each downstream service subscribes to this event and handles its task independently and asynchronously." },
+        { "id": "B", "text": "Use a background thread pool in the order service to run email, inventory, and warehouse calls concurrently within the same request." },
+        { "id": "C", "text": "Create a batch job that processes new orders every minute, sending emails and updating inventory for all orders in bulk." },
+        { "id": "D", "text": "Have the frontend make three separate API calls — one for the order, one for email, and one for inventory — to parallelize the work on the client side." }
+      ],
+      "correct": "A",
+      "explanation": "Event-driven architecture decouples the order service from downstream consumers; each service reacts to the event independently, improving responsiveness and scalability."
+    },
+    {
+      "id": "BE29",
+      "domain": "architecture",
+      "skill": "arch-patterns",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your team uses the Repository pattern, but developers are putting business logic inside repository methods (e.g., applying discounts in the findOrdersByUser method). What's wrong with this?",
+      "options": [
+        { "id": "A", "text": "The Repository pattern should only handle data access. Business logic in repositories makes it impossible to test business rules without a database and mixes concerns." },
+        { "id": "B", "text": "Repository methods should be generic and reusable. Adding discounts makes findOrdersByUser too specific, so it should be split into two repository methods." },
+        { "id": "C", "text": "The Repository pattern is for read operations only. Write operations like applying discounts should use the Unit of Work pattern instead." },
+        { "id": "D", "text": "Repositories shouldn't return domain objects with business logic. They should return DTOs, and the controller should apply the discount before sending the response." }
+      ],
+      "correct": "A",
+      "explanation": "Repositories abstract data access only; embedding business logic there violates separation of concerns and makes business rules untestable without a database."
+    },
+    {
+      "id": "BE30",
+      "domain": "architecture",
+      "skill": "arch-microservices",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your checkout flow calls the Inventory service, then the Payment service, then the Shipping service sequentially. If Payment fails after Inventory has already reserved stock, the reserved stock is never released. What pattern handles this?",
+      "options": [
+        { "id": "A", "text": "Use the Saga pattern with compensating transactions. If Payment fails, a compensating action is triggered to unreserve the stock in the Inventory service." },
+        { "id": "B", "text": "Use a distributed two-phase commit (2PC) across all three services to ensure atomicity, rolling back all changes if any service fails." },
+        { "id": "C", "text": "Make each service call idempotent and retry the entire flow from the beginning when any step fails, so eventually all steps succeed." },
+        { "id": "D", "text": "Combine Inventory, Payment, and Shipping into a single service to use a local database transaction instead of distributed coordination." }
+      ],
+      "correct": "A",
+      "explanation": "The Saga pattern manages distributed transactions through compensating actions — each step has a corresponding undo operation that runs if a later step fails."
+    },
+    {
+      "id": "BE31",
+      "domain": "architecture",
+      "skill": "arch-monolith",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your modular monolith has clearly defined modules (Users, Orders, Payments) but developers frequently import internal classes from other modules. What boundary enforcement would help?",
+      "options": [
+        { "id": "A", "text": "Define explicit public APIs for each module and use architectural fitness functions or linting rules (e.g., ArchUnit) to prevent cross-module internal imports." },
+        { "id": "B", "text": "Move each module to a separate Git repository so developers physically can't import internal classes from other modules." },
+        { "id": "C", "text": "Add runtime access checks that throw exceptions if a class is accessed from outside its module's package namespace." },
+        { "id": "D", "text": "Adopt a naming convention where internal classes are prefixed with an underscore, and rely on code reviews to catch violations." }
+      ],
+      "correct": "A",
+      "explanation": "Explicit public module APIs with automated enforcement (via tools like ArchUnit) maintain module boundaries without the overhead of splitting into separate services."
+    },
+    {
+      "id": "BE32",
+      "domain": "architecture",
+      "skill": "arch-event-driven",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your event-driven system publishes OrderCreated events. A new analytics service subscribes but needs to process all historical orders, not just new ones. How should you handle this?",
+      "options": [
+        { "id": "A", "text": "If using event sourcing, replay the event log from the beginning for the new consumer. Otherwise, backfill from the database and then switch to live event consumption." },
+        { "id": "B", "text": "Re-publish all historical events to the message broker so the analytics service can consume them like regular events from the existing topic." },
+        { "id": "C", "text": "Give the analytics service direct read access to the Orders database so it can query historical data without relying on events." },
+        { "id": "D", "text": "Have the analytics service request historical data from the Orders service API, paginating through all past orders before subscribing to events." }
+      ],
+      "correct": "A",
+      "explanation": "Event sourcing enables replaying the full event history for new consumers; without it, a database backfill followed by live event consumption is the standard approach."
+    },
+    {
+      "id": "BE33",
+      "domain": "architecture",
+      "skill": "arch-patterns",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your API reads from a write-heavy PostgreSQL database, causing read queries to slow down under peak load. The read and write patterns have very different performance requirements. What architectural pattern addresses this?",
+      "options": [
+        { "id": "A", "text": "Implement CQRS (Command Query Responsibility Segregation) with separate read and write models, allowing each to be optimized and scaled independently." },
+        { "id": "B", "text": "Add an in-memory cache in front of the database for all read queries, serving stale data during peak write loads." },
+        { "id": "C", "text": "Partition the database tables by date so reads and writes hit different physical partitions and don't contend for the same locks." },
+        { "id": "D", "text": "Switch to an eventually consistent NoSQL database that handles mixed read/write workloads better than PostgreSQL." }
+      ],
+      "correct": "A",
+      "explanation": "CQRS separates the read and write sides, allowing each to use optimized data models, storage, and scaling strategies independently."
+    },
+    {
+      "id": "BE34",
+      "domain": "architecture",
+      "skill": "arch-microservices",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your microservices architecture has 30 services. Service A calls B, which calls C, which calls D. A single slow response in D causes cascading timeouts through the entire chain. What pattern prevents this cascading failure?",
+      "options": [
+        { "id": "A", "text": "Implement the Circuit Breaker pattern so that when D starts failing, callers quickly fail open instead of waiting for timeouts, preventing the cascade from propagating upstream." },
+        { "id": "B", "text": "Set aggressive timeouts at each service boundary (e.g., 100ms) so slow responses are dropped quickly and don't block calling services." },
+        { "id": "C", "text": "Replace synchronous HTTP calls with asynchronous messaging between all services so no service ever waits for a downstream response." },
+        { "id": "D", "text": "Deploy Service D with 10x more replicas so it can handle the load without slowing down, eliminating the root cause." }
+      ],
+      "correct": "A",
+      "explanation": "The Circuit Breaker pattern detects when a downstream service is failing and short-circuits requests, returning a fallback response immediately instead of cascading timeouts."
+    },
+    {
+      "id": "BE35",
+      "domain": "architecture",
+      "skill": "arch-event-driven",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your event-driven system guarantees at-least-once delivery. A consumer processes a PaymentCharged event and credits the merchant's account. Occasionally, the event is delivered twice, and the merchant gets double-credited. What's the correct fix?",
+      "options": [
+        { "id": "A", "text": "Make the consumer idempotent by recording processed event IDs and skipping duplicates. The credit operation checks if the event was already applied before modifying the balance." },
+        { "id": "B", "text": "Switch to exactly-once delivery semantics in the message broker to guarantee each event is delivered and processed only once." },
+        { "id": "C", "text": "Add a deduplication filter at the broker level that removes duplicate messages before they reach consumers." },
+        { "id": "D", "text": "Use a distributed lock so only one instance of the consumer can process PaymentCharged events at a time, preventing concurrent double-processing." }
+      ],
+      "correct": "A",
+      "explanation": "With at-least-once delivery, consumers must be idempotent — tracking processed events and skipping duplicates ensures the side effect (crediting) happens exactly once."
+    },
+    {
+      "id": "BE36",
+      "domain": "architecture",
+      "skill": "arch-monolith",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your monolith serves 50K requests per second. The team wants to extract the Search module into a microservice to scale it independently. During extraction, both the monolith and new service need to serve search traffic. What migration strategy minimizes risk?",
+      "options": [
+        { "id": "A", "text": "Use the Strangler Fig pattern: route a small percentage of search traffic to the new service via a proxy, gradually increasing the share as confidence grows, while the monolith continues handling the rest." },
+        { "id": "B", "text": "Deploy the new search service and do a hard cutover during a maintenance window, rolling back to the monolith if errors exceed a threshold." },
+        { "id": "C", "text": "Run the new service in shadow mode (receiving traffic but not serving responses) for a week, then switch all traffic once results match the monolith." },
+        { "id": "D", "text": "Extract the search code into a shared library used by both the monolith and the new service, so they always produce identical results during migration." }
+      ],
+      "correct": "A",
+      "explanation": "The Strangler Fig pattern incrementally routes traffic to the new service, enabling gradual validation and easy rollback without big-bang risk."
+    },
+    {
+      "id": "BE37",
+      "domain": "security",
+      "skill": "sec-auth",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "A user logs into your app and you store their plain-text password in the database for future authentication checks. A data breach exposes all user passwords. What should you have done differently?",
+      "options": [
+        { "id": "A", "text": "Hash passwords with a slow, salted algorithm like bcrypt before storing them. Even if the database is breached, the original passwords can't be easily recovered." },
+        { "id": "B", "text": "Encrypt passwords with AES-256 before storing them. If the database is breached, the encrypted passwords are useless without the decryption key." },
+        { "id": "C", "text": "Use Base64 encoding on passwords before storing. This prevents passwords from being readable in database query logs and admin panels." },
+        { "id": "D", "text": "Store passwords in a separate, more secure database with restricted network access so breaches of the main database don't expose credentials." }
+      ],
+      "correct": "A",
+      "explanation": "Bcrypt (or similar adaptive hashing) with per-user salts makes brute-forcing impractical, protecting credentials even if the hash database is compromised."
+    },
+    {
+      "id": "BE38",
+      "domain": "security",
+      "skill": "sec-injection",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your API endpoint takes a user-supplied 'name' parameter and builds a SQL query by concatenating it: `SELECT * FROM users WHERE name = '\" + name + \"'`. A pen test shows this returns all users when name is set to `' OR '1'='1`. What's the fix?",
+      "options": [
+        { "id": "A", "text": "Use parameterized queries (prepared statements) so user input is treated as a data value, never as executable SQL, preventing injection entirely." },
+        { "id": "B", "text": "Escape single quotes in the input by replacing ' with '' before concatenation, neutralizing the injection payload." },
+        { "id": "C", "text": "Add input validation to reject any input containing SQL keywords like OR, SELECT, or DROP before building the query." },
+        { "id": "D", "text": "Limit the database user's permissions to SELECT only, so even if injection occurs, the attacker can't modify or delete data." }
+      ],
+      "correct": "A",
+      "explanation": "Parameterized queries separate SQL code from data, making it impossible for user input to alter the query's structure regardless of its content."
+    },
+    {
+      "id": "BE39",
+      "domain": "security",
+      "skill": "sec-encryption",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your internal API communicates between services over HTTP within a private VPC. A security audit recommends switching to HTTPS. Your team argues it's unnecessary since traffic never leaves the VPC. Why is the auditor right?",
+      "options": [
+        { "id": "A", "text": "A compromised host within the VPC could sniff unencrypted traffic between services. TLS (HTTPS) ensures data confidentiality even if the network is partially compromised." },
+        { "id": "B", "text": "VPC traffic is routed through shared AWS infrastructure, so other AWS customers could potentially intercept packets on the same physical network." },
+        { "id": "C", "text": "HTTPS provides authentication via certificates, ensuring services verify each other's identity. HTTP has no mechanism for mutual service authentication." },
+        { "id": "D", "text": "Regulatory compliance frameworks like SOC2 and PCI-DSS always require HTTPS regardless of network topology, making it a non-negotiable requirement." }
+      ],
+      "correct": "A",
+      "explanation": "Defense in depth: if any host in the VPC is compromised, unencrypted internal traffic can be intercepted; TLS protects data in transit even within trusted networks."
+    },
+    {
+      "id": "BE40",
+      "domain": "security",
+      "skill": "sec-headers",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your web app doesn't set the Content-Security-Policy header. An attacker injects a <script> tag that loads malicious JavaScript from an external domain. What would CSP have done?",
+      "options": [
+        { "id": "A", "text": "CSP tells the browser which sources are allowed to load scripts. A properly configured policy would block the external script from executing." },
+        { "id": "B", "text": "CSP encrypts inline scripts so that only scripts signed by the server can be decrypted and executed by the browser." },
+        { "id": "C", "text": "CSP sanitizes HTML on the server side, removing any <script> tags before the response reaches the browser." },
+        { "id": "D", "text": "CSP redirects all script requests through a proxy server that scans for malicious code before allowing execution." }
+      ],
+      "correct": "A",
+      "explanation": "Content-Security-Policy instructs the browser to only execute scripts from approved sources, blocking injected scripts from unauthorized domains."
+    },
+    {
+      "id": "BE41",
+      "domain": "security",
+      "skill": "sec-auth",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your login endpoint allows unlimited attempts. An attacker uses a credential-stuffing bot to try thousands of username/password combinations per minute. What layered defense is most effective?",
+      "options": [
+        { "id": "A", "text": "Implement rate limiting on the login endpoint, add CAPTCHA after failed attempts, and use account lockout with exponential backoff to slow down automated attacks." },
+        { "id": "B", "text": "Force all users to change their passwords to stronger ones, since credential stuffing only works when passwords are weak or reused." },
+        { "id": "C", "text": "Add a Web Application Firewall (WAF) rule that blocks requests from known bot IP addresses in public threat intelligence lists." },
+        { "id": "D", "text": "Switch to OAuth2 with a third-party provider so your app never handles passwords directly and can't be targeted by credential stuffing." }
+      ],
+      "correct": "A",
+      "explanation": "Rate limiting, CAPTCHA, and exponential backoff form a layered defense that makes credential-stuffing attacks impractically slow and costly."
+    },
+    {
+      "id": "BE42",
+      "domain": "security",
+      "skill": "sec-injection",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your Node.js app passes user input to a shell command: exec(`convert ${filename} output.pdf`). A user submits filename as `; rm -rf /`. What vulnerability is this, and how do you fix it?",
+      "options": [
+        { "id": "A", "text": "This is OS command injection. Fix it by using execFile() with an array of arguments instead of string interpolation, so the input can't break out of the argument context." },
+        { "id": "B", "text": "This is a path traversal attack. Fix it by validating that filename doesn't contain slashes or dots before passing it to the shell command." },
+        { "id": "C", "text": "This is a buffer overflow. Fix it by limiting the filename length to 255 characters so the shell buffer can't be overwritten." },
+        { "id": "D", "text": "This is an XSS attack that targets the server. Fix it by HTML-encoding the filename before passing it to exec() so special characters are neutralized." }
+      ],
+      "correct": "A",
+      "explanation": "OS command injection occurs when user input is interpolated into shell commands; execFile() with argument arrays prevents the input from being interpreted as shell syntax."
+    },
+    {
+      "id": "BE43",
+      "domain": "security",
+      "skill": "sec-encryption",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your application stores API keys for third-party services in environment variables. The keys are visible in process dumps, container inspect output, and CI/CD logs. What's a more secure approach?",
+      "options": [
+        { "id": "A", "text": "Use a secrets manager (like AWS Secrets Manager or HashiCorp Vault) that encrypts secrets at rest, provides fine-grained access control, and supports automatic rotation." },
+        { "id": "B", "text": "Store the keys in a .env file committed to the repository but encrypt the repository with GPG so only authorized developers can clone it." },
+        { "id": "C", "text": "Base64-encode the API keys before setting them as environment variables, so they aren't readable in plain text in process dumps." },
+        { "id": "D", "text": "Embed the API keys directly in the application binary at compile time so they aren't exposed through environment variable inspection." }
+      ],
+      "correct": "A",
+      "explanation": "A secrets manager centralizes sensitive credentials with encryption, access policies, and audit logging — far more secure than environment variables."
+    },
+    {
+      "id": "BE44",
+      "domain": "security",
+      "skill": "sec-headers",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your application sets CORS headers to Access-Control-Allow-Origin: * to fix cross-origin errors during development. This goes to production unnoticed. What's the security risk?",
+      "options": [
+        { "id": "A", "text": "Any website can make authenticated requests to your API using the user's cookies or tokens, enabling data theft through malicious third-party pages." },
+        { "id": "B", "text": "The wildcard disables HTTPS certificate validation for cross-origin requests, allowing man-in-the-middle attacks on the API traffic." },
+        { "id": "C", "text": "Search engines can index your API responses because the wildcard allows crawlers to make cross-origin requests to all endpoints." },
+        { "id": "D", "text": "Attackers can use the wildcard to inject custom headers into requests that bypass your API's authentication middleware." }
+      ],
+      "correct": "A",
+      "explanation": "A wildcard CORS origin allows any website to make requests to your API from the user's browser, potentially accessing sensitive data if credentials are included."
+    },
+    {
+      "id": "BE45",
+      "domain": "security",
+      "skill": "sec-auth",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your API checks if a user is authorized to view a resource by verifying their role (e.g., 'admin'). But a regular user discovers they can access other users' data by changing the user ID in the URL (/users/456/profile). What type of vulnerability is this?",
+      "options": [
+        { "id": "A", "text": "This is an Insecure Direct Object Reference (IDOR). The API checks the user's role but doesn't verify they own the resource they're requesting." },
+        { "id": "B", "text": "This is a privilege escalation attack. The user is exploiting a flaw in the role hierarchy to gain admin-level access." },
+        { "id": "C", "text": "This is a session fixation vulnerability. The user's session token is being shared across user accounts due to poor session management." },
+        { "id": "D", "text": "This is a broken authentication issue. The JWT token contains the wrong user ID, causing the server to authorize access to the wrong profile." }
+      ],
+      "correct": "A",
+      "explanation": "IDOR occurs when the application exposes internal object references (like user IDs) without verifying the requesting user has permission to access that specific resource."
+    },
+    {
+      "id": "BE46",
+      "domain": "security",
+      "skill": "sec-injection",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your application uses an ORM exclusively and never writes raw SQL. A developer claims this makes SQL injection impossible. Under what circumstance could injection still occur?",
+      "options": [
+        { "id": "A", "text": "If the ORM allows raw query fragments (e.g., .where(`status = '${input}'`)) or string interpolation in query builders, user input can still reach the SQL engine unparameterized." },
+        { "id": "B", "text": "ORMs use parameterized queries internally and never pass raw strings to the database, so SQL injection is genuinely impossible with any ORM." },
+        { "id": "C", "text": "SQL injection could occur if the ORM generates queries longer than the database's maximum query length, causing truncation that creates injectable fragments." },
+        { "id": "D", "text": "If the database user has DDL permissions, an attacker could inject through the ORM's migration system rather than through queries." }
+      ],
+      "correct": "A",
+      "explanation": "Most ORMs provide escape hatches for raw SQL fragments; if developers use string interpolation in those fragments, they reintroduce the injection vulnerability."
+    },
+    {
+      "id": "BE47",
+      "domain": "security",
+      "skill": "sec-encryption",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your app encrypts sensitive data using AES-256-ECB mode. A security review finds that identical plaintext blocks produce identical ciphertext blocks, revealing data patterns. What's the fix?",
+      "options": [
+        { "id": "A", "text": "Switch to AES-256-GCM, which uses a nonce to produce different ciphertext for identical plaintext and also provides authenticated encryption to detect tampering." },
+        { "id": "B", "text": "Add random padding to each plaintext block before encryption so identical inputs produce different padded values and therefore different ciphertext." },
+        { "id": "C", "text": "Increase the key size to AES-512 so the larger key space makes it computationally infeasible to detect patterns in the ciphertext." },
+        { "id": "D", "text": "Compress the plaintext before encryption to remove the repeating patterns that cause identical blocks in the ciphertext." }
+      ],
+      "correct": "A",
+      "explanation": "AES-GCM uses a unique nonce per encryption, ensuring identical plaintexts produce different ciphertexts, and adds authentication to detect tampering."
+    },
+    {
+      "id": "BE48",
+      "domain": "security",
+      "skill": "sec-headers",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your bank's web app is embedded in an iframe on a phishing site that overlays a fake 'Confirm Transfer' button on top of your real UI. Users click the phishing button but actually trigger a real transfer. What header prevents this?",
+      "options": [
+        { "id": "A", "text": "X-Frame-Options: DENY (or CSP frame-ancestors 'none') prevents the browser from rendering your application inside an iframe on any other domain." },
+        { "id": "B", "text": "Strict-Transport-Security with a long max-age prevents the phishing site from loading your app over HTTP, which is required for iframe embedding." },
+        { "id": "C", "text": "Referrer-Policy: no-referrer prevents the phishing site from knowing your app's URL, making it impossible to target the iframe source." },
+        { "id": "D", "text": "X-Content-Type-Options: nosniff prevents the browser from interpreting your HTML as embeddable content, blocking iframe rendering." }
+      ],
+      "correct": "A",
+      "explanation": "X-Frame-Options: DENY (or CSP frame-ancestors) blocks clickjacking by instructing browsers to refuse to render the page inside any iframe."
+    },
+    {
+      "id": "BE49",
+      "domain": "caching",
+      "skill": "cache-strategies",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your product catalog page queries the database on every request, even though products change only once a day. The page loads in 2 seconds. What caching strategy would improve this?",
+      "options": [
+        { "id": "A", "text": "Use a cache-aside pattern: check the cache first, return cached data if available, otherwise query the database and populate the cache with a TTL matching your update frequency." },
+        { "id": "B", "text": "Enable the database's built-in query cache so repeated identical queries are served from memory without any application changes." },
+        { "id": "C", "text": "Pre-render the catalog page as a static HTML file daily and serve it from the filesystem to avoid database queries entirely." },
+        { "id": "D", "text": "Add a reverse proxy that caches the entire HTTP response for 24 hours, so the application server is never hit for catalog requests." }
+      ],
+      "correct": "A",
+      "explanation": "Cache-aside gives the application explicit control over what's cached and for how long, with automatic fallback to the database on cache misses."
+    },
+    {
+      "id": "BE50",
+      "domain": "caching",
+      "skill": "cache-invalidation",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "After updating a product's price, customers still see the old price for up to an hour because the cache hasn't expired. What should you do?",
+      "options": [
+        { "id": "A", "text": "Invalidate (delete) the cached product entry immediately when the price is updated, so the next request fetches fresh data from the database." },
+        { "id": "B", "text": "Reduce the cache TTL from 1 hour to 1 minute so stale data is visible for at most 60 seconds." },
+        { "id": "C", "text": "Add a 'last_modified' timestamp to the cached data and have the frontend compare it before rendering, fetching fresh data if it's outdated." },
+        { "id": "D", "text": "Disable caching for product data entirely since price accuracy is more important than performance." }
+      ],
+      "correct": "A",
+      "explanation": "Explicit cache invalidation on write ensures consumers immediately see updated data while retaining caching benefits for unchanged data."
+    },
+    {
+      "id": "BE51",
+      "domain": "caching",
+      "skill": "cache-redis",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your application uses Redis as a session store. After a Redis restart, all users are logged out and must re-authenticate. What configuration would prevent this?",
+      "options": [
+        { "id": "A", "text": "Enable Redis persistence (RDB snapshots or AOF logging) so session data survives restarts by being written to disk." },
+        { "id": "B", "text": "Increase Redis maxmemory so it never needs to restart due to memory pressure, keeping all sessions in memory." },
+        { "id": "C", "text": "Use Redis Cluster with 3 replicas so if one node restarts, sessions are still available on other nodes." },
+        { "id": "D", "text": "Store sessions in both Redis and the database simultaneously, falling back to the database when Redis is unavailable." }
+      ],
+      "correct": "A",
+      "explanation": "Redis persistence (RDB or AOF) writes data to disk, allowing it to reload sessions from disk after a restart without losing user sessions."
+    },
+    {
+      "id": "BE52",
+      "domain": "caching",
+      "skill": "cache-cdn",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your global web app serves static assets (JS, CSS, images) from a single server in US-East. Users in Asia experience 3-second load times due to network latency. What's the standard solution?",
+      "options": [
+        { "id": "A", "text": "Use a CDN (Content Delivery Network) that caches and serves static assets from edge servers geographically close to users worldwide." },
+        { "id": "B", "text": "Deploy duplicate application servers in every region so users connect to the nearest server for both static and dynamic content." },
+        { "id": "C", "text": "Compress static assets with Brotli or gzip to reduce file sizes, making them faster to transfer over high-latency connections." },
+        { "id": "D", "text": "Bundle all CSS and JavaScript into a single file to reduce the number of HTTP requests, which matters more than geographic distance." }
+      ],
+      "correct": "A",
+      "explanation": "A CDN caches static assets at edge locations worldwide, dramatically reducing latency by serving content from servers near the user."
+    },
+    {
+      "id": "BE53",
+      "domain": "caching",
+      "skill": "cache-strategies",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your API has a write-heavy workload (80% writes, 20% reads). Using cache-aside, you find most cache entries are invalidated before they're ever read. What caching strategy better suits this workload?",
+      "options": [
+        { "id": "A", "text": "Use write-through caching, which updates the cache and database simultaneously on every write, ensuring reads always hit the cache without a miss penalty." },
+        { "id": "B", "text": "Switch to write-behind (write-back) caching, which batches writes to the database asynchronously while keeping the cache as the primary data store." },
+        { "id": "C", "text": "For a write-heavy workload, caching provides minimal benefit. Remove the cache entirely and optimize database write performance with batch inserts." },
+        { "id": "D", "text": "Increase the cache TTL so entries survive long enough to be read before being invalidated by subsequent writes." }
+      ],
+      "correct": "C",
+      "explanation": "When writes vastly outnumber reads, cache entries are invalidated before being reused, making caching overhead counterproductive; optimizing the database directly is more effective."
+    },
+    {
+      "id": "BE54",
+      "domain": "caching",
+      "skill": "cache-invalidation",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "You cache user profiles with key user:{id}. When a user updates their name, you invalidate the cache. But the /leaderboard endpoint also caches a list containing user names, and it still shows the old name. What's the underlying problem?",
+      "options": [
+        { "id": "A", "text": "The user data is denormalized across multiple cache keys. Updating one key doesn't automatically propagate to other keys that contain a copy of the same data." },
+        { "id": "B", "text": "Redis uses eventual consistency between keys, so invalidating one key doesn't immediately affect related keys on the same node." },
+        { "id": "C", "text": "The leaderboard cache was set with a higher TTL than the user profile cache, so it takes longer to refresh naturally." },
+        { "id": "D", "text": "Cache invalidation only works for keys within the same Redis database number. The leaderboard is likely stored in a different DB." }
+      ],
+      "correct": "A",
+      "explanation": "Denormalized cached data requires invalidating all cache entries that contain the changed data, not just the primary key — a classic cache invalidation challenge."
+    },
+    {
+      "id": "BE55",
+      "domain": "caching",
+      "skill": "cache-redis",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your Redis instance is at 95% memory. New cache entries are being evicted immediately using the allkeys-lru policy. Users experience slow responses because nearly every request is a cache miss. What should you investigate first?",
+      "options": [
+        { "id": "A", "text": "Audit the cached data for oversized entries, keys without TTLs, and unused data. Optimize key sizes and set appropriate expiration times before scaling up hardware." },
+        { "id": "B", "text": "Switch from allkeys-lru to noeviction policy so entries aren't evicted. The application will handle errors when Redis can't store new entries." },
+        { "id": "C", "text": "Immediately upgrade to a larger Redis instance with 4x the memory to give headroom and prevent evictions." },
+        { "id": "D", "text": "Enable Redis Cluster to distribute keys across multiple nodes, which automatically frees up memory on each individual node." }
+      ],
+      "correct": "A",
+      "explanation": "Before scaling hardware, audit for inefficiencies: large unused keys, missing TTLs, and oversized values are common causes of premature memory exhaustion."
+    },
+    {
+      "id": "BE56",
+      "domain": "caching",
+      "skill": "cache-cdn",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "You deploy a CSS fix to production, but users still see the broken layout because the CDN is serving the old CSS file with a 1-year cache header. How do you force users to get the new version without waiting?",
+      "options": [
+        { "id": "A", "text": "Use cache-busting: change the CSS filename or append a version hash (e.g., styles.abc123.css) so the CDN and browsers treat it as a new resource." },
+        { "id": "B", "text": "Issue a CDN cache purge for the CSS file and reduce the Cache-Control max-age to 5 minutes to prevent this from happening again." },
+        { "id": "C", "text": "Add a no-cache header to the HTML page so browsers always fetch fresh CSS references, even if the CSS itself is cached." },
+        { "id": "D", "text": "Tell users to hard-refresh (Ctrl+Shift+R) their browser to bypass the cache and load the updated CSS directly from the origin." }
+      ],
+      "correct": "A",
+      "explanation": "Cache-busting with content hashes in filenames ensures browsers and CDNs automatically fetch the new file, while allowing aggressive long-term caching for unchanged files."
+    },
+    {
+      "id": "BE57",
+      "domain": "caching",
+      "skill": "cache-strategies",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "A popular product page gets 10,000 requests per second. The cache entry expires, and all 10,000 requests simultaneously hit the database to rebuild the cache. This overwhelms the database. What's this problem called and how do you fix it?",
+      "options": [
+        { "id": "A", "text": "This is a cache stampede (thundering herd). Fix it by using a lock so only one request rebuilds the cache while others wait, or by proactively refreshing the cache before it expires." },
+        { "id": "B", "text": "This is cache poisoning. Fix it by validating cached data integrity with checksums so corrupted entries are refreshed individually." },
+        { "id": "C", "text": "This is cache fragmentation. Fix it by using consistent hashing to distribute requests across multiple cache nodes evenly." },
+        { "id": "D", "text": "This is cache thrashing. Fix it by increasing the cache size so entries aren't evicted under memory pressure, preventing simultaneous rebuilds." }
+      ],
+      "correct": "A",
+      "explanation": "A cache stampede occurs when many requests hit an expired key simultaneously; a single-flight lock or proactive refresh prevents the thundering herd from overwhelming the database."
+    },
+    {
+      "id": "BE58",
+      "domain": "caching",
+      "skill": "cache-invalidation",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your distributed system runs 5 application servers, each with an in-memory cache. When one server updates a product, the other 4 still serve stale data from their local caches. What's the most robust solution?",
+      "options": [
+        { "id": "A", "text": "Replace local caches with a shared distributed cache (like Redis) so all servers read from and write to the same cache, eliminating inconsistency between nodes." },
+        { "id": "B", "text": "Use a pub/sub channel to broadcast cache invalidation events to all servers so they clear their local caches when data changes." },
+        { "id": "C", "text": "Set local cache TTLs to 1 second so stale data is visible for at most 1 second across all servers." },
+        { "id": "D", "text": "Use sticky sessions to route each user to the same server, so they always see consistent data from that server's local cache." }
+      ],
+      "correct": "A",
+      "explanation": "A shared distributed cache provides a single source of truth, eliminating the inconsistency inherent in maintaining separate local caches across multiple servers."
+    },
+    {
+      "id": "BE59",
+      "domain": "caching",
+      "skill": "cache-redis",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your Redis Cluster has 3 masters and 3 replicas. During a network partition, a client writes to a master that gets isolated from the majority. When the partition heals, this master becomes a replica of a new master. What happens to the writes?",
+      "options": [
+        { "id": "A", "text": "The writes are lost. The isolated master accepted writes during the partition, but when it rejoins as a replica, it syncs from the new master and discards its divergent data." },
+        { "id": "B", "text": "Redis Cluster uses a write-ahead log, so the isolated master replays its writes to the new master during resynchronization." },
+        { "id": "C", "text": "The new master detects conflicting writes and initiates a merge process, keeping the most recent version of each key based on timestamps." },
+        { "id": "D", "text": "Redis Cluster prevents writes to the isolated master entirely because it can't reach a quorum, so no data loss occurs." }
+      ],
+      "correct": "A",
+      "explanation": "Redis Cluster provides no write guarantees during network partitions — writes to an isolated master are lost when it resyncs as a replica of the new master."
+    },
+    {
+      "id": "BE60",
+      "domain": "caching",
+      "skill": "cache-cdn",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your API serves personalized content (user-specific recommendations). A developer puts it behind a CDN with caching enabled. Users start seeing each other's personalized data. What went wrong?",
+      "options": [
+        { "id": "A", "text": "The CDN cached the personalized response and served it to different users because the cache key was based on the URL path alone, not the user's identity." },
+        { "id": "B", "text": "The CDN stripped authentication headers before forwarding requests to the origin, causing the API to return default content for all users." },
+        { "id": "C", "text": "CDN edge servers share a global cache, so a response cached at one edge is replicated to all edges, including those serving different users." },
+        { "id": "D", "text": "The API didn't set Vary: Cookie, but the CDN ignores Vary headers anyway, so per-user caching is impossible with CDNs." }
+      ],
+      "correct": "A",
+      "explanation": "CDNs cache by URL by default; personalized responses require cache keys that include user identity (via Vary header or bypassing the cache entirely)."
+    },
+    {
+      "id": "BE61",
+      "domain": "messaging",
+      "skill": "msg-queues",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your web server processes image uploads synchronously — resizing, compressing, and storing each image during the HTTP request. Under load, requests time out because image processing takes 30 seconds. How do you fix this?",
+      "options": [
+        { "id": "A", "text": "Push image processing jobs onto a message queue and return a 202 Accepted immediately. A background worker consumes the queue and processes images asynchronously." },
+        { "id": "B", "text": "Increase the HTTP request timeout to 60 seconds so the server has enough time to finish processing before the client gives up." },
+        { "id": "C", "text": "Scale the web server horizontally with 10 more instances so each server handles fewer concurrent image processing requests." },
+        { "id": "D", "text": "Use WebSockets instead of HTTP so the client maintains a persistent connection and receives the processed image when it's ready." }
+      ],
+      "correct": "A",
+      "explanation": "Offloading heavy processing to an asynchronous queue keeps the web server responsive, processing images in the background without blocking HTTP requests."
+    },
+    {
+      "id": "BE62",
+      "domain": "messaging",
+      "skill": "msg-pub-sub",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "When a new user signs up, the system must send a welcome email, create a Stripe customer, and provision a default workspace. These are handled by different teams' services. What messaging pattern decouples them from the signup service?",
+      "options": [
+        { "id": "A", "text": "Use publish-subscribe: the signup service publishes a UserCreated event, and each downstream service subscribes independently without the signup service knowing about them." },
+        { "id": "B", "text": "Have the signup service call each downstream service's API sequentially, retrying on failure until all three succeed." },
+        { "id": "C", "text": "Store the new user in a shared database table and have each service poll it every second for new rows to process." },
+        { "id": "D", "text": "Use a request-reply pattern where each downstream service sends a response back to the signup service confirming it completed its task." }
+      ],
+      "correct": "A",
+      "explanation": "Pub/sub fully decouples the producer from consumers — the signup service just publishes an event and doesn't need to know which services react to it."
+    },
+    {
+      "id": "BE63",
+      "domain": "messaging",
+      "skill": "msg-patterns",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your order processing system sends each order to a single worker for fulfillment. When a worker crashes mid-processing, the order is lost. What messaging feature prevents this?",
+      "options": [
+        { "id": "A", "text": "Use message acknowledgments. The broker keeps the message until the worker explicitly confirms it was processed; if the worker crashes, the message is redelivered to another worker." },
+        { "id": "B", "text": "Run two workers for every order so if one crashes, the other has already processed it as a backup." },
+        { "id": "C", "text": "Store orders in a database before sending to the queue, and have a separate process check for unprocessed orders every minute." },
+        { "id": "D", "text": "Set the message TTL to 0 so messages never expire and stay in the queue indefinitely until a healthy worker picks them up." }
+      ],
+      "correct": "A",
+      "explanation": "Message acknowledgment ensures the broker only removes a message after the consumer confirms successful processing, enabling automatic redelivery on failure."
+    },
+    {
+      "id": "BE64",
+      "domain": "messaging",
+      "skill": "msg-reliability",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your application publishes messages to RabbitMQ. During a RabbitMQ restart, you notice that all queued messages are gone. What setting would have preserved them?",
+      "options": [
+        { "id": "A", "text": "Declare queues as durable and mark messages as persistent so RabbitMQ writes them to disk, surviving broker restarts." },
+        { "id": "B", "text": "Enable RabbitMQ clustering with at least 2 nodes so messages are replicated and available even if one node restarts." },
+        { "id": "C", "text": "Use publisher confirms so the application knows when RabbitMQ has received each message and can re-send any that were lost." },
+        { "id": "D", "text": "Increase RabbitMQ's memory high-watermark so messages are held in RAM longer and not discarded during memory pressure." }
+      ],
+      "correct": "A",
+      "explanation": "Durable queues and persistent messages tell RabbitMQ to write messages to disk, ensuring they survive broker restarts."
+    },
+    {
+      "id": "BE65",
+      "domain": "messaging",
+      "skill": "msg-queues",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your message queue has 100,000 messages backlogged. You add more consumer workers, but throughput doesn't increase. Investigation shows all messages are routed to a single queue partition. What's the issue?",
+      "options": [
+        { "id": "A", "text": "With a single partition, only one consumer can actively read at a time. You need to increase the number of partitions so multiple consumers can read in parallel." },
+        { "id": "B", "text": "The consumers are CPU-bound and adding more doesn't help. You need to optimize the processing logic within each consumer first." },
+        { "id": "C", "text": "The network bandwidth between the broker and consumers is saturated. Adding consumers on different network segments would increase throughput." },
+        { "id": "D", "text": "Message queues process messages sequentially by design. Parallel consumption is not supported and requires switching to a pub/sub system." }
+      ],
+      "correct": "A",
+      "explanation": "In systems like Kafka, each partition can only be consumed by one consumer in a group; more partitions enable more consumers to process messages in parallel."
+    },
+    {
+      "id": "BE66",
+      "domain": "messaging",
+      "skill": "msg-pub-sub",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your event system publishes OrderPlaced events. The email service and the analytics service both subscribe. You need each service to receive every event independently, but within each service, you want events distributed among multiple instances. What's the correct setup?",
+      "options": [
+        { "id": "A", "text": "Create separate consumer groups for each service. All events are delivered to each group, and within a group, events are distributed among the group's instances." },
+        { "id": "B", "text": "Create separate topics for each service (orders-email, orders-analytics) and have the publisher send each event to both topics." },
+        { "id": "C", "text": "Use fan-out exchange routing where the broker creates a copy of each message for every connected consumer regardless of grouping." },
+        { "id": "D", "text": "Have each service instance subscribe to the same queue. The broker round-robins messages so each instance gets different events." }
+      ],
+      "correct": "A",
+      "explanation": "Consumer groups provide both fan-out (each group gets all events) and load balancing (events distributed among instances within a group)."
+    },
+    {
+      "id": "BE67",
+      "domain": "messaging",
+      "skill": "msg-patterns",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your system requires that order events for the same customer are processed in the order they occurred (created → paid → shipped). But your consumer processes them out of order. How do you ensure ordering?",
+      "options": [
+        { "id": "A", "text": "Use the customer ID as the partition key so all events for the same customer go to the same partition, which guarantees ordering within that partition." },
+        { "id": "B", "text": "Add a sequence number to each event and have consumers buffer events in memory, sorting by sequence before processing." },
+        { "id": "C", "text": "Set the message priority field so 'created' events have higher priority than 'paid', and 'paid' higher than 'shipped'." },
+        { "id": "D", "text": "Use a single-threaded consumer so events are processed one at a time in the order the broker delivers them." }
+      ],
+      "correct": "A",
+      "explanation": "Partitioning by customer ID ensures all events for a given customer are ordered within a single partition, which message brokers like Kafka guarantee."
+    },
+    {
+      "id": "BE68",
+      "domain": "messaging",
+      "skill": "msg-reliability",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your payment processor sends a webhook to your API when a charge succeeds. Occasionally, your server is down when the webhook fires, and the payment is never recorded. What design pattern prevents lost webhooks?",
+      "options": [
+        { "id": "A", "text": "Implement webhook retries with exponential backoff on the provider side, and make your webhook handler idempotent so retried deliveries don't create duplicate records." },
+        { "id": "B", "text": "Poll the payment processor's API every second to check for new charges, eliminating the need for webhooks entirely." },
+        { "id": "C", "text": "Run a secondary webhook endpoint on a different server so if the primary is down, the secondary receives the event." },
+        { "id": "D", "text": "Store a pre-authorized charge reference before initiating the payment, and reconcile against the processor's records in a nightly batch." }
+      ],
+      "correct": "A",
+      "explanation": "Webhook retries with exponential backoff ensure delivery even during downtime, and idempotent handlers prevent duplicate processing of retried events."
+    },
+    {
+      "id": "BE69",
+      "domain": "messaging",
+      "skill": "msg-queues",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "A poison message (malformed JSON) enters your queue. The consumer crashes trying to parse it, the message is redelivered, and the consumer crashes again — an infinite loop. How do you handle this?",
+      "options": [
+        { "id": "A", "text": "Implement a dead-letter queue (DLQ). After a configurable number of failed processing attempts, move the message to the DLQ for manual investigation instead of redelivering indefinitely." },
+        { "id": "B", "text": "Add a try/catch around JSON parsing that silently discards unparseable messages to prevent consumer crashes." },
+        { "id": "C", "text": "Validate message format at the publisher side so malformed messages never enter the queue in the first place." },
+        { "id": "D", "text": "Set a message TTL of 5 seconds so poison messages expire quickly and stop being redelivered after the timeout." }
+      ],
+      "correct": "A",
+      "explanation": "A dead-letter queue captures messages that repeatedly fail processing, breaking the infinite redelivery loop while preserving the message for debugging."
+    },
+    {
+      "id": "BE70",
+      "domain": "messaging",
+      "skill": "msg-pub-sub",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your event-driven system uses Kafka. A slow consumer falls behind and its consumer offset points to data that has already been deleted by Kafka's retention policy. The consumer throws an OffsetOutOfRangeException. What's the correct recovery?",
+      "options": [
+        { "id": "A", "text": "Configure the consumer's auto.offset.reset to 'earliest' to restart from the oldest available offset, and backfill any missed data from the source system if full reprocessing is needed." },
+        { "id": "B", "text": "Increase Kafka's retention period to ensure data is never deleted before all consumers have read it, preventing offset gaps." },
+        { "id": "C", "text": "Reset the consumer offset to 'latest' so it skips the missing data and resumes from the newest messages without errors." },
+        { "id": "D", "text": "Kafka automatically handles this by re-creating the deleted segments from replicas, so the consumer just needs to retry the fetch." }
+      ],
+      "correct": "A",
+      "explanation": "Setting auto.offset.reset to 'earliest' lets the consumer resume from the oldest available data, and a separate backfill covers any gap from the deleted retention window."
+    },
+    {
+      "id": "BE71",
+      "domain": "messaging",
+      "skill": "msg-patterns",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your microservices use choreography: each service listens for events and emits new ones. A new requirement adds a 7th step to the order flow. Debugging shows events bouncing between services in an unexpected cycle. What's the fundamental issue with choreography here?",
+      "options": [
+        { "id": "A", "text": "Choreography distributes flow logic across services, making complex multi-step workflows hard to reason about and debug. An orchestration pattern with a central coordinator would make the flow explicit." },
+        { "id": "B", "text": "The issue is that services aren't filtering events properly. Adding event type filters would prevent the cycles without changing the choreography pattern." },
+        { "id": "C", "text": "Choreography doesn't support more than 5 steps in a workflow. Beyond that, you need to split it into multiple independent sub-workflows." },
+        { "id": "D", "text": "The cyclic events are caused by missing idempotency keys. Adding deduplication at each service would break the cycle." }
+      ],
+      "correct": "A",
+      "explanation": "Choreography scatters workflow logic across services, making complex flows difficult to trace; orchestration centralizes the flow definition, making it visible and debuggable."
+    },
+    {
+      "id": "BE72",
+      "domain": "messaging",
+      "skill": "msg-reliability",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your service must save an order to the database AND publish an OrderCreated event to Kafka. If the database write succeeds but the Kafka publish fails, downstream services never learn about the order. How do you guarantee both happen atomically?",
+      "options": [
+        { "id": "A", "text": "Use the Transactional Outbox pattern: write the event to an outbox table in the same database transaction as the order, and have a separate process publish outbox entries to Kafka." },
+        { "id": "B", "text": "Use Kafka transactions to wrap both the database write and the Kafka publish in a single atomic operation spanning both systems." },
+        { "id": "C", "text": "Publish to Kafka first, and only write to the database after receiving Kafka's acknowledgment, so the event always reaches consumers." },
+        { "id": "D", "text": "Use a two-phase commit protocol between the database and Kafka to coordinate the distributed transaction atomically." }
+      ],
+      "correct": "A",
+      "explanation": "The Transactional Outbox pattern leverages the database transaction to guarantee both the entity and the event are persisted atomically, with a relay process forwarding events to the broker."
+    },
+    {
+      "id": "BE73",
+      "domain": "concurrency",
+      "skill": "conc-threads",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your Java web server creates a new thread for every incoming HTTP request. Under heavy load with 5,000 concurrent requests, the server runs out of memory and crashes. What's the standard fix?",
+      "options": [
+        { "id": "A", "text": "Use a thread pool with a fixed maximum size so threads are reused across requests, preventing unbounded thread creation and memory exhaustion." },
+        { "id": "B", "text": "Increase the JVM's maximum heap size (-Xmx) to accommodate 5,000 concurrent thread stacks without running out of memory." },
+        { "id": "C", "text": "Reduce the thread stack size (-Xss) to 64KB so each thread uses less memory, allowing more concurrent threads." },
+        { "id": "D", "text": "Switch to a single-threaded event loop architecture since threads are inherently inefficient for high-concurrency web servers." }
+      ],
+      "correct": "A",
+      "explanation": "A thread pool limits the maximum number of concurrent threads and reuses them, preventing the memory exhaustion caused by creating one thread per request."
+    },
+    {
+      "id": "BE74",
+      "domain": "concurrency",
+      "skill": "conc-async",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your Node.js API endpoint reads a file, queries a database, and calls an external API — all using synchronous (blocking) operations. Under 100 concurrent requests, the server becomes unresponsive. Why?",
+      "options": [
+        { "id": "A", "text": "Node.js uses a single-threaded event loop. Synchronous blocking operations freeze the entire loop, preventing it from handling other requests until each completes." },
+        { "id": "B", "text": "Node.js can only maintain 100 TCP connections due to its event loop limit. Beyond that, new requests are queued at the OS level." },
+        { "id": "C", "text": "Synchronous operations use more CPU than async ones, and 100 concurrent CPU-intensive operations exhaust the available cores." },
+        { "id": "D", "text": "The V8 garbage collector pauses the event loop to clean up the large number of synchronous call stacks from concurrent requests." }
+      ],
+      "correct": "A",
+      "explanation": "Node.js's single-threaded event loop is blocked by synchronous operations; using async/await or callbacks allows the loop to handle other requests while waiting for I/O."
+    },
+    {
+      "id": "BE75",
+      "domain": "concurrency",
+      "skill": "conc-locks",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Two API instances both read a user's balance as $100, each deducts $80, and both write $20. The user should have -$60, but ends up with $20. What concurrency primitive would prevent this?",
+      "options": [
+        { "id": "A", "text": "Use a distributed lock (e.g., Redis-based) so only one instance can read-modify-write the balance at a time, preventing the lost update." },
+        { "id": "B", "text": "Use database-level optimistic locking with a version column that causes the second write to fail if the data changed since it was read." },
+        { "id": "C", "text": "Switch to eventual consistency and reconcile balance conflicts asynchronously, accepting temporary inconsistency." },
+        { "id": "D", "text": "Both A and B are valid approaches depending on whether you prefer pessimistic locking (blocking) or optimistic locking (retry on conflict)." }
+      ],
+      "correct": "D",
+      "explanation": "Both distributed locks (pessimistic) and version-based optimistic locking solve the lost-update problem; the choice depends on contention level and latency tolerance."
+    },
+    {
+      "id": "BE76",
+      "domain": "concurrency",
+      "skill": "conc-patterns",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your API handler needs to call three independent external services. It calls them sequentially, taking 3 seconds total (1 second each). How can you reduce the total time?",
+      "options": [
+        { "id": "A", "text": "Execute all three calls concurrently (e.g., Promise.all in JavaScript or CompletableFuture in Java) so they run in parallel and the total time is ~1 second." },
+        { "id": "B", "text": "Cache the results of each external call for 5 minutes so subsequent requests don't need to make the calls at all." },
+        { "id": "C", "text": "Use a faster HTTP client library with connection pooling to reduce the overhead of establishing connections to each service." },
+        { "id": "D", "text": "Move the three service calls to a background job and return a 202 Accepted, processing them asynchronously after the response is sent." }
+      ],
+      "correct": "A",
+      "explanation": "Running independent calls concurrently reduces total latency from the sum of all calls to the duration of the slowest one."
+    },
+    {
+      "id": "BE77",
+      "domain": "concurrency",
+      "skill": "conc-threads",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your multi-threaded application uses a HashMap shared across threads without synchronization. It works in testing but corrupts data under production load. What's happening?",
+      "options": [
+        { "id": "A", "text": "HashMap is not thread-safe. Concurrent reads and writes can corrupt internal data structures (like linked lists becoming cycles), causing infinite loops or data loss." },
+        { "id": "B", "text": "The HashMap's default load factor causes excessive rehashing under high throughput, and rehashing is not atomic." },
+        { "id": "C", "text": "Thread scheduling differences between test and production environments cause operations to interleave differently, exposing a bug in HashMap's hashing algorithm." },
+        { "id": "D", "text": "The JVM's JIT compiler optimizes HashMap operations differently under high load, reordering writes in a way that breaks internal consistency." }
+      ],
+      "correct": "A",
+      "explanation": "Standard HashMaps are not thread-safe; concurrent modifications corrupt internal state — use ConcurrentHashMap or explicit synchronization for shared mutable data."
+    },
+    {
+      "id": "BE78",
+      "domain": "concurrency",
+      "skill": "conc-async",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your Python async web server uses asyncio but a developer adds a call to time.sleep(5) instead of await asyncio.sleep(5) in a handler. Under load, all requests slow down. Why?",
+      "options": [
+        { "id": "A", "text": "time.sleep() is a blocking call that freezes the entire event loop for 5 seconds. asyncio.sleep() yields control back to the loop, allowing other coroutines to run." },
+        { "id": "B", "text": "time.sleep() allocates a system timer that conflicts with asyncio's internal timer, causing scheduling contention for all coroutines." },
+        { "id": "C", "text": "asyncio.sleep() uses a more efficient sleep implementation that consumes less CPU, while time.sleep() causes a busy-wait that saturates the core." },
+        { "id": "D", "text": "time.sleep() triggers Python's GIL to hold for the full duration, preventing any other Python thread from executing." }
+      ],
+      "correct": "A",
+      "explanation": "Blocking calls in an async event loop freeze all concurrent tasks; asyncio.sleep() cooperatively yields, letting the loop process other requests during the wait."
+    },
+    {
+      "id": "BE79",
+      "domain": "concurrency",
+      "skill": "conc-locks",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your distributed system uses a Redis-based lock with a 30-second TTL. A slow operation takes 45 seconds, and the lock expires while the operation is still running. A second instance acquires the lock and starts the same operation. What's this called?",
+      "options": [
+        { "id": "A", "text": "This is lock expiration causing split-brain. The first instance thinks it still holds the lock while the second has legitimately acquired it, leading to concurrent unsafe operations." },
+        { "id": "B", "text": "This is lock starvation. The first instance is monopolizing the lock for too long, causing the second instance to forcefully break it." },
+        { "id": "C", "text": "This is a Redis failover issue. The TTL-based lock isn't replicated to Redis replicas, so the second instance gets a lock from a stale replica." },
+        { "id": "D", "text": "This is a race condition in Redis's SETNX command. Under high load, two concurrent SETNX calls can both succeed." }
+      ],
+      "correct": "A",
+      "explanation": "When a lock's TTL is shorter than the operation holding it, the lock expires prematurely, allowing concurrent access — solved by extending the lock or using fencing tokens."
+    },
+    {
+      "id": "BE80",
+      "domain": "concurrency",
+      "skill": "conc-patterns",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your service makes 1,000 HTTP requests to a rate-limited external API that allows 50 requests per second. Sending all 1,000 concurrently triggers rate limit errors. What concurrency pattern helps?",
+      "options": [
+        { "id": "A", "text": "Use a semaphore or concurrency limiter that caps the number of in-flight requests to stay within the API's rate limit, processing the rest as slots become available." },
+        { "id": "B", "text": "Batch the 1,000 requests into groups of 50 and send each batch with a 1-second delay between them, processing sequentially." },
+        { "id": "C", "text": "Implement exponential backoff with jitter on rate-limited responses, retrying each failed request until it eventually succeeds." },
+        { "id": "D", "text": "Use a connection pool limited to 50 connections so the HTTP library naturally throttles outgoing requests to the pool size." }
+      ],
+      "correct": "A",
+      "explanation": "A semaphore limits the number of concurrent operations, ensuring outgoing requests respect the external API's rate limit while still processing efficiently."
+    },
+    {
+      "id": "BE81",
+      "domain": "concurrency",
+      "skill": "conc-threads",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your Go service handles 10K concurrent requests using goroutines. Each goroutine queries a PostgreSQL database. Under load, you get 'too many connections' errors even though your database supports 200 connections. What's missing?",
+      "options": [
+        { "id": "A", "text": "A connection pool that limits the number of simultaneous database connections. Without one, each goroutine opens its own connection, exceeding the database's limit." },
+        { "id": "B", "text": "Go's goroutine scheduler can't handle 10K concurrent goroutines efficiently. Switching to worker goroutines with channels would reduce database pressure." },
+        { "id": "C", "text": "PostgreSQL's max_connections is set too low. Increasing it to 10,000 would allow each goroutine to have its own connection." },
+        { "id": "D", "text": "The Go database driver isn't releasing connections after each query. Adding explicit connection.Close() calls after each query would fix the leak." }
+      ],
+      "correct": "A",
+      "explanation": "A connection pool (like Go's sql.DB with SetMaxOpenConns) limits concurrent database connections, queuing excess goroutines instead of overwhelming the database."
+    },
+    {
+      "id": "BE82",
+      "domain": "concurrency",
+      "skill": "conc-async",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your async Python service processes 500 tasks concurrently using asyncio.gather(). One task raises an unhandled exception, and you notice that all 500 tasks are cancelled. Why, and how do you prevent it?",
+      "options": [
+        { "id": "A", "text": "By default, asyncio.gather() cancels remaining tasks when one fails. Use return_exceptions=True so exceptions are returned as results instead of propagating and cancelling siblings." },
+        { "id": "B", "text": "asyncio.gather() wraps all tasks in a single coroutine, so an unhandled exception in any task crashes the wrapping coroutine and all its children." },
+        { "id": "C", "text": "Python's event loop has a global exception handler that shuts down all pending tasks when any unhandled exception occurs, as a safety mechanism." },
+        { "id": "D", "text": "The exception causes a garbage collection cycle that finalizes the task objects, which triggers their cancellation callbacks." }
+      ],
+      "correct": "A",
+      "explanation": "asyncio.gather() cancels remaining tasks on first failure by default; return_exceptions=True prevents this by treating exceptions as normal return values."
+    },
+    {
+      "id": "BE83",
+      "domain": "concurrency",
+      "skill": "conc-locks",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your distributed system uses the Redlock algorithm across 5 Redis instances for distributed locking. A network partition isolates 2 instances. A client acquires the lock on the 3 reachable instances (majority). Is the lock safe?",
+      "options": [
+        { "id": "A", "text": "It depends. If the 2 isolated instances' clocks drift significantly, another client could acquire the lock on those 2 plus 1 of the original 3 (after TTL expiry), creating a split-brain scenario." },
+        { "id": "B", "text": "Yes, the lock is safe. Redlock requires a majority (3 of 5), and the isolated 2 can never form a majority, so no other client can acquire the lock." },
+        { "id": "C", "text": "No, the lock is unsafe because Redlock requires all 5 instances to agree. A lock acquired on only 3 instances is considered failed." },
+        { "id": "D", "text": "The lock is safe as long as the network partition heals before the lock TTL expires, because Redis will replicate the lock to the isolated instances upon reconnection." }
+      ],
+      "correct": "A",
+      "explanation": "Redlock's safety depends on bounded clock drift; if isolated instances' clocks drift enough, TTL expiry on the majority set could allow a competing client to acquire the lock."
+    },
+    {
+      "id": "BE84",
+      "domain": "concurrency",
+      "skill": "conc-patterns",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your rate limiter uses a shared counter in Redis (INCR + EXPIRE). At the start of each time window, 1,000 concurrent requests all call INCR simultaneously. The first 100 should be allowed, but you observe some windows allowing 105-110 requests. What causes this?",
+      "options": [
+        { "id": "A", "text": "The INCR and EXPIRE are separate commands. Between INCR setting the key and EXPIRE setting the TTL, another request can INCR the same key, creating a race. Use a Lua script to make both atomic." },
+        { "id": "B", "text": "Redis's single-threaded model queues the 1,000 INCRs, but some complete before the EXPIRE is set, so they don't see the TTL and create a new window early." },
+        { "id": "C", "text": "Network latency between the application and Redis means some INCR responses arrive after the check, so the application allows requests it should have rejected." },
+        { "id": "D", "text": "Redis replication lag causes read-after-write inconsistency when replicas serve stale counter values during the burst." }
+      ],
+      "correct": "A",
+      "explanation": "Non-atomic INCR+EXPIRE creates a race condition; using a Lua script or INCR with EX in a single command ensures the counter and its TTL are set atomically."
+    },
+    {
+      "id": "BE85",
+      "domain": "testing",
+      "skill": "test-unit",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "A developer writes a unit test for a UserService.createUser() method. The test connects to a real PostgreSQL database to verify the insert. Another developer argues this is wrong. Why?",
+      "options": [
+        { "id": "A", "text": "Unit tests should test logic in isolation. Using a real database makes it an integration test — mock the repository layer to test the service's business logic without external dependencies." },
+        { "id": "B", "text": "Using a real database is fine for unit tests as long as the test database is separate from production and is reset between test runs." },
+        { "id": "C", "text": "The test is wrong because PostgreSQL is too slow for unit tests. Using an in-memory database like SQLite would make it a proper unit test." },
+        { "id": "D", "text": "Unit tests should only test private methods. Testing createUser() directly is an integration test because it's a public method with external effects." }
+      ],
+      "correct": "A",
+      "explanation": "Unit tests isolate the code under test from external systems; database interactions should be mocked so the test focuses on business logic, not infrastructure."
+    },
+    {
+      "id": "BE86",
+      "domain": "testing",
+      "skill": "test-integration",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your unit tests all pass, but the signup flow fails in production because the email service returns a format the code doesn't handle. What type of test would have caught this?",
+      "options": [
+        { "id": "A", "text": "An integration test that tests the signup flow with the real (or realistic) email service, verifying the code correctly handles actual response formats." },
+        { "id": "B", "text": "A more detailed unit test that covers all possible response formats from the email service by mocking each variation." },
+        { "id": "C", "text": "An end-to-end test that runs the entire application in a browser and verifies the user receives the actual email." },
+        { "id": "D", "text": "A smoke test that checks if the email service is reachable before running the signup flow in production." }
+      ],
+      "correct": "A",
+      "explanation": "Integration tests verify that components work correctly together with real dependencies, catching interface mismatches that mocked unit tests miss."
+    },
+    {
+      "id": "BE87",
+      "domain": "testing",
+      "skill": "test-load",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your API handles 100 requests/second in development. Before launching a marketing campaign expected to drive 10x traffic, your team wants to verify the system can handle the load. What should you run?",
+      "options": [
+        { "id": "A", "text": "A load test that simulates 1,000+ concurrent requests per second against a production-like environment to identify bottlenecks before real traffic hits." },
+        { "id": "B", "text": "A stress test in production during off-peak hours to see exactly how the real infrastructure handles increased traffic." },
+        { "id": "C", "text": "A code review of the hot paths to estimate performance theoretically, since load testing environments never accurately reflect production." },
+        { "id": "D", "text": "A capacity planning document based on the database's published benchmarks and the cloud provider's SLA guarantees." }
+      ],
+      "correct": "A",
+      "explanation": "Load testing in a production-like environment reveals real bottlenecks (database connections, memory limits, third-party rate limits) that theoretical analysis misses."
+    },
+    {
+      "id": "BE88",
+      "domain": "testing",
+      "skill": "test-contract",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "The frontend team and backend team deploy independently. The backend changes a response field from 'userName' to 'user_name'. Frontend tests pass (they mock the backend), but the app breaks in production. What testing approach prevents this?",
+      "options": [
+        { "id": "A", "text": "Contract testing: both teams agree on an API contract, and each side runs tests against it. The backend verifies it produces the expected format, and the frontend verifies it can consume it." },
+        { "id": "B", "text": "End-to-end tests that deploy both frontend and backend together and test the full flow in a staging environment before each release." },
+        { "id": "C", "text": "Schema validation using TypeScript types shared between frontend and backend repositories to catch field name changes at compile time." },
+        { "id": "D", "text": "API versioning so the backend never changes existing field names. New fields are added in a new version while old fields remain." }
+      ],
+      "correct": "A",
+      "explanation": "Contract tests verify both sides adhere to a shared API specification, catching breaking changes before deployment without requiring both services to run together."
+    },
+    {
+      "id": "BE89",
+      "domain": "testing",
+      "skill": "test-unit",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your codebase has 95% unit test coverage, but bugs keep appearing in production. The tests are mostly checking that methods return specific hardcoded values. What's wrong with the testing strategy?",
+      "options": [
+        { "id": "A", "text": "High coverage doesn't equal quality. Tests should verify behavior and edge cases, not just that code executes. The tests are likely testing implementation details instead of meaningful assertions." },
+        { "id": "B", "text": "95% coverage is insufficient. You need 100% coverage including all branches and exception paths to catch production bugs." },
+        { "id": "C", "text": "Unit tests can't catch production bugs by design. You need integration and end-to-end tests instead of unit tests." },
+        { "id": "D", "text": "The tests are running against mocked dependencies, which hides real bugs. Replacing all mocks with real services would expose the issues." }
+      ],
+      "correct": "A",
+      "explanation": "Code coverage measures execution, not correctness; meaningful tests assert behavior, boundary conditions, and error handling — not just that code runs without crashing."
+    },
+    {
+      "id": "BE90",
+      "domain": "testing",
+      "skill": "test-integration",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your integration tests use a shared test database. Tests pass when run individually but fail when run in parallel because one test's data setup interferes with another's assertions. What's the best fix?",
+      "options": [
+        { "id": "A", "text": "Wrap each test in a database transaction that rolls back after the test completes, or use isolated schemas/containers per test suite to prevent data interference." },
+        { "id": "B", "text": "Run tests sequentially instead of in parallel. Integration tests are inherently slow and shouldn't be parallelized." },
+        { "id": "C", "text": "Use unique prefixes for test data (e.g., test1_user, test2_user) so each test's data doesn't conflict with others." },
+        { "id": "D", "text": "Clear the entire database before each test with TRUNCATE on all tables to ensure a clean state." }
+      ],
+      "correct": "A",
+      "explanation": "Transaction rollback or per-test isolation ensures each test runs against a clean, independent state without data contamination from parallel test execution."
+    },
+    {
+      "id": "BE91",
+      "domain": "testing",
+      "skill": "test-load",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your load test shows the API handles 500 requests/second with a p50 latency of 50ms. But the p99 latency is 5,000ms. The team considers the test passing because average latency is 80ms. Why is this wrong?",
+      "options": [
+        { "id": "A", "text": "The p99 shows 1% of users experience 100x worse latency. Averages hide tail latency — 1 in 100 requests taking 5 seconds means many users will have a poor experience." },
+        { "id": "B", "text": "The p99 is an outlier caused by garbage collection pauses and can be safely ignored since it only affects 1% of requests." },
+        { "id": "C", "text": "Load test p99 numbers are unreliable because coordinated omission in the test tool artificially inflates tail latencies." },
+        { "id": "D", "text": "The p50 is the only metric that matters for user experience since most users experience median latency, not tail latency." }
+      ],
+      "correct": "A",
+      "explanation": "Tail latency (p99/p999) directly impacts user experience; at 500 req/s, a 5-second p99 means 5 users per second have an unacceptable experience."
+    },
+    {
+      "id": "BE92",
+      "domain": "testing",
+      "skill": "test-contract",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your API has 50 consumer services. You want to change a response field, but you're not sure which consumers depend on it. How do contract tests help here?",
+      "options": [
+        { "id": "A", "text": "Consumer-driven contract tests let each consumer define what fields it needs. Before changing the API, you run all consumer contracts to see which would break." },
+        { "id": "B", "text": "Contract tests generate a dependency graph showing which consumers use which fields, but they can't prevent breaking changes." },
+        { "id": "C", "text": "Contract tests only work between two services. With 50 consumers, you'd need an API gateway to manage compatibility instead." },
+        { "id": "D", "text": "Contract tests verify the API schema matches an OpenAPI specification, but they don't track individual consumer dependencies on specific fields." }
+      ],
+      "correct": "A",
+      "explanation": "Consumer-driven contracts capture each consumer's expectations; running them before a change reveals exactly which consumers would break, enabling safe API evolution."
+    },
+    {
+      "id": "BE93",
+      "domain": "testing",
+      "skill": "test-unit",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "A developer mocks every dependency in their unit test — database, HTTP client, logger, clock, config loader. The test passes, but the function under test has a bug where it passes arguments to the HTTP client in the wrong order. Why didn't the test catch this?",
+      "options": [
+        { "id": "A", "text": "Over-mocking means the test verifies the code's interaction with mocks, not its correctness. The mock accepts any argument order, so the bug goes undetected." },
+        { "id": "B", "text": "The mock should have been configured with strict argument matching. The developer used a lenient mock that accepts any arguments." },
+        { "id": "C", "text": "Unit tests can't verify HTTP client behavior. This bug can only be caught by integration tests against the real HTTP service." },
+        { "id": "D", "text": "The function has too many dependencies. Refactoring it into smaller functions with fewer mocks each would expose the argument order bug." }
+      ],
+      "correct": "A",
+      "explanation": "Excessive mocking creates tests that pass regardless of actual behavior; the test verifies mock interactions rather than real logic, hiding bugs at component boundaries."
+    },
+    {
+      "id": "BE94",
+      "domain": "testing",
+      "skill": "test-integration",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your integration test suite takes 45 minutes to run. Developers skip it locally and only run it in CI, where it blocks merges for nearly an hour. What strategy reduces this without sacrificing coverage?",
+      "options": [
+        { "id": "A", "text": "Parallelize tests across multiple containers, use test impact analysis to run only tests affected by changed code, and split the suite into fast critical-path tests and slower comprehensive tests." },
+        { "id": "B", "text": "Replace integration tests with unit tests using mocks to achieve the same coverage in seconds instead of minutes." },
+        { "id": "C", "text": "Run integration tests only nightly instead of per-commit, accepting that bugs may be discovered hours after the code is merged." },
+        { "id": "D", "text": "Move all integration tests to production monitoring. If a deployment breaks something, automated rollback handles it faster than blocking CI." }
+      ],
+      "correct": "A",
+      "explanation": "Parallelization, test impact analysis, and tiered test suites reduce feedback time while maintaining comprehensive integration coverage."
+    },
+    {
+      "id": "BE95",
+      "domain": "testing",
+      "skill": "test-load",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your load test runs from a single machine with 10,000 concurrent virtual users. Results show 2,000 req/s throughput, but production handles 5,000 req/s easily. The test machine's CPU is at 100%. What's wrong with the test?",
+      "options": [
+        { "id": "A", "text": "The load generator itself is the bottleneck. A single machine can't generate enough load, so the test measures the generator's capacity, not the server's. Distribute the load across multiple machines." },
+        { "id": "B", "text": "The test is running over a local network with lower bandwidth than production. Using the same cloud region as production would give accurate results." },
+        { "id": "C", "text": "10,000 virtual users is too many for a single test. Reduce to 1,000 users and extrapolate the results linearly to estimate 10,000-user performance." },
+        { "id": "D", "text": "The load test tool is inefficient and uses one thread per virtual user. Switching to an async load generator would allow more virtual users on the same machine." }
+      ],
+      "correct": "A",
+      "explanation": "When the load generator is CPU-saturated, it becomes the bottleneck; distributed load generation from multiple machines ensures the test accurately measures server capacity."
+    },
+    {
+      "id": "BE96",
+      "domain": "testing",
+      "skill": "test-contract",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your team uses Pact for consumer-driven contract testing. The provider passes all contract tests but adds a new required field ('tax_amount') to the CreateOrder request. Existing consumers don't send this field and start failing in production. Why didn't contract tests catch this?",
+      "options": [
+        { "id": "A", "text": "Consumer-driven contracts only verify what consumers expect, not what the provider requires. The new required field was a provider-side change that no existing consumer contract covered." },
+        { "id": "B", "text": "Pact contracts are generated from consumer mocks, not real requests. The mocks didn't include the new field because they were written before the change." },
+        { "id": "C", "text": "Contract tests only validate response schemas, not request schemas. Request validation requires a separate provider-driven contract approach." },
+        { "id": "D", "text": "The provider's contract verification should have failed because it received requests without the required field, but the test framework auto-generated the missing field." }
+      ],
+      "correct": "A",
+      "explanation": "Consumer-driven contracts reflect what consumers send and expect; adding a new required field on the provider side is a backward-incompatible change that existing consumer contracts won't test for."
+    },
+    {
+      "id": "BE97",
+      "domain": "observability",
+      "skill": "obs-logging",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your production logs contain thousands of 'User logged in' messages per minute, making it hard to find error logs during an incident. The debug and info logs drown out warnings and errors. What should you do?",
+      "options": [
+        { "id": "A", "text": "Set production log level to WARN or ERROR so only actionable log entries are recorded. Use DEBUG and INFO levels only in development or when temporarily diagnosing a specific issue." },
+        { "id": "B", "text": "Keep all log levels but route them to separate files (info.log, error.log) so error logs are easy to find during incidents." },
+        { "id": "C", "text": "Remove all INFO-level log statements from the codebase since they provide no value in production and just generate noise." },
+        { "id": "D", "text": "Add a log aggregation tool like ELK that lets you filter by log level during incidents without changing what's emitted." }
+      ],
+      "correct": "A",
+      "explanation": "Setting the production log level to WARN/ERROR reduces noise and ensures logs contain only actionable information during incidents."
+    },
+    {
+      "id": "BE98",
+      "domain": "observability",
+      "skill": "obs-metrics",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your team monitors the API by checking if the health endpoint returns 200 every 30 seconds. During an outage, the health check still passes, but users can't complete purchases. What metric is missing?",
+      "options": [
+        { "id": "A", "text": "Application-level metrics like request latency, error rates, and throughput per endpoint. A passing health check doesn't mean the application is functioning correctly for users." },
+        { "id": "B", "text": "Infrastructure metrics like CPU and memory usage, which would show the server is overloaded even when the health endpoint responds." },
+        { "id": "C", "text": "A more comprehensive health endpoint that checks database connectivity, external service availability, and queue depth before returning 200." },
+        { "id": "D", "text": "Synthetic transaction monitoring that simulates a real purchase every minute and alerts if it fails, replacing the simple health check." }
+      ],
+      "correct": "A",
+      "explanation": "Application metrics (latency, errors, throughput) reflect real user experience; a healthy status endpoint doesn't guarantee that business-critical flows are working."
+    },
+    {
+      "id": "BE99",
+      "domain": "observability",
+      "skill": "obs-tracing",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "A user reports that checkout takes 15 seconds. Your system has 6 microservices involved in checkout. Server logs show each service responds quickly. You can't tell where the 15 seconds is spent. What observability tool helps?",
+      "options": [
+        { "id": "A", "text": "Distributed tracing (e.g., Jaeger, Zipkin) that tracks a request across all services, showing the time spent in each service and the gaps between them." },
+        { "id": "B", "text": "A centralized log aggregator that correlates logs from all 6 services by timestamp to reconstruct the request timeline." },
+        { "id": "C", "text": "APM (Application Performance Monitoring) installed on each service to profile CPU and memory usage during the checkout flow." },
+        { "id": "D", "text": "Network packet capture (tcpdump) between services to measure the actual network latency for each inter-service call." }
+      ],
+      "correct": "A",
+      "explanation": "Distributed tracing propagates a trace ID across services, creating a visual timeline that shows exactly where time is spent in a multi-service request flow."
+    },
+    {
+      "id": "BE100",
+      "domain": "observability",
+      "skill": "obs-alerting",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your monitoring system sends an alert for every 5xx error. The on-call engineer gets 200 alerts per night for transient errors that resolve themselves. They start ignoring alerts. What should you change?",
+      "options": [
+        { "id": "A", "text": "Alert on sustained error rate thresholds (e.g., >5% of requests returning 5xx for 5 minutes) instead of individual errors, reducing noise while catching real outages." },
+        { "id": "B", "text": "Reduce the alert severity from 'critical' to 'warning' so the on-call engineer is notified but not paged for transient errors." },
+        { "id": "C", "text": "Add auto-remediation that restarts the service on every 5xx error, eliminating the need for human intervention on transient issues." },
+        { "id": "D", "text": "Route transient error alerts to a Slack channel instead of paging the on-call engineer, so they can review them asynchronously." }
+      ],
+      "correct": "A",
+      "explanation": "Threshold-based alerting eliminates noise from transient errors while ensuring sustained issues trigger actionable alerts that the team won't ignore."
+    },
+    {
+      "id": "BE101",
+      "domain": "observability",
+      "skill": "obs-logging",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your application logs unstructured text like 'Order 123 placed by user 456 at 2025-03-20'. Querying these logs to find all orders by user 456 requires regex parsing. What logging improvement makes this easier?",
+      "options": [
+        { "id": "A", "text": "Use structured logging (JSON format) with discrete fields like {\"event\": \"order_placed\", \"order_id\": 123, \"user_id\": 456} so log aggregators can index and query by any field." },
+        { "id": "B", "text": "Standardize the text format across all services (e.g., 'ORDER|123|456|2025-03-20') so regex patterns are simpler and more reliable." },
+        { "id": "C", "text": "Write log entries to a relational database table with columns for order_id, user_id, and timestamp instead of text files." },
+        { "id": "D", "text": "Add a log parsing pipeline (like Logstash) that extracts fields from unstructured text and stores them as structured data in Elasticsearch." }
+      ],
+      "correct": "A",
+      "explanation": "Structured logging emits machine-parseable records (typically JSON) with named fields, enabling efficient querying, filtering, and aggregation without regex."
+    },
+    {
+      "id": "BE102",
+      "domain": "observability",
+      "skill": "obs-metrics",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your dashboard shows average API response time as 200ms. Users complain about slowness. You discover the average is skewed by the 90% of requests that complete in 50ms, hiding the 10% that take 2 seconds. What metric better represents this?",
+      "options": [
+        { "id": "A", "text": "Use percentile metrics (p95, p99) instead of averages. The p95 would show that 5% of requests take over 2 seconds, accurately reflecting the slow experience many users have." },
+        { "id": "B", "text": "Use the median (p50) instead of the average, since it's more resistant to outliers and better represents the 'typical' user experience." },
+        { "id": "C", "text": "Create separate dashboards for fast and slow requests by splitting at a 500ms threshold, so each group has a meaningful average." },
+        { "id": "D", "text": "Use a weighted average that gives more importance to slow requests, since they have a disproportionate impact on user satisfaction." }
+      ],
+      "correct": "A",
+      "explanation": "Percentiles (p95, p99) reveal tail latency that averages hide; they show the worst experience a significant portion of users actually encounters."
+    },
+    {
+      "id": "BE103",
+      "domain": "observability",
+      "skill": "obs-tracing",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your distributed tracing shows that a request takes 3 seconds total: Service A takes 500ms, Service B takes 500ms, and Service C takes 500ms. But 500ms + 500ms + 500ms = 1,500ms, not 3,000ms. Where is the missing 1.5 seconds?",
+      "options": [
+        { "id": "A", "text": "The missing time is likely in network latency between services, queue wait times, or connection pool acquisition — the gaps between spans that aren't captured by service-level instrumentation." },
+        { "id": "B", "text": "The trace collector is adding processing overhead at each span boundary, contributing 500ms of overhead per service." },
+        { "id": "C", "text": "The services' clocks are out of sync, causing spans to appear offset in the trace timeline and inflating the total duration." },
+        { "id": "D", "text": "Service B and C are running concurrently (not sequentially), so the trace shows their durations stacked rather than overlapped." }
+      ],
+      "correct": "A",
+      "explanation": "Time between spans reveals infrastructure overhead — network latency, DNS lookups, load balancer routing, and connection pool waits that occur between instrumented service logic."
+    },
+    {
+      "id": "BE104",
+      "domain": "observability",
+      "skill": "obs-alerting",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your alerting system fires when CPU exceeds 80%. After several false alarms where high CPU was caused by legitimate traffic spikes (and the system handled it fine), the team wants better alerts. What should you alert on instead?",
+      "options": [
+        { "id": "A", "text": "Alert on user-facing symptoms (error rate, latency SLO breaches) rather than infrastructure metrics. High CPU that doesn't impact users isn't an actionable alert." },
+        { "id": "B", "text": "Raise the CPU threshold to 95% so only truly critical CPU saturation triggers an alert." },
+        { "id": "C", "text": "Add auto-scaling so CPU never stays above 80%, eliminating the alert condition entirely." },
+        { "id": "D", "text": "Alert on CPU rate of change (derivative) rather than absolute value, so gradual increases from traffic are ignored but sudden spikes trigger alerts." }
+      ],
+      "correct": "A",
+      "explanation": "Symptom-based alerting (latency, errors, SLO breaches) triggers on actual user impact, avoiding false alarms from resource metrics that don't always correlate with degradation."
+    },
+    {
+      "id": "BE105",
+      "domain": "observability",
+      "skill": "obs-logging",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your service logs contain sensitive user data (emails, phone numbers, SSNs) in request payloads. A compliance audit flags this as a PII violation. Removing all logging would hurt debugging. What's the right approach?",
+      "options": [
+        { "id": "A", "text": "Implement log redaction that masks or removes PII fields before they're written to logs, preserving debugging context while protecting sensitive data." },
+        { "id": "B", "text": "Encrypt all log entries using AES-256 so PII is protected at rest. Decryption keys are held by the security team for incident review." },
+        { "id": "C", "text": "Store logs containing PII in a separate, access-controlled log stream with a short retention period (7 days) to limit exposure." },
+        { "id": "D", "text": "Switch to logging only request IDs and correlation IDs. When debugging, use the ID to look up the original request in an encrypted audit database." }
+      ],
+      "correct": "A",
+      "explanation": "Log redaction strips or masks PII before log storage, balancing operational debugging needs with regulatory compliance requirements."
+    },
+    {
+      "id": "BE106",
+      "domain": "observability",
+      "skill": "obs-metrics",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your Prometheus metrics show a counter 'http_requests_total' with labels for method, path, status, and user_id. With 100K users, Prometheus runs out of memory. What's the problem?",
+      "options": [
+        { "id": "A", "text": "High cardinality. Using user_id as a label creates 100K unique time series per path/method/status combination. Labels should have bounded, low-cardinality values." },
+        { "id": "B", "text": "Prometheus can't handle more than 10K unique label values per metric. You need to shard across multiple Prometheus instances." },
+        { "id": "C", "text": "Counter metrics with many labels are inefficient. Switching to a gauge or histogram would reduce memory usage per time series." },
+        { "id": "D", "text": "The scrape interval is too frequent, causing Prometheus to store too many data points per time series in its TSDB." }
+      ],
+      "correct": "A",
+      "explanation": "High-cardinality labels (like user_id) explode the number of unique time series, exhausting Prometheus's memory; use logs or traces for per-user data instead."
+    },
+    {
+      "id": "BE107",
+      "domain": "observability",
+      "skill": "obs-tracing",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your service processes events from a Kafka topic. You add distributed tracing, but traces end at the Kafka producer and new traces start at the consumer. There's no link between the two. How do you connect them?",
+      "options": [
+        { "id": "A", "text": "Propagate the trace context (trace ID and span ID) as Kafka message headers so the consumer can continue the same trace, linking the producer span to the consumer span." },
+        { "id": "B", "text": "Use the Kafka offset as the trace ID so both producer and consumer reference the same identifier for correlation." },
+        { "id": "C", "text": "Install a tracing plugin on the Kafka broker that automatically links producer and consumer spans using the broker's internal request tracking." },
+        { "id": "D", "text": "Batch trace export from both producer and consumer to the same collector, which merges traces with matching timestamps automatically." }
+      ],
+      "correct": "A",
+      "explanation": "Injecting trace context (W3C Trace Context or similar) into message headers lets consumers extract and continue the trace, creating an end-to-end view across async boundaries."
+    },
+    {
+      "id": "BE108",
+      "domain": "observability",
+      "skill": "obs-alerting",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your team defines an SLO of 99.9% availability (43.8 minutes of downtime per month). You want to alert before the budget is exhausted. A traditional threshold alert (e.g., >1% errors for 5 min) fires too late. What approach works better?",
+      "options": [
+        { "id": "A", "text": "Use burn rate alerting: calculate how fast the error budget is being consumed. If the current rate would exhaust the monthly budget in hours instead of days, fire an alert early." },
+        { "id": "B", "text": "Set a tighter SLO (99.99%) internally so the team has buffer, and alert when the public SLO (99.9%) is at risk." },
+        { "id": "C", "text": "Alert when accumulated downtime reaches 50% of the monthly budget (21.9 minutes), giving the team the remaining half to fix the issue." },
+        { "id": "D", "text": "Use anomaly detection with machine learning to predict SLO violations before they happen, alerting on predicted future error rates." }
+      ],
+      "correct": "A",
+      "explanation": "Burn rate alerts measure how quickly the error budget is being consumed relative to the time remaining, providing early warning proportional to the severity of the incident."
+    },
+    {
+      "id": "BE109",
+      "domain": "deployment",
+      "skill": "deploy-containers",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your Docker image is 2.5 GB. Pulling it during deployment takes 4 minutes per server. What's the most effective way to reduce the image size?",
+      "options": [
+        { "id": "A", "text": "Use a multi-stage build with a minimal base image (like Alpine or distroless) so the final image only contains the compiled application and its runtime dependencies." },
+        { "id": "B", "text": "Compress the image with gzip before pushing to the registry so it takes less time to transfer over the network." },
+        { "id": "C", "text": "Split the application into multiple smaller containers so each one is under 500 MB and can be pulled faster." },
+        { "id": "D", "text": "Use a local image cache on each server so the image is only pulled once, and subsequent deployments use the cached version." }
+      ],
+      "correct": "A",
+      "explanation": "Multi-stage builds separate build dependencies from runtime, and minimal base images (Alpine/distroless) drastically reduce the final image size."
+    },
+    {
+      "id": "BE110",
+      "domain": "deployment",
+      "skill": "deploy-ci-cd",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Developers merge code to main and manually deploy to staging by running a deploy script on their laptop. Occasionally, someone forgets to run tests first, and broken code reaches staging. What should you implement?",
+      "options": [
+        { "id": "A", "text": "A CI/CD pipeline that automatically runs tests on every push to main and deploys to staging only if tests pass, removing the manual step entirely." },
+        { "id": "B", "text": "A pre-merge code review requirement so another developer verifies the code works before it's merged to main." },
+        { "id": "C", "text": "A pre-push Git hook that runs tests locally before allowing the push, preventing untested code from reaching the repository." },
+        { "id": "D", "text": "A staging environment that automatically rolls back deployments if the health check fails within 5 minutes of deployment." }
+      ],
+      "correct": "A",
+      "explanation": "A CI/CD pipeline automates testing and deployment, ensuring every code change is tested before reaching staging and removing error-prone manual steps."
+    },
+    {
+      "id": "BE111",
+      "domain": "deployment",
+      "skill": "deploy-scaling",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your single web server can handle 1,000 requests/second. Marketing expects a campaign to drive 5,000 requests/second. Upgrading to a bigger server (vertical scaling) is expensive. What's the alternative?",
+      "options": [
+        { "id": "A", "text": "Add more identical server instances behind a load balancer (horizontal scaling) to distribute the 5,000 req/s across multiple machines." },
+        { "id": "B", "text": "Optimize the application code to handle 5x more requests on the same server, since horizontal scaling adds networking complexity." },
+        { "id": "C", "text": "Use a CDN to cache all API responses so the origin server never receives more than 1,000 req/s regardless of total traffic." },
+        { "id": "D", "text": "Queue incoming requests and process them at the server's 1,000 req/s pace, accepting higher latency during the campaign." }
+      ],
+      "correct": "A",
+      "explanation": "Horizontal scaling distributes load across multiple identical instances behind a load balancer, providing cost-effective capacity without the limits of a single machine."
+    },
+    {
+      "id": "BE112",
+      "domain": "deployment",
+      "skill": "deploy-migrations",
+      "difficulty": "easy",
+      "time_seconds": 20,
+      "question": "Your team deploys a new application version that expects a 'phone_number' column in the users table, but the database migration hasn't run yet. The app crashes on startup with 'column not found.' What deployment practice prevents this?",
+      "options": [
+        { "id": "A", "text": "Run database migrations as a separate step before deploying the new application version, ensuring the schema is ready when the new code starts." },
+        { "id": "B", "text": "Make the application check for the column at startup and create it automatically if it doesn't exist, removing the dependency on manual migrations." },
+        { "id": "C", "text": "Use a schema-less database (like MongoDB) so the application can write new fields without requiring migration scripts." },
+        { "id": "D", "text": "Deploy the application and migration simultaneously in the same transaction so they either both succeed or both fail." }
+      ],
+      "correct": "A",
+      "explanation": "Running database migrations before application deployment ensures the schema matches what the new code expects, preventing startup failures."
+    },
+    {
+      "id": "BE113",
+      "domain": "deployment",
+      "skill": "deploy-containers",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your Dockerfile installs dependencies with `npm install` and then copies the application code. Every time you change a line of code, Docker reinstalls all dependencies (3 minutes). How do you speed this up?",
+      "options": [
+        { "id": "A", "text": "Copy package.json and package-lock.json first, run npm install, then copy the rest of the code. Docker caches the dependency layer and only rebuilds when package files change." },
+        { "id": "B", "text": "Mount node_modules as a Docker volume so dependencies are shared between the host and container and never need reinstalling." },
+        { "id": "C", "text": "Use npm ci instead of npm install because it's faster and skips the resolution step by using the lockfile directly." },
+        { "id": "D", "text": "Add node_modules to .dockerignore and install dependencies at container startup instead of during the build, so the image stays small." }
+      ],
+      "correct": "A",
+      "explanation": "Docker layer caching means unchanged layers are reused; copying package files and installing dependencies before copying code ensures npm install only reruns when dependencies actually change."
+    },
+    {
+      "id": "BE114",
+      "domain": "deployment",
+      "skill": "deploy-ci-cd",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your CI pipeline runs unit tests, integration tests, builds the Docker image, runs security scans, and deploys — all sequentially. The total pipeline takes 40 minutes. Developers complain about slow feedback. What optimization has the biggest impact?",
+      "options": [
+        { "id": "A", "text": "Run independent stages in parallel (e.g., unit tests + security scan simultaneously) and fail fast — stop the pipeline immediately when any stage fails instead of running all remaining stages." },
+        { "id": "B", "text": "Skip integration tests in the CI pipeline and run them nightly instead, since they're the slowest stage." },
+        { "id": "C", "text": "Use a faster CI runner with more CPU cores so each stage completes faster without changing the pipeline structure." },
+        { "id": "D", "text": "Cache the Docker image layers across pipeline runs so the build stage only processes changed layers." }
+      ],
+      "correct": "A",
+      "explanation": "Parallelizing independent stages and failing fast dramatically reduces pipeline duration and gives developers quicker feedback on failures."
+    },
+    {
+      "id": "BE115",
+      "domain": "deployment",
+      "skill": "deploy-scaling",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your application scales horizontally, but it stores user upload files on the local filesystem of each server. After scaling to 3 instances, users intermittently can't find their uploaded files. Why?",
+      "options": [
+        { "id": "A", "text": "Each server has its own filesystem. A file uploaded to Server 1 isn't accessible from Server 2 or 3. Use shared storage (S3, NFS) so all instances access the same files." },
+        { "id": "B", "text": "The load balancer's round-robin algorithm routes users to different servers. Use sticky sessions so each user always hits the server holding their files." },
+        { "id": "C", "text": "The filesystem writes are buffered and not flushed to disk immediately. Adding explicit fsync after each upload ensures files are persisted before the response is sent." },
+        { "id": "D", "text": "The upload endpoint is hitting a race condition where two servers try to write the same filename simultaneously. Adding a file lock prevents corruption." }
+      ],
+      "correct": "A",
+      "explanation": "Local filesystems are not shared between instances; using external object storage (like S3) ensures uploaded files are accessible from any server."
+    },
+    {
+      "id": "BE116",
+      "domain": "deployment",
+      "skill": "deploy-migrations",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "You need to rename a database column from 'name' to 'full_name' with zero downtime. The old code reads 'name' and the new code reads 'full_name'. A direct rename would break the old code during the rolling deployment. What's the safe approach?",
+      "options": [
+        { "id": "A", "text": "Use an expand-and-contract migration: first add 'full_name' and backfill it, deploy code that reads both, then drop 'name' after all instances use the new column." },
+        { "id": "B", "text": "Rename the column in a single migration and deploy the new code simultaneously, using a maintenance window of under 1 second." },
+        { "id": "C", "text": "Create a database view that aliases 'name' as 'full_name' so both old and new code can query the view without breaking." },
+        { "id": "D", "text": "Use a feature flag to switch all instances from reading 'name' to 'full_name' atomically, then rename the column." }
+      ],
+      "correct": "A",
+      "explanation": "Expand-and-contract (parallel change) allows old and new code to coexist during rolling deployments by maintaining both columns until the migration is complete."
+    },
+    {
+      "id": "BE117",
+      "domain": "deployment",
+      "skill": "deploy-containers",
+      "difficulty": "medium",
+      "time_seconds": 15,
+      "question": "Your containerized app runs as root inside the Docker container. A vulnerability in the app allows an attacker to escape the container and gain root access to the host. What should you change?",
+      "options": [
+        { "id": "A", "text": "Run the container process as a non-root user by adding USER in the Dockerfile. This limits the blast radius if the container is compromised." },
+        { "id": "B", "text": "Use --privileged flag to give the container full host capabilities, which enables kernel-level security features that aren't available to unprivileged containers." },
+        { "id": "C", "text": "Run the container in a VM-based runtime (like Kata Containers) that provides hardware-level isolation between the container and the host." },
+        { "id": "D", "text": "Drop all Linux capabilities with --cap-drop=ALL. This prevents the root user inside the container from performing any privileged operations on the host." }
+      ],
+      "correct": "A",
+      "explanation": "Running as non-root inside the container follows the principle of least privilege, reducing the risk and impact of container escape vulnerabilities."
+    },
+    {
+      "id": "BE118",
+      "domain": "deployment",
+      "skill": "deploy-ci-cd",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your team deploys 10 times per day. A bad deployment causes a 30-minute outage before the team notices. You want to detect and roll back bad deploys within 2 minutes. What deployment strategy achieves this?",
+      "options": [
+        { "id": "A", "text": "Canary deployments with automated rollback: route 5% of traffic to the new version, monitor error rates and latency, and automatically roll back if metrics degrade beyond thresholds." },
+        { "id": "B", "text": "Blue-green deployment with a 2-minute smoke test: deploy to the green environment, run automated tests, then switch traffic from blue to green." },
+        { "id": "C", "text": "Feature flags that disable new code paths if error rates spike, without requiring a full deployment rollback." },
+        { "id": "D", "text": "Deployment windows limited to low-traffic hours so outages affect fewer users and give the team more time to react." }
+      ],
+      "correct": "A",
+      "explanation": "Canary deployments limit blast radius by exposing only a small percentage of traffic, and automated metric-based rollback ensures bad deploys are reverted in minutes."
+    },
+    {
+      "id": "BE119",
+      "domain": "deployment",
+      "skill": "deploy-scaling",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your auto-scaler adds new instances when CPU exceeds 70%. But traffic spikes so suddenly that by the time new instances are ready (3 minutes to boot), the existing instances are already overwhelmed and returning 503s. What's the solution?",
+      "options": [
+        { "id": "A", "text": "Use predictive auto-scaling based on historical traffic patterns to pre-provision instances before expected spikes, combined with a warm pool of pre-initialized standby instances for unexpected bursts." },
+        { "id": "B", "text": "Lower the CPU threshold to 40% so scaling triggers earlier, giving instances more headroom before they're overwhelmed." },
+        { "id": "C", "text": "Switch to serverless functions that scale instantly with no boot time, eliminating the cold-start scaling gap." },
+        { "id": "D", "text": "Over-provision by running 3x the baseline capacity at all times so spikes never exceed available resources." }
+      ],
+      "correct": "A",
+      "explanation": "Predictive scaling anticipates demand from patterns, and warm pools keep pre-booted instances ready, together eliminating the gap between traffic spikes and capacity availability."
+    },
+    {
+      "id": "BE120",
+      "domain": "deployment",
+      "skill": "deploy-migrations",
+      "difficulty": "hard",
+      "time_seconds": 12,
+      "question": "Your production database has 500 million rows. A migration needs to add a NOT NULL column with a default value. Running ALTER TABLE on the live database locks the table for 20 minutes, causing an outage. How do you handle this safely?",
+      "options": [
+        { "id": "A", "text": "Use an online schema change tool (like pt-online-schema-change or gh-ost) that creates a shadow table, copies data in batches, and swaps tables atomically — all without locking the original table." },
+        { "id": "B", "text": "Add the column as NULLable first (instant in PostgreSQL 11+), backfill the default in batches, then add the NOT NULL constraint separately once all rows have values." },
+        { "id": "C", "text": "Schedule the migration during a maintenance window at 3 AM when traffic is minimal, accepting 20 minutes of downtime." },
+        { "id": "D", "text": "Both A and B are valid approaches — A works for MySQL and B leverages PostgreSQL-specific optimizations. The right choice depends on the database engine." }
+      ],
+      "correct": "D",
+      "explanation": "Online schema change tools (MySQL) and staged NULLable-then-constrain migrations (PostgreSQL) are both valid strategies for large-table migrations without downtime; the best approach depends on the database."
+    }
+  ]
+}
