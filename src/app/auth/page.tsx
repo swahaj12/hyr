@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 type Mode = "signin" | "signup" | "forgot"
+type UserRole = "candidate" | "employer"
 
 export default function AuthPage() {
   const router = useRouter()
@@ -24,6 +25,7 @@ export default function AuthPage() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [role, setRole] = useState<UserRole>("candidate")
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -58,7 +60,7 @@ export default function AuthPage() {
           email,
           password,
           options: {
-            data: { full_name: name },
+            data: { full_name: name, role },
             emailRedirectTo: `${window.location.origin}/auth/callback`,
           },
         })
@@ -70,7 +72,7 @@ export default function AuthPage() {
         return
       }
 
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -78,7 +80,8 @@ export default function AuthPage() {
         setError(signInError.message)
         return
       }
-      router.push("/dashboard")
+      const userRole = signInData.user?.user_metadata?.role
+      router.push(userRole === "employer" ? "/employers" : "/dashboard")
     } finally {
       setLoading(false)
     }
@@ -123,17 +126,46 @@ export default function AuthPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  autoComplete="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label>I am a</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setRole("candidate")}
+                      className={`rounded-lg border p-3 text-center text-sm font-medium transition-all ${
+                        role === "candidate"
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border hover:border-gray-400"
+                      }`}
+                    >
+                      Candidate
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRole("employer")}
+                      className={`rounded-lg border p-3 text-center text-sm font-medium transition-all ${
+                        role === "employer"
+                          ? "border-primary bg-primary/5 ring-1 ring-primary"
+                          : "border-border hover:border-gray-400"
+                      }`}
+                    >
+                      Employer
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="name">{role === "employer" ? "Company / Your Name" : "Full Name"}</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
+              </>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>

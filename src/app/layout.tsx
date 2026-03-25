@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Hyr — Prove Your Tech Skills",
   description:
     "Free 15-minute tech skills assessment. Get a verified skill profile and get hired faster. DevOps, Frontend, Backend & more.",
-  metadataBase: new URL("https://hyr-snowy.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hyr-snowy.vercel.app"),
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },

@@ -161,7 +161,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold">{profile.candidateName}</h1>
-                <p className="text-muted-foreground text-sm">DevOps Engineer</p>
+                <p className="text-muted-foreground text-sm">{personality.title}</p>
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">

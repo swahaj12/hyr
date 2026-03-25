@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState("")
   const [assessments, setAssessments] = useState<Assessment[]>([])
   const [profileCopied, setProfileCopied] = useState(false)
+  const [profileVisible, setProfileVisible] = useState(true)
 
   const [error, setError] = useState<string | null>(null)
 
@@ -90,20 +91,72 @@ export default function DashboardPage() {
             <p className="text-muted-foreground">Your DevOps assessment dashboard</p>
           </div>
           {assessments.length > 0 && userId && (
-            <Button
-              variant="outline"
-              onClick={() => {
-                try {
-                  navigator.clipboard.writeText(`${window.location.origin}/profile/${userId}`)
-                  setProfileCopied(true)
-                  setTimeout(() => setProfileCopied(false), 2000)
-                } catch { /* clipboard unavailable */ }
-              }}
-            >
-              {profileCopied ? "Copied!" : "Share Profile"}
-            </Button>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={profileVisible}
+                  onClick={async () => {
+                    const next = !profileVisible
+                    setProfileVisible(next)
+                    await supabase
+                      .from("assessments")
+                      .update({ profile_visible: next })
+                      .eq("candidate_id", userId)
+                  }}
+                  className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors ${
+                    profileVisible ? "bg-green-500" : "bg-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+                      profileVisible ? "translate-x-4" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+                <span className="text-muted-foreground">Visible to employers</span>
+              </label>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  try {
+                    navigator.clipboard.writeText(`${window.location.origin}/profile/${userId}`)
+                    setProfileCopied(true)
+                    setTimeout(() => setProfileCopied(false), 2000)
+                  } catch { /* clipboard unavailable */ }
+                }}
+              >
+                {profileCopied ? "Copied!" : "Share Profile"}
+              </Button>
+            </div>
           )}
         </div>
+
+        {/* Progress Tracking */}
+        {assessments.length >= 2 && (() => {
+          const latestPct = Math.round((assessments[0].total_score / assessments[0].total_questions) * 100)
+          const previousPct = Math.round((assessments[1].total_score / assessments[1].total_questions) * 100)
+          const delta = latestPct - previousPct
+          if (delta === 0) return null
+          return (
+            <div className={`rounded-xl border p-4 flex items-center gap-3 ${
+              delta > 0 ? "border-green-200 bg-green-50" : "border-amber-200 bg-amber-50"
+            }`}>
+              <span className={`text-2xl font-bold ${delta > 0 ? "text-green-700" : "text-amber-700"}`}>
+                {delta > 0 ? "+" : ""}{delta}%
+              </span>
+              <div>
+                <p className={`text-sm font-medium ${delta > 0 ? "text-green-800" : "text-amber-800"}`}>
+                  {delta > 0 ? "Score improved since last assessment" : "Score dropped since last assessment"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {previousPct}% &rarr; {latestPct}%
+                </p>
+              </div>
+            </div>
+          )
+        })()}
 
         {assessments.length === 0 ? (
           <Card>

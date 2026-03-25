@@ -88,6 +88,7 @@ export default function ResultsPage() {
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [revealStage, setRevealStage] = useState(0)
+  const [percentile, setPercentile] = useState<number | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -139,6 +140,27 @@ export default function ResultsPage() {
     }
     load()
   }, [params.id, searchParams])
+
+  useEffect(() => {
+    if (!data || loading) return
+    const { totalCorrect: tc, total: tt } = data
+    async function computePercentile() {
+      try {
+        const { data: allScores } = await supabase
+          .from("assessments")
+          .select("total_score, total_questions")
+        if (allScores && allScores.length > 1) {
+          const pcts = allScores.map((a: Record<string, unknown>) =>
+            Math.round(((a.total_score as number) / (a.total_questions as number)) * 100)
+          )
+          const myPct = tt > 0 ? Math.round((tc / tt) * 100) : 0
+          const below = pcts.filter(p => p < myPct).length
+          setPercentile(Math.round((below / pcts.length) * 100))
+        }
+      } catch { /* ignore */ }
+    }
+    computePercentile()
+  }, [data, loading])
 
   useEffect(() => {
     if (!data || loading) return
@@ -275,6 +297,19 @@ export default function ResultsPage() {
                         {tabSwitches} tab switch{(tabSwitches ?? 0) > 1 ? "es" : ""} detected
                       </span>
                     )}
+                  </motion.div>
+                )}
+
+                {revealStage >= 2 && percentile !== null && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-2 inline-block"
+                  >
+                    <p className="text-sm text-blue-800">
+                      You scored higher than <strong>{percentile}%</strong> of all candidates
+                    </p>
                   </motion.div>
                 )}
 

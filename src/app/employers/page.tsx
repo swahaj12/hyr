@@ -22,6 +22,8 @@ type CandidateProfile = {
   topDomains: { name: string; pct: number }[]
   allDomains: DomainScore[]
   lastDate: string
+  personalityType: string | null
+  selfExperience: string | null
 }
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -112,6 +114,8 @@ export default function EmployersPage() {
           topDomains,
           allDomains: domains,
           lastDate: best.created_at,
+          personalityType: best.personality_type ?? null,
+          selfExperience: best.self_experience ?? null,
         })
       })
 
@@ -182,7 +186,7 @@ export default function EmployersPage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <input
                 type="text"
-                placeholder="Search by ID..."
+                placeholder="Search by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
@@ -253,13 +257,18 @@ export default function EmployersPage() {
                           </div>
                           <div>
                             <p className="font-semibold text-sm">{c.name}</p>
-                            <div className="flex items-center gap-2 mt-0.5">
+                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                               <Badge variant="outline" className="text-xs">
                                 {displayLevel(c.bestLevel)}
                               </Badge>
-                              {c.assessedLevel && (
+                              {c.personalityType && (
                                 <span className="text-xs text-muted-foreground">
-                                  {LEVEL_LABELS[c.assessedLevel]} assessment
+                                  {c.personalityType}
+                                </span>
+                              )}
+                              {c.selfExperience && (
+                                <span className="text-xs text-muted-foreground">
+                                  &middot; {c.selfExperience} yrs
                                 </span>
                               )}
                             </div>

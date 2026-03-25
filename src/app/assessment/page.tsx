@@ -343,6 +343,9 @@ export default function AssessmentPage() {
         assessed_level: selectedLevel,
         tab_switches: tabSwitches,
         personality_type: personality.title,
+        self_track: onboardTrack,
+        self_experience: onboardExperience,
+        self_strengths: onboardStrengths,
       })
       .select("id")
       .single()

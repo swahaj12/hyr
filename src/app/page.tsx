@@ -206,19 +206,31 @@ type TickerItem = {
   score: number
   level: string
   track: string
-  minutes: number
+  timeAgo: string
+}
+
+function relativeTime(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return "just now"
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  if (days === 1) return "yesterday"
+  if (days < 30) return `${days}d ago`
+  return `${Math.floor(days / 30)}mo ago`
 }
 
 function useRecentAssessments() {
   const [items, setItems] = useState<TickerItem[]>([])
-  const [totalCount, setTotalCount] = useState(0)
 
   useEffect(() => {
     async function load() {
       try {
-        const { data, count } = await supabase
+        const { data } = await supabase
           .from("assessments")
-          .select("total_score, total_questions, overall_level", { count: "exact" })
+          .select("total_score, total_questions, overall_level, created_at")
           .order("created_at", { ascending: false })
           .limit(20)
 
@@ -228,17 +240,16 @@ function useRecentAssessments() {
               score: Math.round(((a.total_score as number) / (a.total_questions as number)) * 100),
               level: a.overall_level as string,
               track: "DevOps",
-              minutes: Math.floor(Math.random() * 30) + 1,
+              timeAgo: relativeTime(a.created_at as string),
             }))
           )
         }
-        if (count !== null) setTotalCount(count)
       } catch { /* ignore */ }
     }
     load()
   }, [])
 
-  return { items, totalCount }
+  return { items }
 }
 
 function useWaitlistCounts() {
@@ -283,7 +294,7 @@ function LiveTicker({ items }: { items: TickerItem[] }) {
             <span>
               Someone scored <strong className="text-white">{item.score}%</strong> on {item.track} ({item.level})
             </span>
-            <span className="text-gray-600">&middot; {item.minutes}m ago</span>
+            <span className="text-gray-600">&middot; {item.timeAgo}</span>
           </div>
         ))}
       </div>
