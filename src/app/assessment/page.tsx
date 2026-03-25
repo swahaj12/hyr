@@ -22,7 +22,7 @@ export default function AssessmentPage() {
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
 
-  const [stage, setStage] = useState<"select-level" | "quiz" | "finishing">("select-level")
+  const [stage, setStage] = useState<"select-level" | "rules" | "quiz" | "finishing">("select-level")
   const [selectedLevel, setSelectedLevel] = useState<CandidateLevel | null>(null)
 
   const [questions, setQuestions] = useState<Question[]>([])
@@ -50,9 +50,14 @@ export default function AssessmentPage() {
     })
   }, [router])
 
-  function startQuiz(level: CandidateLevel) {
+  function proceedToRules(level: CandidateLevel) {
     setSelectedLevel(level)
-    const q = generateAssessmentSession(level, 40)
+    setStage("rules")
+  }
+
+  function beginQuiz() {
+    if (!selectedLevel) return
+    const q = generateAssessmentSession(selectedLevel, 40)
     setQuestions(q)
     setTimeLeft(q[0]?.time_seconds ?? 15)
     questionStartRef.current = Date.now()
@@ -279,12 +284,106 @@ export default function AssessmentPage() {
             <Button
               size="lg"
               disabled={!selectedLevel}
-              onClick={() => selectedLevel && startQuiz(selectedLevel)}
+              onClick={() => selectedLevel && proceedToRules(selectedLevel)}
+              className="h-11 px-8 text-base"
+            >
+              Continue
+            </Button>
+            <p className="text-xs text-gray-600">40 questions &middot; ~15 minutes &middot; You cannot go back</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // --- Rules / Before You Begin ---
+  if (stage === "rules" && selectedLevel) {
+    const config = LEVEL_CONFIG[selectedLevel]
+    return (
+      <div className="min-h-screen bg-gray-950 text-white">
+        <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
+          <div className="text-center space-y-2 mb-10">
+            <h1 className="text-3xl font-bold">Before You Begin</h1>
+            <p className="text-gray-400">
+              {config.label} Assessment &middot; 40 questions &middot; ~15 minutes
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-xl border border-gray-700 bg-gray-900 p-5 space-y-3">
+              <h3 className="font-semibold text-lg">How It Works</h3>
+              <ul className="space-y-3 text-sm text-gray-300">
+                <li className="flex gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">1</span>
+                  <span>Each question is timed individually (12–20 seconds). If time runs out, the question is skipped automatically.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">2</span>
+                  <span>Questions are scenario-based — read the situation carefully and pick the best answer. Each option includes reasoning to evaluate.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">3</span>
+                  <span>You cannot go back to previous questions. Once answered or timed out, it moves forward.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">4</span>
+                  <span>Your results are scored across 13 DevOps domains and shared on your public profile.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-xl border border-yellow-500/50 bg-yellow-500/10 p-5 space-y-3">
+              <h3 className="font-semibold text-lg text-yellow-400">Integrity Rules</h3>
+              <ul className="space-y-3 text-sm text-gray-300">
+                <li className="flex gap-3">
+                  <span className="shrink-0 text-yellow-400">&#9888;</span>
+                  <span><strong className="text-white">Tab switches are tracked.</strong> Every time you leave this tab, it is counted and shown to employers on your profile.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="shrink-0 text-yellow-400">&#9888;</span>
+                  <span><strong className="text-white">Copy/paste is disabled.</strong> You cannot copy question text or right-click during the assessment.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="shrink-0 text-yellow-400">&#9888;</span>
+                  <span><strong className="text-white">Time pressure is intentional.</strong> Questions are designed to test your working knowledge, not your ability to look things up.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-xl border border-gray-700 bg-gray-900 p-5 space-y-2">
+              <h3 className="font-semibold text-lg">Tips</h3>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li className="flex gap-3">
+                  <span className="shrink-0 text-green-400">&#10003;</span>
+                  <span>Use a quiet environment with a stable internet connection.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="shrink-0 text-green-400">&#10003;</span>
+                  <span>Close other tabs and notifications to avoid accidental tab switches.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="shrink-0 text-green-400">&#10003;</span>
+                  <span>Don&apos;t overthink — go with your gut on timed questions. An educated guess beats a timeout.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setStage("select-level")}
+              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              Back
+            </Button>
+            <Button
+              size="lg"
+              onClick={beginQuiz}
               className="h-11 px-8 text-base"
             >
               Start Assessment
             </Button>
-            <p className="text-xs text-gray-600">40 questions &middot; ~15 minutes &middot; You cannot go back</p>
           </div>
         </div>
       </div>

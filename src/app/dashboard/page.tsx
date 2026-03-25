@@ -184,42 +184,45 @@ export default function DashboardPage() {
               </Card>
             )}
 
-            {/* History */}
-            {assessments.length > 1 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Assessment History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {assessments.slice(1).map((a) => (
-                      <Link
-                        key={a.id}
-                        href={`/results/${a.id}`}
-                        className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm font-medium">
-                            {Math.round((a.total_score / a.total_questions) * 100)}%
-                          </span>
-                          {a.assessed_level && (
-                            <Badge variant="outline" className="text-xs text-muted-foreground">
-                              Took {LEVEL_LABELS[a.assessed_level] || a.assessed_level}
-                            </Badge>
-                          )}
-                          <Badge variant="outline" className="text-xs">
-                            {displayLevel(a.overall_level)}
-                          </Badge>
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(a.created_at).toLocaleDateString()}
+            {/* All Assessments */}
+            <Card>
+              <CardHeader>
+                <CardTitle>All Assessments</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {assessments.map((a, i) => (
+                    <Link
+                      key={a.id}
+                      href={`/results/${a.id}`}
+                      className={`flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors ${
+                        i === 0 ? "border-gray-300 bg-gray-50" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold w-10">
+                          {Math.round((a.total_score / a.total_questions) * 100)}%
                         </span>
-                      </Link>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                        {a.assessed_level && (
+                          <Badge variant="outline" className="text-xs text-muted-foreground">
+                            {LEVEL_LABELS[a.assessed_level] || a.assessed_level}
+                          </Badge>
+                        )}
+                        <Badge variant="outline" className="text-xs">
+                          {displayLevel(a.overall_level)}
+                        </Badge>
+                        {i === 0 && (
+                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Latest</span>
+                        )}
+                      </div>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(a.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </>
         )}
       </main>
