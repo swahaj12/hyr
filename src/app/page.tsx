@@ -348,7 +348,7 @@ function WaitlistButton({ domain }: { domain: string }) {
 }
 
 export default function Home() {
-  const { items: tickerItems, totalCount } = useRecentAssessments()
+  const { items: tickerItems } = useRecentAssessments()
   const waitlistCounts = useWaitlistCounts()
 
   return (
@@ -414,7 +414,7 @@ export default function Home() {
                     nativeButton={false}
                     render={<Link href="/assessment" />}
                     size="lg"
-                    className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:bg-gray-200 hover:text-gray-950 transition-colors"
+                    className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
                   >
                     Take Free Assessment
                   </Button>
@@ -427,17 +427,6 @@ export default function Home() {
                 </a>
               </motion.div>
             </div>
-
-            {totalCount > 0 && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.7 }}
-                className="mt-6 text-sm text-gray-500"
-              >
-                Join <strong className="text-gray-300">{totalCount.toLocaleString()}+</strong> engineers who&apos;ve been assessed
-              </motion.p>
-            )}
 
             {/* Stats row */}
             <StaggerContainer className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto" staggerDelay={0.12}>
@@ -542,7 +531,7 @@ export default function Home() {
                     <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="mt-5">
                       <Link
                         href={track.href}
-                        className="block w-full rounded-lg bg-white text-gray-950 text-center py-2.5 text-sm font-semibold hover:bg-gray-200 transition-colors"
+                        className="block w-full rounded-lg bg-white text-gray-950 text-center py-2.5 text-sm font-semibold hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
                       >
                         Start Assessment
                       </Link>
@@ -787,7 +776,7 @@ export default function Home() {
                   nativeButton={false}
                   render={<Link href="/assessment" />}
                   size="lg"
-                  className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:bg-gray-200 hover:text-gray-950 transition-colors"
+                  className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
                 >
                   Start Free Assessment
                 </Button>

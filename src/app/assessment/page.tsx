@@ -88,9 +88,8 @@ export default function AssessmentPage() {
   // Countdown state
   const [countdownNum, setCountdownNum] = useState(3)
 
-  // Milestone + streak state
+  // Milestone state
   const [milestoneMsg, setMilestoneMsg] = useState<string | null>(null)
-  const [streak, setStreak] = useState(0)
 
   const questionStartRef = useRef(Date.now())
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -173,13 +172,6 @@ export default function AssessmentPage() {
       const nextAnswers = [...answers, ans]
       setAnswers(nextAnswers)
       setSelected(null)
-
-      // Streak tracking: quick answer = under 60% of allotted time
-      if (pickedOption && elapsed < currentQ.time_seconds * 600) {
-        setStreak(prev => prev + 1)
-      } else {
-        setStreak(0)
-      }
 
       const nextIdx = currentIdx + 1
 
@@ -1022,17 +1014,6 @@ export default function AssessmentPage() {
                 <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-xs">
                   {tabSwitches} tab switch{tabSwitches > 1 ? "es" : ""}
                 </Badge>
-              )}
-              {streak >= 3 && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                >
-                  <Badge variant="outline" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/50 text-xs animate-pulse">
-                    Streak: {streak}
-                  </Badge>
-                </motion.div>
               )}
             </div>
           </div>
