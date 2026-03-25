@@ -21,6 +21,7 @@ export default function AssessmentPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
+  const [userName, setUserName] = useState<string>("")
 
   const [stage, setStage] = useState<"select-level" | "rules" | "quiz" | "finishing">("select-level")
   const [selectedLevel, setSelectedLevel] = useState<CandidateLevel | null>(null)
@@ -48,6 +49,7 @@ export default function AssessmentPage() {
         return
       }
       setUserId(data.user.id)
+      setUserName(data.user.user_metadata?.full_name || data.user.email || "")
       setLoading(false)
     })
   }, [router])
@@ -241,6 +243,7 @@ export default function AssessmentPage() {
       .from("assessments")
       .insert({
         candidate_id: userId,
+        candidate_name: userName,
         total_score: totalCorrect,
         total_questions: finalAnswers.length,
         overall_level: level,

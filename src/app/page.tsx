@@ -115,7 +115,7 @@ export default function Home() {
               <div className="animate-fade-up delay-300 mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
                   nativeButton={false}
-                  render={<Link href="/auth" />}
+                  render={<Link href="/assessment" />}
                   size="lg"
                   className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:bg-gray-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
@@ -206,7 +206,7 @@ export default function Home() {
               <div className="mt-8">
                 <Button
                   nativeButton={false}
-                  render={<Link href="/auth" />}
+                  render={<Link href="/assessment" />}
                   size="lg"
                   className="h-11 px-6 text-base"
                 >
@@ -358,7 +358,7 @@ export default function Home() {
             <div className="pt-4">
               <Button
                 nativeButton={false}
-                render={<Link href="/auth" />}
+                render={<Link href="/assessment" />}
                 size="lg"
                 className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:bg-gray-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
@@ -383,6 +383,9 @@ export default function Home() {
               </Link>
               <Link href="/assessment" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
                 Assessment
+              </Link>
+              <Link href="/employers" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                For Employers
               </Link>
             </div>
             <p className="text-xs text-gray-600">

@@ -69,14 +69,11 @@ export default function ProfilePage() {
         return
       }
 
-      const { data: userData } = await supabase.auth.admin.getUserById(candidateId).catch(() => ({ data: null }))
-      let name = "DevOps Candidate"
-      if (userData?.user?.user_metadata?.full_name) {
-        name = userData.user.user_metadata.full_name
-      }
+      const name = assessments.find((a: Record<string, unknown>) => a.candidate_name)?.candidate_name
+        || "DevOps Candidate"
 
       setProfile({
-        candidateName: name,
+        candidateName: name as string,
         assessments: assessments as Assessment[],
       })
       setLoading(false)

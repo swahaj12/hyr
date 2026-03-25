@@ -91,9 +91,13 @@ export default function EmployersPage() {
           .slice(0, 4)
           .map(d => ({ name: d.domainLabel, pct: d.pct }))
 
+        const candidateName = best.candidate_name
+          || userAssessments.find((a: Record<string, unknown>) => a.candidate_name)?.candidate_name
+          || null
+
         profiles.push({
           candidateId,
-          name: `Candidate ${candidateId.slice(0, 6)}`,
+          name: candidateName || `Candidate ${candidateId.slice(0, 6)}`,
           bestScore: best.total_score,
           bestTotal: best.total_questions,
           bestLevel: best.overall_level,

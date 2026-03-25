@@ -53,29 +53,29 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
           <Link href="/" className="text-lg font-bold tracking-tight">
             Hyr
           </Link>
-          {user && checked && (
-            <div className="hidden sm:flex items-center gap-4">
-              <Link href="/dashboard" className={navLinkClass("/dashboard")}>
-                Dashboard
-              </Link>
-              <Link href="/assessment" className={navLinkClass("/assessment")}>
-                Assessment
-              </Link>
-              {isAdmin && (
-                <Link href="/admin" className={navLinkClass("/admin")}>
-                  Admin
+          <div className="hidden sm:flex items-center gap-4">
+            {user && checked && (
+              <>
+                <Link href="/dashboard" className={navLinkClass("/dashboard")}>
+                  Dashboard
                 </Link>
-              )}
-            </div>
-          )}
+                <Link href="/assessment" className={navLinkClass("/assessment")}>
+                  Assessment
+                </Link>
+              </>
+            )}
+            <Link href="/employers" className={navLinkClass("/employers")}>
+              Employers
+            </Link>
+            {isAdmin && (
+              <Link href="/admin" className={navLinkClass("/admin")}>
+                Admin
+              </Link>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {!user && checked && (
-            <Link href="/employers" className={linkClass + " hidden sm:inline"}>
-              For Employers
-            </Link>
-          )}
           {!checked ? (
             <div className="h-8 w-20" />
           ) : user ? (
