@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 
 export const metadata: Metadata = {
   title: "About — Hyr",
-  description: "Hyr bridges the gap between DevOps talent and companies. Learn about our mission and how we're changing tech hiring in Pakistan.",
+  description: "Hyr bridges the gap between tech talent and companies. Learn about our mission and how we're changing tech hiring in Pakistan.",
 }
 
 export default function AboutPage() {
@@ -18,10 +18,10 @@ export default function AboutPage() {
         {/* Hero */}
         <div className="text-center space-y-4">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-950">
-            Bridging the DevOps skills gap
+            Bridging the tech skills gap
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Hyr is a skills verification platform that helps DevOps engineers prove what they know
+            Hyr is a skills verification platform that helps engineers prove what they know
             and helps companies find the talent they need — without wasting weeks on screening.
           </p>
         </div>
@@ -57,9 +57,9 @@ export default function AboutPage() {
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-gray-950">How Hyr Works</h2>
           <p className="text-gray-600 text-lg leading-relaxed">
-            Candidates take a free 15-minute assessment covering 13 DevOps domains — from Linux
-            and Kubernetes to CI/CD and cloud security. Questions are scenario-based, timed, and
-            designed to test real working knowledge.
+            Candidates pick an engineering track — DevOps, Frontend, Backend, or QA — and take a free
+            15-minute assessment. Questions are scenario-based, timed, and designed to test real working
+            knowledge, not textbook theory.
           </p>
           <p className="text-gray-600 text-lg leading-relaxed">
             The result is a verified skill profile that candidates can share with any employer.
@@ -74,7 +74,7 @@ export default function AboutPage() {
           <p className="text-gray-600 text-lg leading-relaxed">
             Pakistan&apos;s tech sector is growing fast, but the skills gap between what universities
             teach and what companies need remains wide. Hyr is built to close that gap — starting
-            with DevOps, the backbone of modern software delivery.
+            with DevOps, with Frontend, Backend, and QA tracks launching soon.
           </p>
           <p className="text-gray-600 text-lg leading-relaxed">
             Whether you&apos;re a fresh graduate proving your first skills or a senior engineer

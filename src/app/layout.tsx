@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hyr — Prove Your DevOps Skills",
+  title: "Hyr — Prove Your Tech Skills",
   description:
-    "Free 15-minute DevOps assessment across 13 domains. Get a verified skill profile and get hired faster.",
+    "Free 15-minute tech skills assessment. Get a verified skill profile and get hired faster. DevOps, Frontend, Backend & more.",
   metadataBase: new URL("https://hyr-snowy.vercel.app"),
   icons: {
     icon: [
@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     apple: "/favicon-hyr.png",
   },
   openGraph: {
-    title: "Hyr — Prove Your DevOps Skills",
+    title: "Hyr — Prove Your Tech Skills",
     description:
-      "Take a free 15-minute assessment. Get a verified skill profile across 13 DevOps domains. Show employers exactly what you can do.",
+      "Take a free 15-minute assessment. Get a verified skill profile across multiple engineering domains. Show employers exactly what you can do.",
     siteName: "Hyr",
     type: "website",
     images: [
@@ -35,15 +35,15 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Hyr — Prove Your DevOps Skills. Get Hired Faster.",
+        alt: "Hyr — Prove Your Tech Skills. Get Hired Faster.",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hyr — Prove Your DevOps Skills",
+    title: "Hyr — Prove Your Tech Skills",
     description:
-      "Free 15-minute DevOps assessment across 13 domains. Get hired faster.",
+      "Free 15-minute tech skills assessment. Get a verified profile and get hired faster.",
     images: ["/og-image.png"],
   },
 };
