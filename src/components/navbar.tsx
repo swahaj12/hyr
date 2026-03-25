@@ -86,7 +86,10 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
               <Button
                 variant="outline"
                 size="sm"
-                className={isDark ? "text-white border-gray-700 hover:bg-gray-800" : ""}
+                className={isDark
+                  ? "text-white border-gray-600 bg-gray-800 hover:bg-gray-700"
+                  : "text-gray-900 border-gray-300 hover:bg-gray-100"
+                }
                 onClick={handleSignOut}
               >
                 Sign Out
@@ -94,7 +97,14 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
             </>
           ) : (
             <Link href="/auth">
-              <Button variant={isDark ? "outline" : "default"} size="sm" className={isDark ? "text-white border-gray-700 hover:bg-gray-800" : ""}>
+              <Button
+                variant={isDark ? "outline" : "default"}
+                size="sm"
+                className={isDark
+                  ? "text-white border-gray-600 bg-gray-800 hover:bg-gray-700"
+                  : ""
+                }
+              >
                 Sign In
               </Button>
             </Link>
