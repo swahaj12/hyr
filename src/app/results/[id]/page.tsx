@@ -51,6 +51,8 @@ export default function ResultsPage() {
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     async function load() {
       const id = params.id as string
@@ -67,23 +69,33 @@ export default function ResultsPage() {
         return
       }
 
-      const { data: assessment } = await supabase
-        .from("assessments")
-        .select("*")
-        .eq("id", id)
-        .single()
+      try {
+        const { data: assessment, error: fetchError } = await supabase
+          .from("assessments")
+          .select("*")
+          .eq("id", id)
+          .single()
 
-      if (assessment) {
-        setData({
-          domainScores: assessment.domain_scores as DomainScore[],
-          level: assessment.overall_level,
-          totalCorrect: assessment.total_score,
-          total: assessment.total_questions,
-          completedAt: assessment.completed_at,
-          assessedLevel: assessment.assessed_level,
-          tabSwitches: assessment.tab_switches ?? 0,
-          candidateId: assessment.candidate_id,
-        })
+        if (fetchError) {
+          setError("Could not load assessment. Please try again.")
+          setLoading(false)
+          return
+        }
+
+        if (assessment) {
+          setData({
+            domainScores: assessment.domain_scores as DomainScore[],
+            level: assessment.overall_level,
+            totalCorrect: assessment.total_score,
+            total: assessment.total_questions,
+            completedAt: assessment.completed_at,
+            assessedLevel: assessment.assessed_level,
+            tabSwitches: assessment.tab_switches ?? 0,
+            candidateId: assessment.candidate_id,
+          })
+        }
+      } catch {
+        setError("Something went wrong. Please try again.")
       }
       setLoading(false)
     }
@@ -99,21 +111,24 @@ export default function ResultsPage() {
     )
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center space-y-4">
-          <p className="text-gray-500">Assessment not found.</p>
-          <Link href="/dashboard">
-            <Button>Go to Dashboard</Button>
-          </Link>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center space-y-4">
+            <p className="text-gray-500">{error || "Assessment not found."}</p>
+            <Link href="/dashboard">
+              <Button>Go to Dashboard</Button>
+            </Link>
+          </div>
         </div>
       </div>
     )
   }
 
   const { domainScores, level, totalCorrect, total, assessedLevel, tabSwitches, candidateId } = data
-  const overallPct = Math.round((totalCorrect / total) * 100)
+  const overallPct = total > 0 ? Math.round((totalCorrect / total) * 100) : 0
   const strongDomains = domainScores.filter((d) => d.pct >= 70)
   const gapDomains = domainScores.filter((d) => d.pct < 40)
   const isTrusted = (tabSwitches ?? 0) === 0
@@ -274,10 +289,12 @@ export default function ResultsPage() {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      const profileUrl = `${window.location.origin}/profile/${candidateId}`
-                      navigator.clipboard.writeText(profileUrl)
-                      setCopied(true)
-                      setTimeout(() => setCopied(false), 2000)
+                      try {
+                        const profileUrl = `${window.location.origin}/profile/${candidateId}`
+                        navigator.clipboard.writeText(profileUrl)
+                        setCopied(true)
+                        setTimeout(() => setCopied(false), 2000)
+                      } catch { /* clipboard may not be available in all contexts */ }
                     }}
                   >
                     {copied ? "Copied!" : "Copy Profile Link"}

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
-import { generateAssessmentSession, LEVEL_CONFIG, type Question, type CandidateLevel } from "@/lib/questions"
+import { generateAssessmentSession, allQuestions, LEVEL_CONFIG, type Question, type CandidateLevel } from "@/lib/questions"
 import { calculateDomainScores, overallLevel, type AnswerRecord } from "@/lib/scoring"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -37,21 +37,25 @@ export default function AssessmentPage() {
   const [tabWarning, setTabWarning] = useState(false)
   const [copyWarning, setCopyWarning] = useState(false)
   const [hasResumable, setHasResumable] = useState(false)
-  const [resumableData, setResumableData] = useState<{ selectedLevel: CandidateLevel; answers: AnswerState[]; currentIdx: number; tabSwitches: number; savedAt: number } | null>(null)
+  const [resumableData, setResumableData] = useState<{ selectedLevel: CandidateLevel; answers: AnswerState[]; currentIdx: number; tabSwitches: number; savedAt: number; questionIds: string[] } | null>(null)
 
   const questionStartRef = useRef(Date.now())
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) {
+    supabase.auth.getUser()
+      .then(({ data }) => {
+        if (!data.user) {
+          router.push("/auth")
+          return
+        }
+        setUserId(data.user.id)
+        setUserName(data.user.user_metadata?.full_name || data.user.email || "")
+        setLoading(false)
+      })
+      .catch(() => {
         router.push("/auth")
-        return
-      }
-      setUserId(data.user.id)
-      setUserName(data.user.user_metadata?.full_name || data.user.email || "")
-      setLoading(false)
-    })
+      })
   }, [router])
 
   function proceedToRules(level: CandidateLevel) {
@@ -147,6 +151,7 @@ export default function AssessmentPage() {
         currentIdx,
         selectedLevel,
         tabSwitches,
+        questionIds: questions.map(q => q.id),
         savedAt: Date.now(),
       }))
     } catch { /* ignore quota errors */ }
@@ -171,7 +176,17 @@ export default function AssessmentPage() {
   function resumeAssessment() {
     if (!resumableData) return
     setSelectedLevel(resumableData.selectedLevel)
-    const q = generateAssessmentSession(resumableData.selectedLevel, 40)
+    let q: Question[]
+    if (resumableData.questionIds?.length) {
+      const idOrder = resumableData.questionIds
+      const questionMap = new Map(allQuestions.map((qq) => [qq.id, qq]))
+      q = idOrder.map(id => questionMap.get(id)).filter(Boolean) as Question[]
+      if (q.length < idOrder.length) {
+        q = generateAssessmentSession(resumableData.selectedLevel, 40)
+      }
+    } else {
+      q = generateAssessmentSession(resumableData.selectedLevel, 40)
+    }
     setQuestions(q)
     setAnswers(resumableData.answers || [])
     setCurrentIdx(resumableData.currentIdx || 0)
@@ -433,7 +448,7 @@ export default function AssessmentPage() {
               <ul className="space-y-3 text-sm text-gray-300">
                 <li className="flex gap-3">
                   <span className="shrink-0 text-yellow-400">&#9888;</span>
-                  <span><strong className="text-white">Tab switches are tracked.</strong> Every time you leave this tab, it is counted and shown to employers on your profile.</span>
+                  <span><strong className="text-white">Tab switches are tracked.</strong> Every time you leave this tab, it is counted and shown to employers on your profile. On mobile, incoming calls or app switches may also trigger this.</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="shrink-0 text-yellow-400">&#9888;</span>
@@ -541,8 +556,8 @@ export default function AssessmentPage() {
       )}
 
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+        {/* Header — sticky on mobile so timer is always visible */}
+        <div className="flex items-center justify-between sticky top-0 z-30 bg-gray-950 py-2 -mt-2 -mx-4 px-4">
           <div className="space-y-1">
             <p className="text-sm text-gray-400">
               Question {currentIdx + 1} of {questions.length}

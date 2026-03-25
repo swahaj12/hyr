@@ -24,7 +24,7 @@ type CandidateRow = {
   candidate_name: string
 }
 
-const ADMIN_EMAILS = ["admin@hyr.pk", "chkk@hyr.pk"]
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",")
 
 export default function AdminPage() {
   const router = useRouter()
@@ -34,39 +34,47 @@ export default function AdminPage() {
   const [search, setSearch] = useState("")
   const [levelFilter, setLevelFilter] = useState("")
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push("/auth")
-        return
-      }
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          router.push("/auth")
+          return
+        }
 
-      if (!ADMIN_EMAILS.includes(user.email || "")) {
-        setAuthorized(false)
-        setLoading(false)
-        return
-      }
-      setAuthorized(true)
+        if (!ADMIN_EMAILS.includes(user.email || "")) {
+          setAuthorized(false)
+          setLoading(false)
+          return
+        }
+        setAuthorized(true)
 
-      const { data } = await supabase
-        .from("assessments")
-        .select("*")
-        .order("created_at", { ascending: false })
+        const { data, error: fetchError } = await supabase
+          .from("assessments")
+          .select("*")
+          .order("created_at", { ascending: false })
 
-      if (data) {
-        const rows: CandidateRow[] = data.map((a: Record<string, unknown>) => ({
-          id: a.id as string,
-          candidate_id: a.candidate_id as string,
-          total_score: a.total_score as number,
-          total_questions: a.total_questions as number,
-          overall_level: a.overall_level as string,
-          domain_scores: a.domain_scores as DomainScore[],
-          created_at: a.created_at as string,
-          candidate_email: (a.candidate_email as string) || "",
-          candidate_name: (a.candidate_name as string) || "",
-        }))
-        setCandidates(rows)
+        if (fetchError) {
+          setError("Could not load assessments.")
+        } else if (data) {
+          const rows: CandidateRow[] = data.map((a: Record<string, unknown>) => ({
+            id: a.id as string,
+            candidate_id: a.candidate_id as string,
+            total_score: a.total_score as number,
+            total_questions: a.total_questions as number,
+            overall_level: a.overall_level as string,
+            domain_scores: a.domain_scores as DomainScore[],
+            created_at: a.created_at as string,
+            candidate_email: (a.candidate_email as string) || "",
+            candidate_name: (a.candidate_name as string) || "",
+          }))
+          setCandidates(rows)
+        }
+      } catch {
+        setError("Something went wrong. Please refresh.")
       }
       setLoading(false)
     }
@@ -114,6 +122,12 @@ export default function AdminPage() {
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-0">
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Candidate Assessments</h1>

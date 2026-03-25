@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-type Mode = "signin" | "signup"
+type Mode = "signin" | "signup" | "forgot"
 
 export default function AuthPage() {
   const router = useRouter()
@@ -41,6 +41,18 @@ export default function AuthPage() {
     setLoading(true)
 
     try {
+      if (mode === "forgot") {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/reset`,
+        })
+        if (resetError) {
+          setError(resetError.message)
+          return
+        }
+        setSuccess("Check your email for a password reset link")
+        return
+      }
+
       if (mode === "signup") {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
@@ -82,28 +94,32 @@ export default function AuthPage() {
           <CardDescription>
             {mode === "signin"
               ? "Sign in to continue"
-              : "Create your account"}
+              : mode === "signup"
+                ? "Create your account"
+                : "Reset your password"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2 rounded-lg border border-border bg-muted/40 p-1">
-            <Button
-              type="button"
-              variant={mode === "signin" ? "default" : "ghost"}
-              className="flex-1"
-              onClick={() => switchMode("signin")}
-            >
-              Sign In
-            </Button>
-            <Button
-              type="button"
-              variant={mode === "signup" ? "default" : "ghost"}
-              className="flex-1"
-              onClick={() => switchMode("signup")}
-            >
-              Sign Up
-            </Button>
-          </div>
+          {mode !== "forgot" && (
+            <div className="flex gap-2 rounded-lg border border-border bg-muted/40 p-1">
+              <Button
+                type="button"
+                variant={mode === "signin" ? "default" : "ghost"}
+                className="flex-1"
+                onClick={() => switchMode("signin")}
+              >
+                Sign In
+              </Button>
+              <Button
+                type="button"
+                variant={mode === "signup" ? "default" : "ghost"}
+                className="flex-1"
+                onClick={() => switchMode("signup")}
+              >
+                Sign Up
+              </Button>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "signup" && (
@@ -130,19 +146,32 @@ export default function AuthPage() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete={
-                  mode === "signin" ? "current-password" : "new-password"
-                }
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+            {mode !== "forgot" && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  {mode === "signin" && (
+                    <button
+                      type="button"
+                      className="text-xs text-primary hover:underline underline-offset-4"
+                      onClick={() => switchMode("forgot")}
+                    >
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete={
+                    mode === "signin" ? "current-password" : "new-password"
+                  }
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            )}
 
             {error && (
               <div className="rounded-md bg-red-50 border border-red-200 p-3">
@@ -160,12 +189,25 @@ export default function AuthPage() {
                 ? "Please wait…"
                 : mode === "signin"
                   ? "Sign In"
-                  : "Create Account"}
+                  : mode === "signup"
+                    ? "Create Account"
+                    : "Send Reset Link"}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
-            {mode === "signin" ? (
+            {mode === "forgot" ? (
+              <>
+                Remember your password?{" "}
+                <button
+                  type="button"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  onClick={() => switchMode("signin")}
+                >
+                  Sign in
+                </button>
+              </>
+            ) : mode === "signin" ? (
               <>
                 Don&apos;t have an account?{" "}
                 <button

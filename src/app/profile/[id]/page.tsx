@@ -54,28 +54,40 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     async function load() {
       const candidateId = params.id as string
 
-      const { data: assessments } = await supabase
-        .from("assessments")
-        .select("*")
-        .eq("candidate_id", candidateId)
-        .order("created_at", { ascending: false })
+      try {
+        const { data: assessments, error: fetchError } = await supabase
+          .from("assessments")
+          .select("*")
+          .eq("candidate_id", candidateId)
+          .order("created_at", { ascending: false })
 
-      if (!assessments || assessments.length === 0) {
-        setLoading(false)
-        return
+        if (fetchError) {
+          setError("Could not load profile. Please try again.")
+          setLoading(false)
+          return
+        }
+
+        if (!assessments || assessments.length === 0) {
+          setLoading(false)
+          return
+        }
+
+        const name = assessments.find((a: Record<string, unknown>) => a.candidate_name)?.candidate_name
+          || "DevOps Candidate"
+
+        setProfile({
+          candidateName: name as string,
+          assessments: assessments as Assessment[],
+        })
+      } catch {
+        setError("Something went wrong. Please try again.")
       }
-
-      const name = assessments.find((a: Record<string, unknown>) => a.candidate_name)?.candidate_name
-        || "DevOps Candidate"
-
-      setProfile({
-        candidateName: name as string,
-        assessments: assessments as Assessment[],
-      })
       setLoading(false)
     }
     load()
@@ -90,14 +102,16 @@ export default function ProfilePage() {
     )
   }
 
-  if (!profile) {
+  if (error || !profile) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
-            <p className="text-gray-500 text-lg">Profile not found</p>
-            <p className="text-sm text-muted-foreground">This candidate hasn&apos;t completed any assessments yet.</p>
+            <p className="text-gray-500 text-lg">{error || "Profile not found"}</p>
+            {!error && (
+              <p className="text-sm text-muted-foreground">This candidate hasn&apos;t completed any assessments yet.</p>
+            )}
             <Link href="/">
               <Button variant="outline">Go Home</Button>
             </Link>
@@ -107,10 +121,12 @@ export default function ProfilePage() {
     )
   }
 
-  const best = profile.assessments.reduce((a, b) =>
-    (a.total_score / a.total_questions) >= (b.total_score / b.total_questions) ? a : b
-  )
-  const bestPct = Math.round((best.total_score / best.total_questions) * 100)
+  const best = profile.assessments.reduce((a, b) => {
+    const aPct = a.total_questions > 0 ? a.total_score / a.total_questions : 0
+    const bPct = b.total_questions > 0 ? b.total_score / b.total_questions : 0
+    return aPct >= bPct ? a : b
+  })
+  const bestPct = best.total_questions > 0 ? Math.round((best.total_score / best.total_questions) * 100) : 0
   const bestDomains = (best.domain_scores as DomainScore[])
   const isTrusted = (best.tab_switches ?? 0) === 0
   const strongDomains = bestDomains.filter((d) => d.pct >= 70)
@@ -268,6 +284,53 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Share */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <h3 className="font-semibold">Share This Profile</h3>
+                <p className="text-sm text-muted-foreground">Share this verified skill profile on social media.</p>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const url = typeof window !== "undefined" ? window.location.href : ""
+                    const text = `Check out ${profile.candidateName}'s verified DevOps skill profile on Hyr`
+                    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank", "noopener")
+                  }}
+                >
+                  LinkedIn
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const url = typeof window !== "undefined" ? window.location.href : ""
+                    const text = `Check out ${profile.candidateName}'s verified DevOps skill profile on @HyrPK`
+                    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank", "noopener")
+                  }}
+                >
+                  Twitter / X
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    try {
+                      navigator.clipboard.writeText(window.location.href)
+                    } catch { /* ignore */ }
+                  }}
+                >
+                  Copy Link
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Footer */}
         <div className="text-center py-4">

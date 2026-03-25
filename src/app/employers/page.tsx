@@ -20,6 +20,7 @@ type CandidateProfile = {
   tabSwitches: number
   totalAssessments: number
   topDomains: { name: string; pct: number }[]
+  allDomains: DomainScore[]
   lastDate: string
 }
 
@@ -60,17 +61,21 @@ export default function EmployersPage() {
   const [levelFilter, setLevelFilter] = useState("All")
   const [sortBy, setSortBy] = useState<"score" | "recent">("score")
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     async function load() {
-      const { data: assessments } = await supabase
-        .from("assessments")
-        .select("*")
-        .order("created_at", { ascending: false })
+      try {
+        const { data: assessments, error: fetchError } = await supabase
+          .from("assessments")
+          .select("*")
+          .order("created_at", { ascending: false })
 
-      if (!assessments) {
-        setLoading(false)
-        return
-      }
+        if (fetchError || !assessments) {
+          setError("Could not load candidates. Please try again.")
+          setLoading(false)
+          return
+        }
 
       const grouped = new Map<string, typeof assessments>()
       for (const a of assessments) {
@@ -105,11 +110,15 @@ export default function EmployersPage() {
           tabSwitches: best.tab_switches ?? 0,
           totalAssessments: userAssessments.length,
           topDomains,
+          allDomains: domains,
           lastDate: best.created_at,
         })
       })
 
       setCandidates(profiles)
+      } catch {
+        setError("Something went wrong. Please refresh the page.")
+      }
       setLoading(false)
     }
     load()
@@ -128,8 +137,8 @@ export default function EmployersPage() {
       if (domainFilter !== "All Domains") {
         const domainKey = DOMAIN_KEY_MAP[domainFilter]
         if (!domainKey) return true
-        const hasDomain = c.topDomains.some(
-          d => d.name.toLowerCase().includes(domainFilter.split(" ")[0].toLowerCase()) && d.pct >= 50
+        const hasDomain = c.allDomains.some(
+          d => d.domain === domainKey && d.pct >= 50
         )
         if (!hasDomain) return false
       }
@@ -156,6 +165,12 @@ export default function EmployersPage() {
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-0">
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         <div>
           <h1 className="text-2xl font-bold">Browse Candidates</h1>
           <p className="text-muted-foreground">Verified DevOps skill profiles — click any candidate to see their full breakdown.</p>
@@ -221,7 +236,7 @@ export default function EmployersPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {filtered.map((c) => {
-              const pct = Math.round((c.bestScore / c.bestTotal) * 100)
+              const pct = c.bestTotal > 0 ? Math.round((c.bestScore / c.bestTotal) * 100) : 0
               const isTrusted = c.tabSwitches === 0
               return (
                 <Link
@@ -234,7 +249,7 @@ export default function EmployersPage() {
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
                           <div className="w-11 h-11 rounded-full bg-gray-950 text-white flex items-center justify-center text-sm font-bold shrink-0">
-                            {c.name.charAt(c.name.length - 6)?.toUpperCase() || "?"}
+                            {c.name.charAt(0)?.toUpperCase() || "?"}
                           </div>
                           <div>
                             <p className="font-semibold text-sm">{c.name}</p>

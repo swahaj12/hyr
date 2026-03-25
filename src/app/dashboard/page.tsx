@@ -35,23 +35,33 @@ export default function DashboardPage() {
   const [assessments, setAssessments] = useState<Assessment[]>([])
   const [profileCopied, setProfileCopied] = useState(false)
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push("/auth")
-        return
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) {
+          router.push("/auth")
+          return
+        }
+        setUserName(user.user_metadata?.full_name || user.email || "")
+        setUserId(user.id)
+
+        const { data, error: fetchError } = await supabase
+          .from("assessments")
+          .select("*")
+          .eq("candidate_id", user.id)
+          .order("created_at", { ascending: false })
+
+        if (fetchError) {
+          setError("Could not load your assessments. Please refresh the page.")
+        } else if (data) {
+          setAssessments(data as Assessment[])
+        }
+      } catch {
+        setError("Something went wrong. Please refresh the page.")
       }
-      setUserName(user.user_metadata?.full_name || user.email || "")
-      setUserId(user.id)
-
-      const { data } = await supabase
-        .from("assessments")
-        .select("*")
-        .eq("candidate_id", user.id)
-        .order("created_at", { ascending: false })
-
-      if (data) setAssessments(data as Assessment[])
       setLoading(false)
     }
     load()
@@ -68,6 +78,12 @@ export default function DashboardPage() {
       <Navbar />
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Welcome back, {userName.split(" ")[0] || "there"}</h1>
@@ -77,9 +93,11 @@ export default function DashboardPage() {
             <Button
               variant="outline"
               onClick={() => {
-                navigator.clipboard.writeText(`${window.location.origin}/profile/${userId}`)
-                setProfileCopied(true)
-                setTimeout(() => setProfileCopied(false), 2000)
+                try {
+                  navigator.clipboard.writeText(`${window.location.origin}/profile/${userId}`)
+                  setProfileCopied(true)
+                  setTimeout(() => setProfileCopied(false), 2000)
+                } catch { /* clipboard unavailable */ }
               }}
             >
               {profileCopied ? "Copied!" : "Share Profile"}
