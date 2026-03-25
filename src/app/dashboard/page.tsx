@@ -31,7 +31,9 @@ export default function DashboardPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [userName, setUserName] = useState("")
+  const [userId, setUserId] = useState("")
   const [assessments, setAssessments] = useState<Assessment[]>([])
+  const [profileCopied, setProfileCopied] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -41,6 +43,7 @@ export default function DashboardPage() {
         return
       }
       setUserName(user.user_metadata?.full_name || user.email || "")
+      setUserId(user.id)
 
       const { data } = await supabase
         .from("assessments")
@@ -65,9 +68,23 @@ export default function DashboardPage() {
       <Navbar />
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
-        <div>
-          <h1 className="text-2xl font-bold">Welcome back, {userName.split(" ")[0] || "there"}</h1>
-          <p className="text-muted-foreground">Your DevOps assessment dashboard</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">Welcome back, {userName.split(" ")[0] || "there"}</h1>
+            <p className="text-muted-foreground">Your DevOps assessment dashboard</p>
+          </div>
+          {assessments.length > 0 && userId && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigator.clipboard.writeText(`${window.location.origin}/profile/${userId}`)
+                setProfileCopied(true)
+                setTimeout(() => setProfileCopied(false), 2000)
+              }}
+            >
+              {profileCopied ? "Copied!" : "Share Profile"}
+            </Button>
+          )}
         </div>
 
         {assessments.length === 0 ? (

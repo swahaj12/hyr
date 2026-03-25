@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase"
 import { generateAssessmentSession, LEVEL_CONFIG, type Question, type CandidateLevel } from "@/lib/questions"
 import { calculateDomainScores, overallLevel, type AnswerRecord } from "@/lib/scoring"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 
@@ -22,18 +22,20 @@ export default function AssessmentPage() {
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
 
-  // Level selection
   const [stage, setStage] = useState<"select-level" | "quiz" | "finishing">("select-level")
   const [selectedLevel, setSelectedLevel] = useState<CandidateLevel | null>(null)
 
-  // Quiz state
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentIdx, setCurrentIdx] = useState(0)
   const [answers, setAnswers] = useState<AnswerState[]>([])
   const [timeLeft, setTimeLeft] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
+
+  const [tabSwitches, setTabSwitches] = useState(0)
   const [tabWarning, setTabWarning] = useState(false)
+  const [copyWarning, setCopyWarning] = useState(false)
+
   const questionStartRef = useRef(Date.now())
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -87,6 +89,7 @@ export default function AssessmentPage() {
     [currentQ, currentIdx, questions, answers],
   )
 
+  // Timer
   useEffect(() => {
     if (stage !== "quiz" || submitted) return
     if (timerRef.current) clearInterval(timerRef.current)
@@ -106,13 +109,44 @@ export default function AssessmentPage() {
     }
   }, [stage, submitted, currentIdx, advance])
 
+  // Anti-cheat: tab switch detection
   useEffect(() => {
+    if (stage !== "quiz" || submitted) return
+
     const handleVisibility = () => {
-      if (document.hidden && !submitted && stage === "quiz") setTabWarning(true)
+      if (document.hidden) {
+        setTabSwitches((prev) => prev + 1)
+        setTabWarning(true)
+      }
     }
     document.addEventListener("visibilitychange", handleVisibility)
     return () => document.removeEventListener("visibilitychange", handleVisibility)
-  }, [submitted, stage])
+  }, [stage, submitted])
+
+  // Anti-cheat: block copy/paste/right-click during quiz
+  useEffect(() => {
+    if (stage !== "quiz" || submitted) return
+
+    const blockCopy = (e: ClipboardEvent) => {
+      e.preventDefault()
+      setCopyWarning(true)
+      setTimeout(() => setCopyWarning(false), 2000)
+    }
+    const blockContext = (e: MouseEvent) => {
+      e.preventDefault()
+      setCopyWarning(true)
+      setTimeout(() => setCopyWarning(false), 2000)
+    }
+
+    document.addEventListener("copy", blockCopy)
+    document.addEventListener("cut", blockCopy)
+    document.addEventListener("contextmenu", blockContext)
+    return () => {
+      document.removeEventListener("copy", blockCopy)
+      document.removeEventListener("cut", blockCopy)
+      document.removeEventListener("contextmenu", blockContext)
+    }
+  }, [stage, submitted])
 
   async function finishAssessment(finalAnswers: AnswerState[]) {
     setStage("finishing")
@@ -132,6 +166,7 @@ export default function AssessmentPage() {
         overall_level: level,
         domain_scores: domainScores,
         assessed_level: selectedLevel,
+        tab_switches: tabSwitches,
       })
       .select("id")
       .single()
@@ -150,13 +185,12 @@ export default function AssessmentPage() {
       router.push(`/results/${assessment.id}`)
     } else {
       const fallbackScores = btoa(
-        JSON.stringify({ domainScores, level, totalCorrect, total: finalAnswers.length, assessedLevel: selectedLevel })
+        JSON.stringify({ domainScores, level, totalCorrect, total: finalAnswers.length, assessedLevel: selectedLevel, tabSwitches })
       )
       router.push(`/results/local?d=${encodeURIComponent(fallbackScores)}`)
     }
   }
 
-  // --- Loading ---
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
@@ -176,7 +210,7 @@ export default function AssessmentPage() {
           <div className="text-center space-y-3 mb-10">
             <h1 className="text-3xl font-bold">Choose Your Level</h1>
             <p className="text-gray-400 max-w-lg mx-auto">
-              Select the level that best matches your experience. This determines the difficulty mix of your assessment — every level still includes easy, medium, and hard questions.
+              Select the level that best matches your experience. This determines the difficulty mix — every level still includes easy, medium, and hard questions.
             </p>
           </div>
 
@@ -215,7 +249,6 @@ export default function AssessmentPage() {
                     />
                   </div>
 
-                  {/* Difficulty mix bar */}
                   <div className="mt-4 space-y-2">
                     <div className="flex h-2 rounded-full overflow-hidden">
                       <div className="bg-green-500" style={{ width: `${easyPct}%` }} />
@@ -279,20 +312,36 @@ export default function AssessmentPage() {
   const timerBg = timeLeft <= 3 ? "bg-red-500/20" : timeLeft <= 5 ? "bg-yellow-500/20" : "bg-white/10"
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-gray-950 text-white select-none">
+      {/* Tab switch warning overlay */}
       {tabWarning && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
           <Card className="max-w-md bg-gray-900 border-yellow-500 text-white">
             <CardContent className="pt-6 space-y-4 text-center">
+              <div className="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center mx-auto">
+                <span className="text-3xl">&#9888;</span>
+              </div>
               <p className="text-xl font-bold text-yellow-400">Tab Switch Detected</p>
-              <p className="text-gray-300">
-                Switching tabs during the assessment is logged. Employers can see this in your profile.
+              <p className="text-gray-300 text-sm">
+                Leaving this tab during the assessment is tracked and visible to employers on your profile.
+                {tabSwitches > 1 && (
+                  <span className="block mt-2 text-yellow-400 font-medium">
+                    You have switched tabs {tabSwitches} time{tabSwitches > 1 ? "s" : ""}.
+                  </span>
+                )}
               </p>
               <Button onClick={() => setTabWarning(false)} className="w-full">
                 Continue Assessment
               </Button>
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {/* Copy blocked toast */}
+      {copyWarning && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-900/90 border border-red-500 text-red-200 px-4 py-2 rounded-lg text-sm font-medium shadow-lg animate-in fade-in slide-in-from-top-2">
+          Copying is disabled during the assessment
         </div>
       )}
 
@@ -315,6 +364,11 @@ export default function AssessmentPage() {
               <Badge variant="outline" className="text-gray-400 border-gray-700 text-xs">
                 {currentQ.domain}
               </Badge>
+              {tabSwitches > 0 && (
+                <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-xs">
+                  {tabSwitches} tab switch{tabSwitches > 1 ? "es" : ""}
+                </Badge>
+              )}
             </div>
           </div>
           <div className={`${timerBg} rounded-full px-4 py-2 text-center min-w-[64px]`}>

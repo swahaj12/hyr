@@ -18,6 +18,8 @@ type AssessmentData = {
   total: number
   completedAt?: string
   assessedLevel?: string
+  tabSwitches?: number
+  candidateId?: string
 }
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -79,6 +81,8 @@ export default function ResultsPage() {
           total: assessment.total_questions,
           completedAt: assessment.completed_at,
           assessedLevel: assessment.assessed_level,
+          tabSwitches: assessment.tab_switches ?? 0,
+          candidateId: assessment.candidate_id,
         })
       }
       setLoading(false)
@@ -108,10 +112,11 @@ export default function ResultsPage() {
     )
   }
 
-  const { domainScores, level, totalCorrect, total, assessedLevel } = data
+  const { domainScores, level, totalCorrect, total, assessedLevel, tabSwitches, candidateId } = data
   const overallPct = Math.round((totalCorrect / total) * 100)
   const strongDomains = domainScores.filter((d) => d.pct >= 70)
   const gapDomains = domainScores.filter((d) => d.pct < 40)
+  const isTrusted = (tabSwitches ?? 0) === 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -145,6 +150,21 @@ export default function ResultsPage() {
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">Your Level</span>
                   <Badge className="text-sm">{displayLevel(level)}</Badge>
                 </div>
+              </div>
+
+              {/* Trust indicator */}
+              <div className="flex items-center justify-center gap-2 pt-1">
+                {isTrusted ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-full px-3 py-1">
+                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                    Verified — no tab switches detected
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-full px-3 py-1">
+                    <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                    {tabSwitches} tab switch{(tabSwitches ?? 0) > 1 ? "es" : ""} detected
+                  </span>
+                )}
               </div>
 
               {assessedLevel && (
@@ -246,20 +266,23 @@ export default function ResultsPage() {
               <div>
                 <h3 className="font-semibold">Share Your Profile</h3>
                 <p className="text-sm text-muted-foreground">
-                  Send this link to employers to showcase your verified skills.
+                  Send your profile link to employers to showcase all your verified skills.
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    navigator.clipboard.writeText(window.location.href)
-                    setCopied(true)
-                    setTimeout(() => setCopied(false), 2000)
-                  }}
-                >
-                  {copied ? "Copied!" : "Copy Link"}
-                </Button>
+                {candidateId && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const profileUrl = `${window.location.origin}/profile/${candidateId}`
+                      navigator.clipboard.writeText(profileUrl)
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 2000)
+                    }}
+                  >
+                    {copied ? "Copied!" : "Copy Profile Link"}
+                  </Button>
+                )}
                 <Link href="/dashboard">
                   <Button>Go to Dashboard</Button>
                 </Link>
