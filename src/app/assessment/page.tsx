@@ -101,6 +101,10 @@ export default function AssessmentPage() {
           router.push("/auth")
           return
         }
+        if (data.user.user_metadata?.role === "employer") {
+          router.push("/employers")
+          return
+        }
         setUserId(data.user.id)
         setUserName(data.user.user_metadata?.full_name || data.user.email || "")
         setLoading(false)

@@ -47,6 +47,10 @@ export default function DashboardPage() {
           router.push("/auth")
           return
         }
+        if (user.user_metadata?.role === "employer") {
+          router.push("/employers")
+          return
+        }
         setUserName(user.user_metadata?.full_name || user.email || "")
         setUserId(user.id)
 

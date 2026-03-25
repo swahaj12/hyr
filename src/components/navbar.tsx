@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
+import type { UserRole } from "@/lib/use-user"
 
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
 
@@ -13,7 +14,7 @@ type NavVariant = "dark" | "light"
 export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [user, setUser] = useState<{ email: string; name: string } | null>(null)
+  const [user, setUser] = useState<{ email: string; name: string; role: UserRole } | null>(null)
   const [checked, setChecked] = useState(false)
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
         setUser({
           email: data.user.email || "",
           name: data.user.user_metadata?.full_name || data.user.email || "",
+          role: (data.user.user_metadata?.role as UserRole) || "candidate",
         })
       }
       setChecked(true)
@@ -41,6 +43,8 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
   const activeLinkClass = isDark ? "text-sm text-white font-medium" : "text-sm text-gray-950 font-medium"
 
   const isAdmin = user && ADMIN_EMAILS.includes(user.email)
+  const isEmployer = user?.role === "employer"
+  const isCandidate = !isEmployer
 
   function navLinkClass(href: string) {
     return pathname === href ? activeLinkClass : linkClass
@@ -54,7 +58,7 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
             Hyr
           </Link>
           <div className="hidden sm:flex items-center gap-4">
-            {user && checked && (
+            {user && checked && isCandidate && (
               <>
                 <Link href="/dashboard" className={navLinkClass("/dashboard")}>
                   Dashboard
@@ -65,7 +69,7 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
               </>
             )}
             <Link href="/employers" className={navLinkClass("/employers")}>
-              Employers
+              {isEmployer ? "Browse Candidates" : "Employers"}
             </Link>
             {isAdmin && (
               <Link href="/admin" className={navLinkClass("/admin")}>
@@ -83,6 +87,11 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
               <span className={`text-xs hidden sm:inline ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                 {user.name.split(" ")[0]}
               </span>
+              {isEmployer && (
+                <span className={`text-xs hidden sm:inline px-1.5 py-0.5 rounded ${isDark ? "bg-blue-900/50 text-blue-300" : "bg-blue-100 text-blue-700"}`}>
+                  Employer
+                </span>
+              )}
               <Button
                 variant="outline"
                 size="sm"
@@ -114,7 +123,7 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
         {/* Mobile bottom nav */}
         {checked && (
           <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex items-center justify-around py-2 px-4 z-40">
-            {user && (
+            {user && isCandidate && (
               <Link
                 href="/dashboard"
                 className={`flex flex-col items-center gap-0.5 text-xs ${pathname === "/dashboard" ? "text-gray-950 font-medium" : "text-gray-500"}`}
@@ -123,7 +132,7 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
                 Dashboard
               </Link>
             )}
-            {user && (
+            {user && isCandidate && (
               <Link
                 href="/assessment"
                 className={`flex flex-col items-center gap-0.5 text-xs ${pathname === "/assessment" ? "text-gray-950 font-medium" : "text-gray-500"}`}
@@ -137,7 +146,7 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
               className={`flex flex-col items-center gap-0.5 text-xs ${pathname === "/employers" ? "text-gray-950 font-medium" : "text-gray-500"}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              Employers
+              {isEmployer ? "Candidates" : "Employers"}
             </Link>
             {isAdmin && (
               <Link
