@@ -35,6 +35,8 @@ export default function AssessmentPage() {
   const [tabSwitches, setTabSwitches] = useState(0)
   const [tabWarning, setTabWarning] = useState(false)
   const [copyWarning, setCopyWarning] = useState(false)
+  const [hasResumable, setHasResumable] = useState(false)
+  const [resumableData, setResumableData] = useState<{ selectedLevel: CandidateLevel; answers: AnswerState[]; currentIdx: number; tabSwitches: number; savedAt: number } | null>(null)
 
   const questionStartRef = useRef(Date.now())
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -114,6 +116,78 @@ export default function AssessmentPage() {
     }
   }, [stage, submitted, currentIdx, advance])
 
+  // Keyboard shortcuts: 1-4 or A-D to select answers
+  useEffect(() => {
+    if (stage !== "quiz" || submitted || !currentQ) return
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (tabWarning) return
+      const keyMap: Record<string, string> = {
+        "1": "A", "2": "B", "3": "C", "4": "D",
+        "a": "A", "b": "B", "c": "C", "d": "D",
+      }
+      const optId = keyMap[e.key.toLowerCase()]
+      if (optId && currentQ.options.some(o => o.id === optId)) {
+        setSelected(optId)
+        setTimeout(() => advance(optId), 200)
+      }
+    }
+    window.addEventListener("keydown", handleKey)
+    return () => window.removeEventListener("keydown", handleKey)
+  }, [stage, submitted, currentQ, tabWarning, advance])
+
+  // Auto-save progress to localStorage
+  useEffect(() => {
+    if (stage !== "quiz" || answers.length === 0) return
+    try {
+      localStorage.setItem("hyr_assessment_progress", JSON.stringify({
+        answers,
+        currentIdx,
+        selectedLevel,
+        tabSwitches,
+        savedAt: Date.now(),
+      }))
+    } catch { /* ignore quota errors */ }
+  }, [answers, currentIdx, selectedLevel, tabSwitches, stage])
+
+  // Restore progress on mount (if crashed mid-assessment)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("hyr_assessment_progress")
+      if (!saved || stage !== "select-level") return
+      const data = JSON.parse(saved)
+      const age = Date.now() - (data.savedAt || 0)
+      if (age > 30 * 60 * 1000) {
+        localStorage.removeItem("hyr_assessment_progress")
+        return
+      }
+      setHasResumable(true)
+      setResumableData(data)
+    } catch { /* ignore */ }
+  }, [stage])
+
+  function resumeAssessment() {
+    if (!resumableData) return
+    setSelectedLevel(resumableData.selectedLevel)
+    const q = generateAssessmentSession(resumableData.selectedLevel, 40)
+    setQuestions(q)
+    setAnswers(resumableData.answers || [])
+    setCurrentIdx(resumableData.currentIdx || 0)
+    setTabSwitches(resumableData.tabSwitches || 0)
+    const nextQ = q[resumableData.currentIdx]
+    if (nextQ) setTimeLeft(nextQ.time_seconds)
+    questionStartRef.current = Date.now()
+    setStage("quiz")
+    setHasResumable(false)
+    localStorage.removeItem("hyr_assessment_progress")
+  }
+
+  function discardResumable() {
+    localStorage.removeItem("hyr_assessment_progress")
+    setHasResumable(false)
+    setResumableData(null)
+  }
+
   // Anti-cheat: tab switch detection
   useEffect(() => {
     if (stage !== "quiz" || submitted) return
@@ -157,6 +231,7 @@ export default function AssessmentPage() {
     setStage("finishing")
     setSubmitted(true)
     if (timerRef.current) clearInterval(timerRef.current)
+    try { localStorage.removeItem("hyr_assessment_progress") } catch { /* ignore */ }
 
     const domainScores = calculateDomainScores(finalAnswers)
     const level = overallLevel(domainScores)
@@ -212,6 +287,24 @@ export default function AssessmentPage() {
     return (
       <div className="min-h-screen bg-gray-950 text-white">
         <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
+          {/* Resume banner */}
+          {hasResumable && resumableData && (
+            <div className="mb-8 rounded-xl border border-blue-500/50 bg-blue-500/10 p-5 space-y-3">
+              <p className="text-sm font-semibold text-blue-400">You have an unfinished assessment</p>
+              <p className="text-sm text-gray-400">
+                {LEVEL_CONFIG[resumableData.selectedLevel].label} level &middot; {resumableData.currentIdx}/{40} questions answered
+              </p>
+              <div className="flex gap-3">
+                <Button onClick={resumeAssessment} size="sm" className="bg-blue-600 hover:bg-blue-700">
+                  Resume
+                </Button>
+                <Button onClick={discardResumable} variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-800">
+                  Start Fresh
+                </Button>
+              </div>
+            </div>
+          )}
+
           <div className="text-center space-y-3 mb-10">
             <h1 className="text-3xl font-bold">Choose Your Level</h1>
             <p className="text-gray-400 max-w-lg mx-auto">
@@ -516,6 +609,7 @@ export default function AssessmentPage() {
 
         <p className="text-xs text-gray-600 text-center">
           Select an answer or wait for the timer. You cannot go back.
+          <span className="hidden sm:inline"> &middot; Press <kbd className="px-1 py-0.5 rounded bg-gray-800 text-gray-400 font-mono text-[10px]">1</kbd>-<kbd className="px-1 py-0.5 rounded bg-gray-800 text-gray-400 font-mono text-[10px]">4</kbd> to answer quickly.</span>
         </p>
       </div>
     </div>
