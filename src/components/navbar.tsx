@@ -71,6 +71,11 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
         </div>
 
         <div className="flex items-center gap-3">
+          {!user && checked && (
+            <Link href="/employers" className={linkClass + " hidden sm:inline"}>
+              For Employers
+            </Link>
+          )}
           {!checked ? (
             <div className="h-8 w-20" />
           ) : user ? (

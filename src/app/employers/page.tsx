@@ -1,0 +1,301 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { supabase } from "@/lib/supabase"
+import { type DomainScore, displayLevel } from "@/lib/scoring"
+import { Navbar } from "@/components/navbar"
+import { PageLoading } from "@/components/loading"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+
+type CandidateProfile = {
+  candidateId: string
+  name: string
+  bestScore: number
+  bestTotal: number
+  bestLevel: string
+  assessedLevel: string | null
+  tabSwitches: number
+  totalAssessments: number
+  topDomains: { name: string; pct: number }[]
+  lastDate: string
+}
+
+const LEVEL_LABELS: Record<string, string> = {
+  junior: "Junior",
+  mid: "Mid-Level",
+  senior: "Senior",
+}
+
+const DOMAIN_FILTERS = [
+  "All Domains",
+  "Kubernetes", "Docker", "Cloud / AWS", "Terraform / IaC",
+  "CI/CD", "Linux", "Monitoring", "Security",
+  "Networking", "Git", "Scripting", "SRE", "FinOps",
+]
+
+const DOMAIN_KEY_MAP: Record<string, string> = {
+  "Kubernetes": "kubernetes",
+  "Docker": "containers",
+  "Cloud / AWS": "cloud",
+  "Terraform / IaC": "iac",
+  "CI/CD": "cicd",
+  "Linux": "linux",
+  "Monitoring": "monitoring",
+  "Security": "security",
+  "Networking": "networking",
+  "Git": "git",
+  "Scripting": "scripting",
+  "SRE": "sre",
+  "FinOps": "finops",
+}
+
+export default function EmployersPage() {
+  const [candidates, setCandidates] = useState<CandidateProfile[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [domainFilter, setDomainFilter] = useState("All Domains")
+  const [levelFilter, setLevelFilter] = useState("All")
+  const [sortBy, setSortBy] = useState<"score" | "recent">("score")
+
+  useEffect(() => {
+    async function load() {
+      const { data: assessments } = await supabase
+        .from("assessments")
+        .select("*")
+        .order("created_at", { ascending: false })
+
+      if (!assessments) {
+        setLoading(false)
+        return
+      }
+
+      const grouped = new Map<string, typeof assessments>()
+      for (const a of assessments) {
+        const existing = grouped.get(a.candidate_id) || []
+        existing.push(a)
+        grouped.set(a.candidate_id, existing)
+      }
+
+      const profiles: CandidateProfile[] = []
+      grouped.forEach((userAssessments, candidateId) => {
+        const best = userAssessments.reduce((a, b) =>
+          (a.total_score / a.total_questions) >= (b.total_score / b.total_questions) ? a : b
+        )
+
+        const domains = best.domain_scores as DomainScore[]
+        const topDomains = [...domains]
+          .sort((a, b) => b.pct - a.pct)
+          .slice(0, 4)
+          .map(d => ({ name: d.domainLabel, pct: d.pct }))
+
+        profiles.push({
+          candidateId,
+          name: `Candidate ${candidateId.slice(0, 6)}`,
+          bestScore: best.total_score,
+          bestTotal: best.total_questions,
+          bestLevel: best.overall_level,
+          assessedLevel: best.assessed_level,
+          tabSwitches: best.tab_switches ?? 0,
+          totalAssessments: userAssessments.length,
+          topDomains,
+          lastDate: best.created_at,
+        })
+      })
+
+      setCandidates(profiles)
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  const filtered = candidates
+    .filter((c) => {
+      if (searchTerm) {
+        const s = searchTerm.toLowerCase()
+        if (!c.candidateId.toLowerCase().includes(s) && !c.name.toLowerCase().includes(s)) return false
+      }
+      if (levelFilter !== "All") {
+        const scored = displayLevel(c.bestLevel).toLowerCase()
+        if (!scored.includes(levelFilter.toLowerCase())) return false
+      }
+      if (domainFilter !== "All Domains") {
+        const domainKey = DOMAIN_KEY_MAP[domainFilter]
+        if (!domainKey) return true
+        const hasDomain = c.topDomains.some(
+          d => d.name.toLowerCase().includes(domainFilter.split(" ")[0].toLowerCase()) && d.pct >= 50
+        )
+        if (!hasDomain) return false
+      }
+      return true
+    })
+    .sort((a, b) => {
+      if (sortBy === "score") {
+        return (b.bestScore / b.bestTotal) - (a.bestScore / a.bestTotal)
+      }
+      return new Date(b.lastDate).getTime() - new Date(a.lastDate).getTime()
+    })
+
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <PageLoading />
+      </>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+
+      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-0">
+        <div>
+          <h1 className="text-2xl font-bold">Browse Candidates</h1>
+          <p className="text-muted-foreground">Verified DevOps skill profiles — click any candidate to see their full breakdown.</p>
+        </div>
+
+        {/* Filters */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                placeholder="Search by ID..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+              />
+              <select
+                value={domainFilter}
+                onChange={(e) => setDomainFilter(e.target.value)}
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                {DOMAIN_FILTERS.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+              <select
+                value={levelFilter}
+                onChange={(e) => setLevelFilter(e.target.value)}
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                <option value="All">All Levels</option>
+                <option value="Senior">Senior</option>
+                <option value="Mid">Mid-Level</option>
+                <option value="Junior">Junior</option>
+                <option value="Entry">Entry-Level</option>
+              </select>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as "score" | "recent")}
+                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+              >
+                <option value="score">Highest Score</option>
+                <option value="recent">Most Recent</option>
+              </select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Results count */}
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} candidate{filtered.length !== 1 ? "s" : ""} found
+        </p>
+
+        {/* Candidate cards */}
+        {filtered.length === 0 ? (
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-center text-muted-foreground py-8">
+                No candidates match your filters. Try broadening your search.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {filtered.map((c) => {
+              const pct = Math.round((c.bestScore / c.bestTotal) * 100)
+              const isTrusted = c.tabSwitches === 0
+              return (
+                <Link
+                  key={c.candidateId}
+                  href={`/profile/${c.candidateId}`}
+                  className="block group"
+                >
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-gray-300">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-11 h-11 rounded-full bg-gray-950 text-white flex items-center justify-center text-sm font-bold shrink-0">
+                            {c.name.charAt(c.name.length - 6)?.toUpperCase() || "?"}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">{c.name}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <Badge variant="outline" className="text-xs">
+                                {displayLevel(c.bestLevel)}
+                              </Badge>
+                              {c.assessedLevel && (
+                                <span className="text-xs text-muted-foreground">
+                                  {LEVEL_LABELS[c.assessedLevel]} assessment
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-bold">{pct}%</p>
+                          <p className="text-xs text-muted-foreground">{c.bestScore}/{c.bestTotal}</p>
+                        </div>
+                      </div>
+
+                      {/* Top domains */}
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {c.topDomains.map((d) => (
+                          <span
+                            key={d.name}
+                            className={`text-xs px-2 py-0.5 rounded-full border ${
+                              d.pct >= 70
+                                ? "bg-green-50 text-green-700 border-green-200"
+                                : d.pct >= 50
+                                  ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                                  : "bg-gray-50 text-gray-600 border-gray-200"
+                            }`}
+                          >
+                            {d.name} {d.pct}%
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+                        <div className="flex items-center gap-3">
+                          {isTrusted ? (
+                            <span className="flex items-center gap-1 text-green-600">
+                              <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                              Verified
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1 text-yellow-600">
+                              <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                              {c.tabSwitches} tab switch{c.tabSwitches > 1 ? "es" : ""}
+                            </span>
+                          )}
+                          <span>{c.totalAssessments} assessment{c.totalAssessments > 1 ? "s" : ""}</span>
+                        </div>
+                        <span>{new Date(c.lastDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              )
+            })}
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
