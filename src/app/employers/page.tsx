@@ -55,9 +55,12 @@ const DOMAIN_KEY_MAP: Record<string, string> = {
   "FinOps": "finops",
 }
 
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
+
 export default function EmployersPage() {
   const [candidates, setCandidates] = useState<CandidateProfile[]>([])
   const [loading, setLoading] = useState(true)
+  const [authorized, setAuthorized] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [domainFilter, setDomainFilter] = useState("All Domains")
   const [levelFilter, setLevelFilter] = useState("All")
@@ -68,6 +71,18 @@ export default function EmployersPage() {
   useEffect(() => {
     async function load() {
       try {
+        const { data: { user } } = await supabase.auth.getUser()
+
+        const role = user?.user_metadata?.role
+        const isAdmin = user && ADMIN_EMAILS.includes(user.email || "")
+
+        if (!user || (role !== "employer" && !isAdmin)) {
+          setAuthorized(false)
+          setLoading(false)
+          return
+        }
+        setAuthorized(true)
+
         const { data: assessments, error: fetchError } = await supabase
           .from("assessments")
           .select("*")
@@ -165,6 +180,38 @@ export default function EmployersPage() {
     )
   }
 
+  if (!authorized) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <main className="max-w-lg mx-auto px-4 py-16">
+          <Card>
+            <CardContent className="pt-8 pb-8 text-center space-y-5">
+              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">For Employers Only</h2>
+                <p className="text-muted-foreground mt-2 text-sm">
+                  This page lets employers browse verified candidate profiles.
+                  Sign up as an employer to access it.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center pt-2">
+                <Link href="/auth">
+                  <Button>Sign Up as Employer</Button>
+                </Link>
+                <Link href="/dashboard">
+                  <Button variant="outline">Go to Dashboard</Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -178,7 +225,7 @@ export default function EmployersPage() {
 
         <div>
           <h1 className="text-2xl font-bold">Browse Candidates</h1>
-          <p className="text-muted-foreground">Verified DevOps skill profiles — click any candidate to see their full breakdown.</p>
+          <p className="text-muted-foreground">Verified skill profiles — click any candidate to see their full breakdown.</p>
         </div>
 
         {/* Filters */}
