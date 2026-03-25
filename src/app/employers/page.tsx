@@ -71,6 +71,7 @@ export default function EmployersPage() {
         const { data: assessments, error: fetchError } = await supabase
           .from("assessments")
           .select("*")
+          .eq("profile_visible", true)
           .order("created_at", { ascending: false })
 
         if (fetchError || !assessments) {

@@ -19,6 +19,7 @@ type Assessment = {
   assessed_level: string | null
   domain_scores: DomainScore[]
   created_at: string
+  profile_visible?: boolean
 }
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -59,6 +60,10 @@ export default function DashboardPage() {
           setError("Could not load your assessments. Please refresh the page.")
         } else if (data) {
           setAssessments(data as Assessment[])
+          const first = data[0] as Record<string, unknown> | undefined
+          if (first && typeof first.profile_visible === "boolean") {
+            setProfileVisible(first.profile_visible)
+          }
         }
       } catch {
         setError("Something went wrong. Please refresh the page.")

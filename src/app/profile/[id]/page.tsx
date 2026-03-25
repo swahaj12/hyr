@@ -88,6 +88,15 @@ export default function ProfilePage() {
           return
         }
 
+        const allHidden = assessments.every(
+          (a: Record<string, unknown>) => a.profile_visible === false
+        )
+        if (allHidden) {
+          setError("This profile is private.")
+          setLoading(false)
+          return
+        }
+
         const name = assessments.find((a: Record<string, unknown>) => a.candidate_name)?.candidate_name
           || "DevOps Candidate"
 
