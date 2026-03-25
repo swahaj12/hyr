@@ -103,7 +103,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6">
                       <div className="text-center">
                         <p className="text-3xl font-bold">
                           {Math.round((latest.total_score / latest.total_questions) * 100)}%
@@ -112,13 +112,17 @@ export default function DashboardPage() {
                           {latest.total_score}/{latest.total_questions}
                         </p>
                       </div>
-                      <div className="space-y-1">
+                      <div className="flex gap-3">
                         {latest.assessed_level && (
-                          <p className="text-xs text-muted-foreground">
-                            {LEVEL_LABELS[latest.assessed_level] || latest.assessed_level} assessment
-                          </p>
+                          <div className="text-center px-3 py-1.5 rounded-md bg-gray-100 border border-gray-200">
+                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Took</p>
+                            <p className="text-sm font-semibold">{LEVEL_LABELS[latest.assessed_level] || latest.assessed_level}</p>
+                          </div>
                         )}
-                        <Badge className="text-sm">{latest.overall_level}</Badge>
+                        <div className="text-center px-3 py-1.5 rounded-md bg-gray-100 border border-gray-200">
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Scored</p>
+                          <p className="text-sm font-semibold">{latest.overall_level}</p>
+                        </div>
                       </div>
                     </div>
                     <div className="flex gap-2">
@@ -182,12 +186,12 @@ export default function DashboardPage() {
                             {Math.round((a.total_score / a.total_questions) * 100)}%
                           </span>
                           {a.assessed_level && (
-                            <span className="text-xs text-muted-foreground">
-                              {LEVEL_LABELS[a.assessed_level] || a.assessed_level}
-                            </span>
+                            <Badge variant="outline" className="text-xs text-muted-foreground">
+                              Took {LEVEL_LABELS[a.assessed_level] || a.assessed_level}
+                            </Badge>
                           )}
                           <Badge variant="outline" className="text-xs">
-                            {a.overall_level}
+                            Scored {a.overall_level}
                           </Badge>
                         </div>
                         <span className="text-sm text-muted-foreground">
