@@ -117,7 +117,7 @@ export default function Home() {
                   nativeButton={false}
                   render={<Link href="/assessment" />}
                   size="lg"
-                  className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:bg-gray-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:bg-gray-200 hover:text-gray-950 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Take Free Assessment
                 </Button>
@@ -360,7 +360,7 @@ export default function Home() {
                 nativeButton={false}
                 render={<Link href="/assessment" />}
                 size="lg"
-                className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:bg-gray-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:bg-gray-200 hover:text-gray-950 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 Start Free Assessment
               </Button>
