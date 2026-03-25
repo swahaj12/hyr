@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 import { supabase } from "@/lib/supabase"
 import {
@@ -72,7 +73,9 @@ export default function AuthPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <Card className="mx-4 w-full max-w-md">
         <CardHeader>
-          <CardTitle>Hyr</CardTitle>
+          <Link href="/" className="text-xl font-bold tracking-tight text-gray-950 hover:opacity-80 transition-opacity">
+            Hyr
+          </Link>
           <CardDescription>
             {mode === "signin"
               ? "Sign in to continue"
@@ -138,8 +141,16 @@ export default function AuthPage() {
               />
             </div>
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
-            {success && <p className="text-sm">{success}</p>}
+            {error && (
+              <div className="rounded-md bg-red-50 border border-red-200 p-3">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            )}
+            {success && (
+              <div className="rounded-md bg-green-50 border border-green-200 p-3">
+                <p className="text-sm text-green-700">{success}</p>
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading

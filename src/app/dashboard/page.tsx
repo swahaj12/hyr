@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { type DomainScore } from "@/lib/scoring"
+import { Navbar } from "@/components/navbar"
+import { PageLoading } from "@/components/loading"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -45,39 +47,17 @@ export default function DashboardPage() {
     load()
   }, [router])
 
-  async function handleSignOut() {
-    await supabase.auth.signOut()
-    router.push("/")
-  }
-
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Loading...</p>
-      </div>
-    )
+    return <><Navbar /><PageLoading /></>
   }
 
   const latest = assessments[0]
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gray-950 text-white">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">
-            Hyr
-          </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400 hidden sm:inline">{userName}</span>
-            <Button variant="outline" size="sm" className="text-white border-gray-700 hover:bg-gray-800" onClick={handleSignOut}>
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-5xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
         <div>
           <h1 className="text-2xl font-bold">Welcome back, {userName.split(" ")[0] || "there"}</h1>
           <p className="text-muted-foreground">Your DevOps assessment dashboard</p>

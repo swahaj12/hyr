@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Navbar } from "@/components/navbar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,22 +49,7 @@ export default function Home() {
     <div className="flex min-h-screen flex-col bg-white">
       {/* Dark header + hero */}
       <section className="bg-gray-950 text-white">
-        <header className="border-b border-white/10">
-          <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
-            <Link
-              href="/"
-              className="text-lg font-semibold tracking-tight text-white"
-            >
-              Hyr
-            </Link>
-            <Link
-              href="/auth"
-              className="text-sm font-medium text-white/90 transition-colors hover:text-white"
-            >
-              Sign In
-            </Link>
-          </nav>
-        </header>
+        <Navbar variant="dark" />
 
         <div className="mx-auto max-w-6xl px-4 pb-20 pt-12 sm:px-6 sm:pb-24 sm:pt-16 lg:px-8 lg:pb-28 lg:pt-20">
           <div className="mx-auto max-w-3xl text-center">

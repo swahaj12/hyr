@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Navbar } from "@/components/navbar"
+import { PageLoading } from "@/components/loading"
 
 type CandidateRow = {
   id: string
@@ -73,9 +75,10 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Loading...</p>
-      </div>
+      <>
+        <Navbar />
+        <PageLoading />
+      </>
     )
   }
 
@@ -108,21 +111,9 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gray-950 text-white">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold">
-            Hyr <span className="text-sm font-normal text-gray-400">Admin</span>
-          </Link>
-          <Link href="/dashboard">
-            <Button variant="outline" size="sm" className="text-white border-gray-700 hover:bg-gray-800">
-              My Dashboard
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-0">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Candidate Assessments</h1>

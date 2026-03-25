@@ -8,6 +8,8 @@ import { type DomainScore, overallLevel } from "@/lib/scoring"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Navbar } from "@/components/navbar"
+import { PageLoading } from "@/components/loading"
 
 type AssessmentData = {
   domainScores: DomainScore[]
@@ -38,6 +40,7 @@ export default function ResultsPage() {
   const searchParams = useSearchParams()
   const [data, setData] = useState<AssessmentData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -77,9 +80,10 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Loading results...</p>
-      </div>
+      <>
+        <Navbar />
+        <PageLoading />
+      </>
     )
   }
 
@@ -103,23 +107,9 @@ export default function ResultsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gray-950 text-white">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-xl font-bold">
-              Hyr
-            </Link>
-            <Link href="/dashboard">
-              <Button variant="outline" size="sm" className="text-white border-gray-700 hover:bg-gray-800">
-                Dashboard
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
-      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
         {/* Overall Score Card */}
         <Card>
           <CardContent className="pt-6">
@@ -236,10 +226,11 @@ export default function ResultsPage() {
                   variant="outline"
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href)
-                    alert("Link copied to clipboard!")
+                    setCopied(true)
+                    setTimeout(() => setCopied(false), 2000)
                   }}
                 >
-                  Copy Link
+                  {copied ? "Copied!" : "Copy Link"}
                 </Button>
                 <Link href="/dashboard">
                   <Button>Go to Dashboard</Button>
