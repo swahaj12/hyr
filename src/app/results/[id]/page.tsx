@@ -121,22 +121,37 @@ export default function ResultsPage() {
         {/* Overall Score Card */}
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center space-y-3">
+            <div className="text-center space-y-4">
               <h1 className="text-3xl font-bold">Your DevOps Skill Profile</h1>
-              {assessedLevel && (
-                <p className="text-sm text-muted-foreground">
-                  Assessed at <span className="font-medium text-foreground">{LEVEL_LABELS[assessedLevel] || assessedLevel}</span> level
-                </p>
-              )}
+
               <div className="flex items-center justify-center gap-3">
                 <span className="text-5xl font-bold">{overallPct}%</span>
                 <div className="text-left">
-                  <Badge className="text-sm">{level}</Badge>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-sm text-muted-foreground">
                     {totalCorrect}/{total} correct
                   </p>
                 </div>
               </div>
+
+              {/* Clear two-row layout: Assessment Type + Scored Result */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                {assessedLevel && (
+                  <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Assessment</span>
+                    <span className="text-sm font-semibold">{LEVEL_LABELS[assessedLevel] || assessedLevel}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Scored Proficiency</span>
+                  <Badge className="text-sm">{level}</Badge>
+                </div>
+              </div>
+
+              {assessedLevel && (
+                <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                  You took the {LEVEL_LABELS[assessedLevel]} assessment. Your scored proficiency is based on how you performed against that difficulty level.
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

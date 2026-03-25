@@ -16,8 +16,15 @@ type Assessment = {
   total_score: number
   total_questions: number
   overall_level: string
+  assessed_level: string | null
   domain_scores: DomainScore[]
   created_at: string
+}
+
+const LEVEL_LABELS: Record<string, string> = {
+  junior: "Junior",
+  mid: "Mid-Level",
+  senior: "Senior",
 }
 
 export default function DashboardPage() {
@@ -105,7 +112,12 @@ export default function DashboardPage() {
                           {latest.total_score}/{latest.total_questions}
                         </p>
                       </div>
-                      <div>
+                      <div className="space-y-1">
+                        {latest.assessed_level && (
+                          <p className="text-xs text-muted-foreground">
+                            {LEVEL_LABELS[latest.assessed_level] || latest.assessed_level} assessment
+                          </p>
+                        )}
                         <Badge className="text-sm">{latest.overall_level}</Badge>
                       </div>
                     </div>
@@ -169,6 +181,11 @@ export default function DashboardPage() {
                           <span className="text-sm font-medium">
                             {Math.round((a.total_score / a.total_questions) * 100)}%
                           </span>
+                          {a.assessed_level && (
+                            <span className="text-xs text-muted-foreground">
+                              {LEVEL_LABELS[a.assessed_level] || a.assessed_level}
+                            </span>
+                          )}
                           <Badge variant="outline" className="text-xs">
                             {a.overall_level}
                           </Badge>
