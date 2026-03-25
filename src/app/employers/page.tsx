@@ -237,12 +237,12 @@ export default function EmployersPage() {
                 placeholder="Search by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full sm:flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300"
               />
               <select
                 value={domainFilter}
                 onChange={(e) => setDomainFilter(e.target.value)}
-                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full sm:w-auto rounded-lg border border-gray-200 bg-white px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300"
               >
                 {DOMAIN_FILTERS.map((d) => (
                   <option key={d} value={d}>{d}</option>
@@ -251,7 +251,7 @@ export default function EmployersPage() {
               <select
                 value={levelFilter}
                 onChange={(e) => setLevelFilter(e.target.value)}
-                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full sm:w-auto rounded-lg border border-gray-200 bg-white px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300"
               >
                 <option value="All">All Levels</option>
                 <option value="Senior">Senior</option>
@@ -262,7 +262,7 @@ export default function EmployersPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as "score" | "recent")}
-                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full sm:w-auto rounded-lg border border-gray-200 bg-white px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300"
               >
                 <option value="score">Highest Score</option>
                 <option value="recent">Most Recent</option>

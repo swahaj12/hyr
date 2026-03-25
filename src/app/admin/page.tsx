@@ -133,17 +133,17 @@ export default function AdminPage() {
             <h1 className="text-2xl font-bold">Candidate Assessments</h1>
             <p className="text-muted-foreground">{candidates.length} total assessments</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Input
               placeholder="Search by email or name..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="max-w-xs"
+              className="w-full sm:max-w-xs"
             />
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="border rounded-md px-3 py-2 text-sm bg-white"
+              className="border rounded-md px-3 py-2 text-base sm:text-sm bg-white min-h-11 sm:min-h-9"
             >
               <option value="">All Levels</option>
               {levels.map((l) => (
@@ -171,9 +171,9 @@ export default function AdminPage() {
                     <tr className="border-b">
                       <th className="text-left py-3 px-2 font-medium">Candidate</th>
                       <th className="text-left py-3 px-2 font-medium">Score</th>
-                      <th className="text-left py-3 px-2 font-medium">Level</th>
-                      <th className="text-left py-3 px-2 font-medium">Top Domains</th>
-                      <th className="text-left py-3 px-2 font-medium">Date</th>
+                      <th className="text-left py-3 px-2 font-medium hidden sm:table-cell">Level</th>
+                      <th className="text-left py-3 px-2 font-medium hidden md:table-cell">Top Domains</th>
+                      <th className="text-left py-3 px-2 font-medium hidden sm:table-cell">Date</th>
                       <th className="text-right py-3 px-2 font-medium">Actions</th>
                     </tr>
                   </thead>
@@ -202,12 +202,12 @@ export default function AdminPage() {
                               ({c.total_score}/{c.total_questions})
                             </span>
                           </td>
-                          <td className="py-3 px-2">
+                          <td className="py-3 px-2 hidden sm:table-cell">
                             <Badge variant="outline" className="text-xs">
                               {c.overall_level}
                             </Badge>
                           </td>
-                          <td className="py-3 px-2">
+                          <td className="py-3 px-2 hidden md:table-cell">
                             <div className="flex gap-1 flex-wrap">
                               {topDomains.map((d) => (
                                 <Badge
@@ -220,7 +220,7 @@ export default function AdminPage() {
                               ))}
                             </div>
                           </td>
-                          <td className="py-3 px-2 text-muted-foreground">
+                          <td className="py-3 px-2 text-muted-foreground hidden sm:table-cell">
                             {new Date(c.created_at).toLocaleDateString()}
                           </td>
                           <td className="py-3 px-2 text-right">

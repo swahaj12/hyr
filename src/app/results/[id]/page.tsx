@@ -406,7 +406,7 @@ export default function ResultsPage() {
                   >
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium w-32 shrink-0">{d.domainLabel}</span>
+                        <span className="font-medium w-24 sm:w-32 shrink-0 truncate">{d.domainLabel}</span>
                         <Badge variant="outline" className={`${levelColor(d.level)} text-white border-0 text-xs`}>
                           {displayLevel(d.level)}
                         </Badge>

@@ -754,6 +754,52 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ═══════ EMPLOYER CTA ═══════ */}
+      <section className="bg-gray-950 text-white py-24 sm:py-32 border-t border-gray-800">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <Reveal>
+              <p className="text-sm font-semibold uppercase tracking-wider text-emerald-400">For Employers</p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+                Skip the screening rounds
+              </h2>
+              <p className="mt-4 text-gray-400 text-lg leading-relaxed">
+                Browse pre-verified candidates with detailed skill breakdowns. Each profile shows domain scores, trust indicators, and assessment history — so you know exactly what you&apos;re getting before the first interview.
+              </p>
+              <div className="mt-8">
+                <Link href="/auth">
+                  <Button
+                    size="lg"
+                    className="h-12 px-8 text-base font-semibold bg-emerald-500 text-white hover:!bg-emerald-400 hover:!text-white transition-colors border-0"
+                  >
+                    Sign Up as Employer
+                  </Button>
+                </Link>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="space-y-4">
+                {[
+                  { icon: "🔍", title: "Browse verified profiles", desc: "Search by domain, level, and personality type" },
+                  { icon: "🛡️", title: "Trust indicators on every profile", desc: "See tab-switch counts, assessment history, and verification status" },
+                  { icon: "⚡", title: "Go straight to final interview", desc: "Skip phone screens and take-home tests — skills are already verified" },
+                  { icon: "📊", title: "13 domains, scored individually", desc: "From Kubernetes to FinOps — see exactly where candidates excel" },
+                ].map((item) => (
+                  <div key={item.title} className="flex gap-4 p-4 rounded-xl border border-gray-800 bg-gray-900/50">
+                    <span className="text-2xl shrink-0">{item.icon}</span>
+                    <div>
+                      <p className="font-semibold text-sm">{item.title}</p>
+                      <p className="text-sm text-gray-400 mt-0.5">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════ BOTTOM CTA ═══════ */}
       <section className="relative bg-gray-950 text-white py-24 sm:py-32 overflow-hidden">
         <div className="absolute inset-0 hero-grid" />
@@ -817,6 +863,12 @@ export default function Home() {
               </Link>
               <Link href="/about" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
                 About
+              </Link>
+              <Link href="/terms" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                Terms
+              </Link>
+              <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                Privacy
               </Link>
             </div>
             <p className="text-xs text-gray-600">

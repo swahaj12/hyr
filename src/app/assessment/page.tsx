@@ -365,6 +365,21 @@ export default function AssessmentPage() {
         difficulty: a.difficulty,
       }))
       await supabase.from("assessment_answers").insert(rows)
+
+      fetch("/api/send-results-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: (await supabase.auth.getUser()).data.user?.email,
+          name: userName,
+          score: totalCorrect,
+          total: finalAnswers.length,
+          level,
+          assessmentId: assessment.id,
+          profileId: userId,
+        }),
+      }).catch(() => {})
+
       router.push(`/results/${assessment.id}`)
     } else {
       const fallbackScores = btoa(
