@@ -57,6 +57,56 @@ export function displayLevel(stored: string): string {
   return LEGACY_LEVEL_MAP[stored] || stored
 }
 
+export type PersonalityType = {
+  title: string
+  tagline: string
+  domains: string[]
+}
+
+const PERSONALITY_TYPES: { title: string; tagline: string; keys: string[][] }[] = [
+  { title: 'The Infrastructure Architect', tagline: 'You build the foundations everything runs on', keys: [['kubernetes', 'cloud', 'iac']] },
+  { title: 'The Pipeline Builder', tagline: 'You make code flow from commit to production', keys: [['cicd', 'git', 'scripting']] },
+  { title: 'The Guardian', tagline: 'You keep systems safe, stable, and observable', keys: [['security', 'monitoring', 'sre']] },
+  { title: 'The Cloud Native', tagline: 'Containers and orchestration are your second language', keys: [['kubernetes', 'containers', 'cloud']] },
+  { title: 'The Automation Engineer', tagline: 'If it can be scripted, you\'ve already automated it', keys: [['scripting', 'iac', 'cicd']] },
+]
+
+export function engineeringPersonality(scores: DomainScore[]): PersonalityType {
+  const scoreMap = new Map(scores.map(s => [s.domain, s.pct]))
+
+  let bestType = PERSONALITY_TYPES[0]
+  let bestScore = -1
+
+  for (const pt of PERSONALITY_TYPES) {
+    for (const keyGroup of pt.keys) {
+      const groupScore = keyGroup.reduce((sum, k) => sum + (scoreMap.get(k) || 0), 0)
+      if (groupScore > bestScore) {
+        bestScore = groupScore
+        bestType = pt
+      }
+    }
+  }
+
+  const avg = scores.reduce((s, d) => s + d.pct, 0) / (scores.length || 1)
+  const spread = Math.max(...scores.map(s => s.pct)) - Math.min(...scores.map(s => s.pct))
+  if (spread < 20 && avg >= 50) {
+    return {
+      title: 'The Full-Stack Ops',
+      tagline: 'Balanced across the board — you can do it all',
+      domains: scores.filter(s => s.pct >= 50).map(s => s.domainLabel),
+    }
+  }
+
+  return {
+    title: bestType.title,
+    tagline: bestType.tagline,
+    domains: bestType.keys[0].map(k => {
+      const found = scores.find(s => s.domain === k)
+      return found?.domainLabel || k
+    }),
+  }
+}
+
 export type AnswerRecord = {
   question_id: string
   domain: string

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
-import { type DomainScore, displayLevel } from "@/lib/scoring"
+import { type DomainScore, displayLevel, engineeringPersonality } from "@/lib/scoring"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,16 @@ type Assessment = {
   domain_scores: DomainScore[]
   tab_switches: number
   created_at: string
+  personality_type: string | null
+}
+
+const PERSONALITY_ICONS: Record<string, string> = {
+  "The Infrastructure Architect": "🏗️",
+  "The Pipeline Builder": "🔧",
+  "The Guardian": "🛡️",
+  "The Cloud Native": "☁️",
+  "The Automation Engineer": "⚙️",
+  "The Full-Stack Ops": "🎯",
 }
 
 type ProfileData = {
@@ -131,6 +141,11 @@ export default function ProfilePage() {
   const isTrusted = (best.tab_switches ?? 0) === 0
   const strongDomains = bestDomains.filter((d) => d.pct >= 70)
   const totalAssessments = profile.assessments.length
+  const computedPersonality = engineeringPersonality(bestDomains)
+  const personality = best.personality_type
+    ? { ...computedPersonality, title: best.personality_type }
+    : computedPersonality
+  const personalityIcon = PERSONALITY_ICONS[personality.title] || "🎯"
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -186,6 +201,19 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Personality Type */}
+        <div className="relative rounded-xl border-2 border-gray-900 bg-gray-950 text-white p-6 overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
+            <span className="text-4xl">{personalityIcon}</span>
+            <div className="text-center sm:text-left">
+              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Engineering Type</p>
+              <h3 className="text-xl font-bold">{personality.title}</h3>
+              <p className="text-sm text-gray-400 mt-1">{personality.tagline}</p>
+            </div>
+          </div>
+        </div>
 
         {/* Best Assessment — Domain Breakdown */}
         <Card>

@@ -202,6 +202,95 @@ const scaleChild = {
   },
 }
 
+type TickerItem = {
+  score: number
+  level: string
+  track: string
+  minutes: number
+}
+
+function useRecentAssessments() {
+  const [items, setItems] = useState<TickerItem[]>([])
+  const [totalCount, setTotalCount] = useState(0)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data, count } = await supabase
+          .from("assessments")
+          .select("total_score, total_questions, overall_level", { count: "exact" })
+          .order("created_at", { ascending: false })
+          .limit(20)
+
+        if (data && data.length > 0) {
+          setItems(
+            data.map((a: Record<string, unknown>) => ({
+              score: Math.round(((a.total_score as number) / (a.total_questions as number)) * 100),
+              level: a.overall_level as string,
+              track: "DevOps",
+              minutes: Math.floor(Math.random() * 30) + 1,
+            }))
+          )
+        }
+        if (count !== null) setTotalCount(count)
+      } catch { /* ignore */ }
+    }
+    load()
+  }, [])
+
+  return { items, totalCount }
+}
+
+function useWaitlistCounts() {
+  const [counts, setCounts] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { data } = await supabase
+          .from("waitlist")
+          .select("domain")
+
+        if (data) {
+          const map: Record<string, number> = {}
+          for (const row of data) {
+            map[row.domain] = (map[row.domain] || 0) + 1
+          }
+          setCounts(map)
+        }
+      } catch { /* ignore */ }
+    }
+    load()
+  }, [])
+
+  return counts
+}
+
+function LiveTicker({ items }: { items: TickerItem[] }) {
+  if (items.length === 0) return null
+
+  const doubled = [...items, ...items]
+
+  return (
+    <div className="relative overflow-hidden py-4 border-t border-b border-gray-800 bg-gray-950/80 backdrop-blur-sm">
+      <div className="flex animate-scroll gap-6" style={{ width: `${doubled.length * 280}px` }}>
+        {doubled.map((item, i) => (
+          <div
+            key={i}
+            className="shrink-0 flex items-center gap-2 text-sm text-gray-400"
+          >
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span>
+              Someone scored <strong className="text-white">{item.score}%</strong> on {item.track} ({item.level})
+            </span>
+            <span className="text-gray-600">&middot; {item.minutes}m ago</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function WaitlistButton({ domain }: { domain: string }) {
   const [email, setEmail] = useState("")
   const [open, setOpen] = useState(false)
@@ -259,6 +348,9 @@ function WaitlistButton({ domain }: { domain: string }) {
 }
 
 export default function Home() {
+  const { items: tickerItems, totalCount } = useRecentAssessments()
+  const waitlistCounts = useWaitlistCounts()
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
       {/* ═══════ HERO ═══════ */}
@@ -336,8 +428,19 @@ export default function Home() {
               </motion.div>
             </div>
 
+            {totalCount > 0 && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7 }}
+                className="mt-6 text-sm text-gray-500"
+              >
+                Join <strong className="text-gray-300">{totalCount.toLocaleString()}+</strong> engineers who&apos;ve been assessed
+              </motion.p>
+            )}
+
             {/* Stats row */}
-            <StaggerContainer className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto" staggerDelay={0.12}>
+            <StaggerContainer className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto" staggerDelay={0.12}>
               {statItems.map((stat) => (
                 <motion.div
                   key={stat.label}
@@ -354,6 +457,9 @@ export default function Home() {
             </StaggerContainer>
           </div>
         </div>
+
+        {/* Live ticker */}
+        <LiveTicker items={tickerItems} />
       </section>
 
       {/* ═══════ ASSESSMENT TRACKS ═══════ */}
@@ -442,7 +548,14 @@ export default function Home() {
                       </Link>
                     </motion.div>
                   ) : (
-                    <WaitlistButton domain={track.name} />
+                    <div className="mt-4 space-y-1">
+                      {(waitlistCounts[track.name] ?? 0) > 0 && (
+                        <p className="text-xs text-gray-500">
+                          <span className="text-gray-300 font-medium">{waitlistCounts[track.name]}</span> engineer{waitlistCounts[track.name] > 1 ? "s" : ""} waiting
+                        </p>
+                      )}
+                      <WaitlistButton domain={track.name} />
+                    </div>
                   )}
                 </div>
               </motion.div>

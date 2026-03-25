@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "motion/react"
 import { supabase } from "@/lib/supabase"
 import { generateAssessmentSession, allQuestions, LEVEL_CONFIG, type Question, type CandidateLevel } from "@/lib/questions"
-import { calculateDomainScores, overallLevel, type AnswerRecord } from "@/lib/scoring"
+import { calculateDomainScores, overallLevel, engineeringPersonality, type AnswerRecord } from "@/lib/scoring"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -15,7 +16,47 @@ type AnswerState = AnswerRecord & {
   time_taken_ms: number
 }
 
+type Stage =
+  | "onboard-track"
+  | "onboard-experience"
+  | "onboard-strengths"
+  | "onboard-ready"
+  | "select-level"
+  | "rules"
+  | "countdown"
+  | "quiz"
+  | "finishing"
+
 const levels: CandidateLevel[] = ["junior", "mid", "senior"]
+
+const DOMAIN_OPTIONS = [
+  { key: "kubernetes", label: "Kubernetes", icon: "☸️" },
+  { key: "containers", label: "Docker", icon: "🐳" },
+  { key: "cloud", label: "Cloud / AWS", icon: "☁️" },
+  { key: "cicd", label: "CI/CD", icon: "🔄" },
+  { key: "iac", label: "Terraform / IaC", icon: "🏗️" },
+  { key: "linux", label: "Linux", icon: "🐧" },
+  { key: "monitoring", label: "Monitoring", icon: "📊" },
+  { key: "security", label: "Security", icon: "🔒" },
+  { key: "scripting", label: "Scripting", icon: "📝" },
+  { key: "git", label: "Git", icon: "🔀" },
+  { key: "networking", label: "Networking", icon: "🌐" },
+  { key: "sre", label: "SRE", icon: "🚀" },
+  { key: "finops", label: "FinOps", icon: "💰" },
+]
+
+const EXPERIENCE_OPTIONS = [
+  { value: "0-1", label: "Less than 1 year", desc: "Just getting started" },
+  { value: "1-3", label: "1–3 years", desc: "Building foundations" },
+  { value: "3-5", label: "3–5 years", desc: "Solid experience" },
+  { value: "5+", label: "5+ years", desc: "Seasoned professional" },
+]
+
+const MILESTONE_MESSAGES = [
+  { at: 10, text: "10 down. 30 to go. You're in the zone." },
+  { at: 20, text: "Halfway there. Keep that momentum." },
+  { at: 30, text: "10 more. You've got this." },
+]
 
 export default function AssessmentPage() {
   const router = useRouter()
@@ -23,8 +64,13 @@ export default function AssessmentPage() {
   const [userId, setUserId] = useState<string | null>(null)
   const [userName, setUserName] = useState<string>("")
 
-  const [stage, setStage] = useState<"select-level" | "rules" | "quiz" | "finishing">("select-level")
+  const [stage, setStage] = useState<Stage>("onboard-track")
   const [selectedLevel, setSelectedLevel] = useState<CandidateLevel | null>(null)
+
+  // Onboarding state
+  const [onboardTrack, setOnboardTrack] = useState<string>("devops")
+  const [onboardExperience, setOnboardExperience] = useState<string | null>(null)
+  const [onboardStrengths, setOnboardStrengths] = useState<string[]>([])
 
   const [questions, setQuestions] = useState<Question[]>([])
   const [currentIdx, setCurrentIdx] = useState(0)
@@ -38,6 +84,13 @@ export default function AssessmentPage() {
   const [copyWarning, setCopyWarning] = useState(false)
   const [hasResumable, setHasResumable] = useState(false)
   const [resumableData, setResumableData] = useState<{ selectedLevel: CandidateLevel; answers: AnswerState[]; currentIdx: number; tabSwitches: number; savedAt: number; questionIds: string[] } | null>(null)
+
+  // Countdown state
+  const [countdownNum, setCountdownNum] = useState(3)
+
+  // Milestone + streak state
+  const [milestoneMsg, setMilestoneMsg] = useState<string | null>(null)
+  const [streak, setStreak] = useState(0)
 
   const questionStartRef = useRef(Date.now())
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -58,12 +111,43 @@ export default function AssessmentPage() {
       })
   }, [router])
 
+  // Restore progress on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("hyr_assessment_progress")
+      if (!saved) return
+      const data = JSON.parse(saved)
+      const age = Date.now() - (data.savedAt || 0)
+      if (age > 30 * 60 * 1000) {
+        localStorage.removeItem("hyr_assessment_progress")
+        return
+      }
+      setHasResumable(true)
+      setResumableData(data)
+    } catch { /* ignore */ }
+  }, [])
+
   function proceedToRules(level: CandidateLevel) {
     setSelectedLevel(level)
     setStage("rules")
   }
 
-  function beginQuiz() {
+  function startCountdown() {
+    setStage("countdown")
+    setCountdownNum(3)
+  }
+
+  useEffect(() => {
+    if (stage !== "countdown") return
+    if (countdownNum <= 0) {
+      actuallyBeginQuiz()
+      return
+    }
+    const t = setTimeout(() => setCountdownNum(prev => prev - 1), 800)
+    return () => clearTimeout(t)
+  }, [stage, countdownNum])
+
+  function actuallyBeginQuiz() {
     if (!selectedLevel) return
     const q = generateAssessmentSession(selectedLevel, 40)
     setQuestions(q)
@@ -90,9 +174,25 @@ export default function AssessmentPage() {
       setAnswers(nextAnswers)
       setSelected(null)
 
-      if (currentIdx + 1 < questions.length) {
-        const nextQ = questions[currentIdx + 1]
-        setCurrentIdx(currentIdx + 1)
+      // Streak tracking: quick answer = under 60% of allotted time
+      if (pickedOption && elapsed < currentQ.time_seconds * 600) {
+        setStreak(prev => prev + 1)
+      } else {
+        setStreak(0)
+      }
+
+      const nextIdx = currentIdx + 1
+
+      // Milestone messages
+      const milestone = MILESTONE_MESSAGES.find(m => m.at === nextIdx)
+      if (milestone) {
+        setMilestoneMsg(milestone.text)
+        setTimeout(() => setMilestoneMsg(null), 1800)
+      }
+
+      if (nextIdx < questions.length) {
+        const nextQ = questions[nextIdx]
+        setCurrentIdx(nextIdx)
         setTimeLeft(nextQ.time_seconds)
         questionStartRef.current = Date.now()
       } else {
@@ -122,7 +222,7 @@ export default function AssessmentPage() {
     }
   }, [stage, submitted, currentIdx, advance])
 
-  // Keyboard shortcuts: 1-4 or A-D to select answers
+  // Keyboard shortcuts
   useEffect(() => {
     if (stage !== "quiz" || submitted || !currentQ) return
 
@@ -142,7 +242,7 @@ export default function AssessmentPage() {
     return () => window.removeEventListener("keydown", handleKey)
   }, [stage, submitted, currentQ, tabWarning, advance])
 
-  // Auto-save progress to localStorage
+  // Auto-save
   useEffect(() => {
     if (stage !== "quiz" || answers.length === 0) return
     try {
@@ -155,23 +255,7 @@ export default function AssessmentPage() {
         savedAt: Date.now(),
       }))
     } catch { /* ignore quota errors */ }
-  }, [answers, currentIdx, selectedLevel, tabSwitches, stage])
-
-  // Restore progress on mount (if crashed mid-assessment)
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("hyr_assessment_progress")
-      if (!saved || stage !== "select-level") return
-      const data = JSON.parse(saved)
-      const age = Date.now() - (data.savedAt || 0)
-      if (age > 30 * 60 * 1000) {
-        localStorage.removeItem("hyr_assessment_progress")
-        return
-      }
-      setHasResumable(true)
-      setResumableData(data)
-    } catch { /* ignore */ }
-  }, [stage])
+  }, [answers, currentIdx, selectedLevel, tabSwitches, stage, questions])
 
   function resumeAssessment() {
     if (!resumableData) return
@@ -219,7 +303,7 @@ export default function AssessmentPage() {
     return () => document.removeEventListener("visibilitychange", handleVisibility)
   }, [stage, submitted])
 
-  // Anti-cheat: block copy/paste/right-click during quiz
+  // Anti-cheat: block copy/paste/right-click
   useEffect(() => {
     if (stage !== "quiz" || submitted) return
 
@@ -252,6 +336,7 @@ export default function AssessmentPage() {
 
     const domainScores = calculateDomainScores(finalAnswers)
     const level = overallLevel(domainScores)
+    const personality = engineeringPersonality(domainScores)
     const totalCorrect = finalAnswers.filter((a) => a.is_correct).length
 
     const { data: assessment, error } = await supabase
@@ -265,6 +350,7 @@ export default function AssessmentPage() {
         domain_scores: domainScores,
         assessed_level: selectedLevel,
         tab_switches: tabSwitches,
+        personality_type: personality.title,
       })
       .select("id")
       .single()
@@ -283,10 +369,18 @@ export default function AssessmentPage() {
       router.push(`/results/${assessment.id}`)
     } else {
       const fallbackScores = btoa(
-        JSON.stringify({ domainScores, level, totalCorrect, total: finalAnswers.length, assessedLevel: selectedLevel, tabSwitches })
+        JSON.stringify({ domainScores, level, totalCorrect, total: finalAnswers.length, assessedLevel: selectedLevel, tabSwitches, personalityType: personality.title })
       )
       router.push(`/results/local?d=${encodeURIComponent(fallbackScores)}`)
     }
+  }
+
+  function toggleStrength(key: string) {
+    setOnboardStrengths(prev =>
+      prev.includes(key)
+        ? prev.filter(k => k !== key)
+        : prev.length < 3 ? [...prev, key] : prev
+    )
   }
 
   if (loading) {
@@ -300,8 +394,8 @@ export default function AssessmentPage() {
     )
   }
 
-  // --- Level Selection ---
-  if (stage === "select-level") {
+  // --- Onboarding: Track Selection ---
+  if (stage === "onboard-track") {
     return (
       <div className="min-h-screen bg-gray-950 text-white">
         <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
@@ -323,6 +417,286 @@ export default function AssessmentPage() {
             </div>
           )}
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-2 mb-10"
+          >
+            <p className="text-sm text-blue-400 font-medium uppercase tracking-wider">Step 1 of 4</p>
+            <h1 className="text-3xl font-bold">What do you do?</h1>
+            <p className="text-gray-400">Choose your engineering discipline</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="space-y-3"
+          >
+            {[
+              { key: "devops", label: "DevOps / SRE / Platform", icon: "🛠️", active: true },
+              { key: "frontend", label: "Frontend Engineering", icon: "🎨", active: false },
+              { key: "backend", label: "Backend Engineering", icon: "⚡", active: false },
+              { key: "qa", label: "QA / Testing", icon: "🧪", active: false },
+            ].map(track => (
+              <button
+                key={track.key}
+                onClick={() => track.active && setOnboardTrack(track.key)}
+                disabled={!track.active}
+                className={`w-full text-left rounded-xl border p-5 transition-all ${
+                  onboardTrack === track.key
+                    ? "border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/50"
+                    : track.active
+                      ? "border-gray-700 bg-gray-900 hover:border-gray-500"
+                      : "border-gray-800 bg-gray-900/50 opacity-50 cursor-not-allowed"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{track.icon}</span>
+                    <span className="font-semibold">{track.label}</span>
+                  </div>
+                  {!track.active && (
+                    <Badge variant="outline" className="text-xs text-gray-500 border-gray-700">Coming Soon</Badge>
+                  )}
+                  {track.active && onboardTrack === track.key && (
+                    <div className="w-5 h-5 rounded-full border-2 border-blue-500 bg-blue-500" />
+                  )}
+                </div>
+              </button>
+            ))}
+          </motion.div>
+
+          <div className="mt-8 text-center">
+            <Button
+              size="lg"
+              onClick={() => setStage("onboard-experience")}
+              className="h-11 px-8 text-base"
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // --- Onboarding: Experience ---
+  if (stage === "onboard-experience") {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white">
+        <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-2 mb-10"
+          >
+            <p className="text-sm text-blue-400 font-medium uppercase tracking-wider">Step 2 of 4</p>
+            <h1 className="text-3xl font-bold">How long have you been doing this?</h1>
+            <p className="text-gray-400">This helps us understand your journey</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="grid grid-cols-2 gap-3"
+          >
+            {EXPERIENCE_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setOnboardExperience(opt.value)}
+                className={`text-left rounded-xl border p-5 transition-all ${
+                  onboardExperience === opt.value
+                    ? "border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/50"
+                    : "border-gray-700 bg-gray-900 hover:border-gray-500"
+                }`}
+              >
+                <p className="font-semibold text-lg">{opt.label}</p>
+                <p className="text-sm text-gray-400 mt-1">{opt.desc}</p>
+              </button>
+            ))}
+          </motion.div>
+
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setStage("onboard-track")}
+              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              Back
+            </Button>
+            <Button
+              size="lg"
+              disabled={!onboardExperience}
+              onClick={() => setStage("onboard-strengths")}
+              className="h-11 px-8 text-base"
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // --- Onboarding: Strengths ---
+  if (stage === "onboard-strengths") {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white">
+        <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-2 mb-10"
+          >
+            <p className="text-sm text-blue-400 font-medium uppercase tracking-wider">Step 3 of 4</p>
+            <h1 className="text-3xl font-bold">What are you strongest in?</h1>
+            <p className="text-gray-400">Pick up to 3 domains you feel most confident in</p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="grid grid-cols-2 sm:grid-cols-3 gap-2"
+          >
+            {DOMAIN_OPTIONS.map(d => {
+              const isSelected = onboardStrengths.includes(d.key)
+              return (
+                <button
+                  key={d.key}
+                  onClick={() => toggleStrength(d.key)}
+                  className={`rounded-xl border p-3 text-center transition-all ${
+                    isSelected
+                      ? "border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/50"
+                      : "border-gray-700 bg-gray-900 hover:border-gray-500"
+                  }`}
+                >
+                  <span className="text-xl">{d.icon}</span>
+                  <p className="text-sm font-medium mt-1">{d.label}</p>
+                </button>
+              )
+            })}
+          </motion.div>
+
+          <p className="text-center text-xs text-gray-500 mt-3">
+            {onboardStrengths.length}/3 selected
+          </p>
+
+          <div className="mt-6 flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setStage("onboard-experience")}
+              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              Back
+            </Button>
+            <Button
+              size="lg"
+              disabled={onboardStrengths.length === 0}
+              onClick={() => setStage("onboard-ready")}
+              className="h-11 px-8 text-base"
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // --- Onboarding: Ready / Summary ---
+  if (stage === "onboard-ready") {
+    const strengthLabels = onboardStrengths
+      .map(k => DOMAIN_OPTIONS.find(d => d.key === k)?.label || k)
+    const expLabel = EXPERIENCE_OPTIONS.find(o => o.value === onboardExperience)?.label || ""
+
+    return (
+      <div className="min-h-screen bg-gray-950 text-white">
+        <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-2 mb-10"
+          >
+            <p className="text-sm text-blue-400 font-medium uppercase tracking-wider">Step 4 of 4</p>
+            <h1 className="text-3xl font-bold">Here&apos;s what you told us</h1>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="rounded-xl border border-gray-700 bg-gray-900 p-6 space-y-4"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">🛠️</span>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">Track</p>
+                <p className="font-semibold">DevOps / SRE / Platform</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">📅</span>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">Experience</p>
+                <p className="font-semibold">{expLabel}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">💪</span>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">Strongest In</p>
+                <p className="font-semibold">{strengthLabels.join(", ")}</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-6 text-center"
+          >
+            <p className="text-gray-400 text-lg">
+              Now let&apos;s see if the data agrees.
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              Choose your assessment level and prove what you know.
+            </p>
+          </motion.div>
+
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setStage("onboard-strengths")}
+              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              Back
+            </Button>
+            <Button
+              size="lg"
+              onClick={() => setStage("select-level")}
+              className="h-11 px-8 text-base"
+            >
+              Choose Level
+            </Button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // --- Level Selection ---
+  if (stage === "select-level") {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white">
+        <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
           <div className="text-center space-y-3 mb-10">
             <h1 className="text-3xl font-bold">Choose Your Level</h1>
             <p className="text-gray-400 max-w-lg mx-auto">
@@ -391,7 +765,14 @@ export default function AssessmentPage() {
             })}
           </div>
 
-          <div className="mt-8 text-center space-y-3">
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setStage("onboard-ready")}
+              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+            >
+              Back
+            </Button>
             <Button
               size="lg"
               disabled={!selectedLevel}
@@ -400,8 +781,8 @@ export default function AssessmentPage() {
             >
               Continue
             </Button>
-            <p className="text-xs text-gray-600">40 questions &middot; ~15 minutes &middot; You cannot go back</p>
           </div>
+          <p className="text-center text-xs text-gray-600 mt-3">40 questions &middot; ~15 minutes &middot; You cannot go back</p>
         </div>
       </div>
     )
@@ -490,7 +871,7 @@ export default function AssessmentPage() {
             </Button>
             <Button
               size="lg"
-              onClick={beginQuiz}
+              onClick={startCountdown}
               className="h-11 px-8 text-base"
             >
               Start Assessment
@@ -501,14 +882,62 @@ export default function AssessmentPage() {
     )
   }
 
+  // --- Countdown ---
+  if (stage === "countdown") {
+    return (
+      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {countdownNum > 0 ? (
+            <motion.div
+              key={countdownNum}
+              initial={{ scale: 0.3, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 2, opacity: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="text-center"
+            >
+              <span className="text-9xl font-bold bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent">
+                {countdownNum}
+              </span>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-gray-500 text-lg mt-4"
+              >
+                {countdownNum === 3 ? "Get ready..." : countdownNum === 2 ? "Focus..." : "Go!"}
+              </motion.p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="go"
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 1.5, opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-center"
+            >
+              <span className="text-7xl font-bold text-blue-400">GO</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    )
+  }
+
   // --- Finishing ---
   if (stage === "finishing") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
-        <div className="text-center space-y-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center space-y-4"
+        >
           <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full mx-auto" />
-          <p className="text-lg">Calculating your results...</p>
-        </div>
+          <p className="text-lg font-semibold">Calculating your results...</p>
+          <p className="text-sm text-gray-400">Analyzing {answers.length} answers across 13 domains</p>
+        </motion.div>
       </div>
     )
   }
@@ -555,8 +984,23 @@ export default function AssessmentPage() {
         </div>
       )}
 
+      {/* Milestone message overlay */}
+      <AnimatePresence>
+        {milestoneMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4 }}
+            className="fixed top-16 left-1/2 -translate-x-1/2 z-40 bg-blue-600/90 backdrop-blur-sm text-white px-6 py-3 rounded-xl text-sm font-semibold shadow-xl"
+          >
+            {milestoneMsg}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-        {/* Header — sticky on mobile so timer is always visible */}
+        {/* Header */}
         <div className="flex items-center justify-between sticky top-0 z-30 bg-gray-950 py-2 -mt-2 -mx-4 px-4">
           <div className="space-y-1">
             <p className="text-sm text-gray-400">
@@ -578,6 +1022,17 @@ export default function AssessmentPage() {
                 <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-xs">
                   {tabSwitches} tab switch{tabSwitches > 1 ? "es" : ""}
                 </Badge>
+              )}
+              {streak >= 3 && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                >
+                  <Badge variant="outline" className="bg-emerald-500/20 text-emerald-400 border-emerald-500/50 text-xs animate-pulse">
+                    Streak: {streak}
+                  </Badge>
+                </motion.div>
               )}
             </div>
           </div>
