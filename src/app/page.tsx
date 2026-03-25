@@ -575,6 +575,9 @@ export default function Home() {
               <Link href="/employers" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
                 For Employers
               </Link>
+              <Link href="/about" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                About
+              </Link>
             </div>
             <p className="text-xs text-gray-600">
               &copy; 2026 Hyr. Built for DevOps engineers.
