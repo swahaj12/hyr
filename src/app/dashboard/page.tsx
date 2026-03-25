@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
-import { type DomainScore } from "@/lib/scoring"
+import { type DomainScore, displayLevel } from "@/lib/scoring"
 import { Navbar } from "@/components/navbar"
 import { PageLoading } from "@/components/loading"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -120,8 +120,8 @@ export default function DashboardPage() {
                           </div>
                         )}
                         <div className="text-center px-3 py-1.5 rounded-md bg-gray-100 border border-gray-200">
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Scored</p>
-                          <p className="text-sm font-semibold">{latest.overall_level}</p>
+                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Your Level</p>
+                          <p className="text-sm font-semibold">{displayLevel(latest.overall_level)}</p>
                         </div>
                       </div>
                     </div>
@@ -191,7 +191,7 @@ export default function DashboardPage() {
                             </Badge>
                           )}
                           <Badge variant="outline" className="text-xs">
-                            Scored {a.overall_level}
+                            {displayLevel(a.overall_level)}
                           </Badge>
                         </div>
                         <span className="text-sm text-muted-foreground">

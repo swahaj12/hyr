@@ -24,20 +24,37 @@ const DOMAIN_LABELS: Record<string, string> = {
 }
 
 function pctToLevel(pct: number, hasHardCorrect: boolean): string {
-  if (pct >= 80 && hasHardCorrect) return 'L2+'
-  if (pct >= 70) return 'L2'
-  if (pct >= 55) return 'L1-L2'
-  if (pct >= 35) return 'L1'
-  return 'Gap'
+  if (pct >= 80 && hasHardCorrect) return 'Expert'
+  if (pct >= 70) return 'Proficient'
+  if (pct >= 55) return 'Developing'
+  if (pct >= 35) return 'Basic'
+  return 'Needs Work'
 }
 
 export function overallLevel(scores: DomainScore[]): string {
   const avg = scores.reduce((s, d) => s + d.pct, 0) / (scores.length || 1)
-  if (avg >= 75) return 'Senior DevOps (L2-L3)'
-  if (avg >= 60) return 'Mid-Level DevOps (L2)'
-  if (avg >= 45) return 'Junior+ DevOps (L1-L2)'
-  if (avg >= 25) return 'Junior DevOps (L1)'
-  return 'Foundational (Pre-L1)'
+  if (avg >= 75) return 'Senior'
+  if (avg >= 60) return 'Mid-Level'
+  if (avg >= 45) return 'Junior'
+  if (avg >= 25) return 'Entry-Level'
+  return 'Beginner'
+}
+
+const LEGACY_LEVEL_MAP: Record<string, string> = {
+  'Senior DevOps (L2-L3)': 'Senior',
+  'Mid-Level DevOps (L2)': 'Mid-Level',
+  'Junior+ DevOps (L1-L2)': 'Junior',
+  'Junior DevOps (L1)': 'Entry-Level',
+  'Foundational (Pre-L1)': 'Beginner',
+  'L2+': 'Expert',
+  'L2': 'Proficient',
+  'L1-L2': 'Developing',
+  'L1': 'Basic',
+  'Gap': 'Needs Work',
+}
+
+export function displayLevel(stored: string): string {
+  return LEGACY_LEVEL_MAP[stored] || stored
 }
 
 export type AnswerRecord = {

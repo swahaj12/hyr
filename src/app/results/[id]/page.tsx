@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
-import { type DomainScore, overallLevel } from "@/lib/scoring"
+import { type DomainScore, overallLevel, displayLevel } from "@/lib/scoring"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -27,11 +27,11 @@ const LEVEL_LABELS: Record<string, string> = {
 }
 
 function levelColor(level: string) {
-  if (level === "Gap") return "bg-red-500"
-  if (level === "L1") return "bg-orange-500"
-  if (level === "L1-L2") return "bg-yellow-500"
-  if (level === "L2") return "bg-green-500"
-  if (level === "L2+") return "bg-emerald-500"
+  if (level === "Needs Work" || level === "Gap") return "bg-red-500"
+  if (level === "Basic" || level === "L1") return "bg-orange-500"
+  if (level === "Developing" || level === "L1-L2") return "bg-yellow-500"
+  if (level === "Proficient" || level === "L2") return "bg-green-500"
+  if (level === "Expert" || level === "L2+") return "bg-emerald-500"
   return "bg-gray-500"
 }
 
@@ -133,23 +133,23 @@ export default function ResultsPage() {
                 </div>
               </div>
 
-              {/* Clear two-row layout: Assessment Type + Scored Result */}
+              {/* Assessment type + scored result */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                 {assessedLevel && (
                   <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
-                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Assessment</span>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wide">Assessment Taken</span>
                     <span className="text-sm font-semibold">{LEVEL_LABELS[assessedLevel] || assessedLevel}</span>
                   </div>
                 )}
                 <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Scored Proficiency</span>
-                  <Badge className="text-sm">{level}</Badge>
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Your Level</span>
+                  <Badge className="text-sm">{displayLevel(level)}</Badge>
                 </div>
               </div>
 
               {assessedLevel && (
                 <p className="text-xs text-muted-foreground max-w-md mx-auto">
-                  You took the {LEVEL_LABELS[assessedLevel]} assessment. Your scored proficiency is based on how you performed against that difficulty level.
+                  You took the {LEVEL_LABELS[assessedLevel]} assessment. Your level is based on how you performed.
                 </p>
               )}
             </div>
@@ -168,7 +168,7 @@ export default function ResultsPage() {
                   <div className="flex items-center gap-2">
                     <span className="font-medium w-32 shrink-0">{d.domainLabel}</span>
                     <Badge variant="outline" className={`${levelColor(d.level)} text-white border-0 text-xs`}>
-                      {d.level}
+                      {displayLevel(d.level)}
                     </Badge>
                   </div>
                   <span className="text-muted-foreground">
@@ -204,7 +204,7 @@ export default function ResultsPage() {
                       <span className="text-green-600">&#10003;</span>
                       <span className="font-medium">{d.domainLabel}</span>
                       <Badge variant="outline" className="text-xs">
-                        {d.level}
+                        {displayLevel(d.level)}
                       </Badge>
                     </li>
                   ))}
