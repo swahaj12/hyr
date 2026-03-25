@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Hyr — Prove Your DevOps Skills",
   description:
     "Free 15-minute DevOps assessment across 13 domains. Get a verified skill profile and get hired faster.",
-  metadataBase: new URL("https://hyr.vercel.app"),
+  metadataBase: new URL("https://hyr-snowy.vercel.app"),
   openGraph: {
     title: "Hyr — Prove Your DevOps Skills",
     description:
