@@ -17,6 +17,13 @@ type AssessmentData = {
   totalCorrect: number
   total: number
   completedAt?: string
+  assessedLevel?: string
+}
+
+const LEVEL_LABELS: Record<string, string> = {
+  junior: "Junior",
+  mid: "Mid-Level",
+  senior: "Senior",
 }
 
 function levelColor(level: string) {
@@ -71,6 +78,7 @@ export default function ResultsPage() {
           totalCorrect: assessment.total_score,
           total: assessment.total_questions,
           completedAt: assessment.completed_at,
+          assessedLevel: assessment.assessed_level,
         })
       }
       setLoading(false)
@@ -100,7 +108,7 @@ export default function ResultsPage() {
     )
   }
 
-  const { domainScores, level, totalCorrect, total } = data
+  const { domainScores, level, totalCorrect, total, assessedLevel } = data
   const overallPct = Math.round((totalCorrect / total) * 100)
   const strongDomains = domainScores.filter((d) => d.pct >= 70)
   const gapDomains = domainScores.filter((d) => d.pct < 40)
@@ -115,6 +123,11 @@ export default function ResultsPage() {
           <CardContent className="pt-6">
             <div className="text-center space-y-3">
               <h1 className="text-3xl font-bold">Your DevOps Skill Profile</h1>
+              {assessedLevel && (
+                <p className="text-sm text-muted-foreground">
+                  Assessed at <span className="font-medium text-foreground">{LEVEL_LABELS[assessedLevel] || assessedLevel}</span> level
+                </p>
+              )}
               <div className="flex items-center justify-center gap-3">
                 <span className="text-5xl font-bold">{overallPct}%</span>
                 <div className="text-left">
