@@ -113,6 +113,7 @@ export default function ResultsPage() {
   const [error, setError] = useState<string | null>(null)
   const [revealStage, setRevealStage] = useState(0)
   const [percentile, setPercentile] = useState<number | null>(null)
+  const [isOwner, setIsOwner] = useState(true)
 
   useEffect(() => {
     async function load() {
@@ -126,11 +127,14 @@ export default function ResultsPage() {
             setData(parsed)
           } catch { /* ignore */ }
         }
+        setIsOwner(true)
         setLoading(false)
         return
       }
 
       try {
+        const { data: { user } } = await supabase.auth.getUser()
+
         const { data: assessment, error: fetchError } = await supabase
           .from("assessments")
           .select("*")
@@ -144,6 +148,7 @@ export default function ResultsPage() {
         }
 
         if (assessment) {
+          setIsOwner(user?.id === assessment.candidate_id)
           setData({
             domainScores: assessment.domain_scores as DomainScore[],
             level: assessment.overall_level,
@@ -236,6 +241,8 @@ export default function ResultsPage() {
   const personalityIcon = PERSONALITY_ICONS[personality.title] || "🎯"
   const topStrengthNames = strongDomains.slice(0, 2).map(d => d.domainLabel)
   const topGapNames = gapDomains.slice(0, 2).map(d => d.domainLabel)
+  const displayName = candidateName || "Candidate"
+  const possessive = isOwner ? "Your" : `${displayName}'s`
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -257,7 +264,7 @@ export default function ResultsPage() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  Your {TRACK_LABELS[data.selfTrack || ""] || "Tech"} Skill Profile
+                  {possessive} {TRACK_LABELS[data.selfTrack || ""] || "Tech"} Skill Profile
                 </motion.h1>
 
                 {revealStage >= 1 && (
@@ -298,7 +305,7 @@ export default function ResultsPage() {
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
                       className="flex items-center gap-2 rounded-lg border-2 border-gray-900 bg-gray-950 px-5 py-2.5"
                     >
-                      <span className="text-xs text-gray-400 uppercase tracking-wide">Your Level</span>
+                      <span className="text-xs text-gray-400 uppercase tracking-wide">{isOwner ? "Your" : ""} Level</span>
                       <span className="text-sm font-bold text-white">{displayLevel(level)}</span>
                     </motion.div>
                   </motion.div>
@@ -333,7 +340,7 @@ export default function ResultsPage() {
                     className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-2 inline-block"
                   >
                     <p className="text-sm text-blue-800">
-                      You scored higher than <strong>{percentile}%</strong> of all candidates
+                      {isOwner ? "You scored" : `${displayName} scored`} higher than <strong>{percentile}%</strong> of all candidates
                     </p>
                   </motion.div>
                 )}
@@ -344,7 +351,7 @@ export default function ResultsPage() {
                     animate={{ opacity: 1 }}
                     className="text-xs text-muted-foreground max-w-md mx-auto"
                   >
-                    You took the {LEVEL_LABELS[assessedLevel]} assessment. Your level is based on how you performed.
+                    {isOwner ? "You took" : `${displayName} took`} the {LEVEL_LABELS[assessedLevel]} assessment. {isOwner ? "Your" : "Their"} level is based on how {isOwner ? "you" : "they"} performed.
                   </motion.p>
                 )}
               </div>
@@ -362,9 +369,9 @@ export default function ResultsPage() {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
                 <div className="rounded-xl border border-green-200 bg-green-50 p-5">
-                  <p className="text-sm font-semibold text-green-800 mb-1">Your strengths</p>
+                  <p className="text-sm font-semibold text-green-800 mb-1">{isOwner ? "Your" : `${displayName}'s`} strengths</p>
                   <p className="text-green-700">
-                    You crushed{" "}
+                    {isOwner ? "You crushed" : `${displayName} crushed`}{" "}
                     <strong>{topStrengthNames.join(" and ")}</strong>
                   </p>
                 </div>
@@ -380,7 +387,7 @@ export default function ResultsPage() {
                   <p className="text-sm font-semibold text-amber-800 mb-1">Growth areas</p>
                   <p className="text-amber-700">
                     <strong>{topGapNames.join(" and ")}</strong>{" "}
-                    {topGapNames.length === 1 ? "is" : "are"} your next frontier — most engineers score below 50% here
+                    {topGapNames.length === 1 ? "is" : "are"} {isOwner ? "your" : "their"} next frontier — most engineers score below 50% here
                   </p>
                 </div>
               </motion.div>
@@ -388,8 +395,8 @@ export default function ResultsPage() {
           </div>
         )}
 
-        {/* You're Live Card */}
-        {revealStage >= 3 && candidateId && (
+        {/* You're Live Card — only show to the candidate themselves */}
+        {revealStage >= 3 && candidateId && isOwner && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -432,7 +439,7 @@ export default function ResultsPage() {
               <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
                 <span className="text-4xl">{personalityIcon}</span>
                 <div className="text-center sm:text-left">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Your Engineering Type</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{isOwner ? "Your" : ""} Engineering Type</p>
                   <h3 className="text-xl font-bold">{personality.title}</h3>
                   <p className="text-sm text-gray-400 mt-1">{personality.tagline}</p>
                 </div>
@@ -602,59 +609,80 @@ export default function ResultsPage() {
           >
             <Card>
               <CardContent className="pt-6">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div>
-                    <h3 className="font-semibold">Boost Your Visibility</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Share your verified profile to reach more employers and hiring managers.
-                    </p>
+                {isOwner ? (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold">Boost Your Visibility</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Share your verified profile to reach more employers and hiring managers.
+                      </p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      {candidateId && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const url = `${window.location.origin}/profile/${candidateId}`
+                              window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank", "noopener")
+                            }}
+                          >
+                            LinkedIn
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const url = `${window.location.origin}/profile/${candidateId}`
+                              const trackName = TRACK_LABELS[data.selfTrack || ""] || "tech"
+                              const text = `My verified ${trackName} skill profile is live on @HyrPK — ${overallPct}% overall (${displayLevel(level)}). Companies can now find me based on my actual skills.`
+                              window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank", "noopener")
+                            }}
+                          >
+                            Twitter / X
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              try {
+                                const profileUrl = `${window.location.origin}/profile/${candidateId}`
+                                navigator.clipboard.writeText(profileUrl)
+                                setCopied(true)
+                                setTimeout(() => setCopied(false), 2000)
+                              } catch { /* clipboard may not be available in all contexts */ }
+                            }}
+                          >
+                            {copied ? "Copied!" : "Copy Link"}
+                          </Button>
+                        </>
+                      )}
+                      <Link href="/dashboard">
+                        <Button>Go to Career Hub</Button>
+                      </Link>
+                    </div>
                   </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {candidateId && (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const url = `${window.location.origin}/profile/${candidateId}`
-                            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank", "noopener")
-                          }}
-                        >
-                          LinkedIn
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const url = `${window.location.origin}/profile/${candidateId}`
-                            const trackName = TRACK_LABELS[data.selfTrack || ""] || "tech"
-                            const text = `My verified ${trackName} skill profile is live on @HyrPK — ${overallPct}% overall (${displayLevel(level)}). Companies can now find me based on my actual skills.`
-                            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank", "noopener")
-                          }}
-                        >
-                          Twitter / X
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            try {
-                              const profileUrl = `${window.location.origin}/profile/${candidateId}`
-                              navigator.clipboard.writeText(profileUrl)
-                              setCopied(true)
-                              setTimeout(() => setCopied(false), 2000)
-                            } catch { /* clipboard may not be available in all contexts */ }
-                          }}
-                        >
-                          {copied ? "Copied!" : "Copy Link"}
-                        </Button>
-                      </>
-                    )}
-                    <Link href="/dashboard">
-                      <Button>Go to Career Hub</Button>
-                    </Link>
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-semibold">{displayName}&apos;s Assessment</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Viewing as admin. This is {displayName}&apos;s verified skill profile.
+                      </p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      {candidateId && (
+                        <Link href={`/profile/${candidateId}`}>
+                          <Button variant="outline" size="sm">View Public Profile</Button>
+                        </Link>
+                      )}
+                      <Link href="/admin">
+                        <Button>Back to Admin</Button>
+                      </Link>
+                    </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
