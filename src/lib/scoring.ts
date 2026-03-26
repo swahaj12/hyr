@@ -7,7 +7,7 @@ export type DomainScore = {
   level: string
 }
 
-const DOMAIN_LABELS: Record<string, string> = {
+export const DOMAIN_LABELS: Record<string, string> = {
   // DevOps
   linux: 'Linux',
   networking: 'Networking',

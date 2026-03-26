@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase"
 import { type DomainScore, displayLevel } from "@/lib/scoring"
 import { Navbar } from "@/components/navbar"
 import { PageLoading } from "@/components/loading"
+import { SupportButton } from "@/components/support-dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -69,6 +70,7 @@ export default function EmployersPage() {
   const [sortBy, setSortBy] = useState<"score" | "recent">("score")
 
   const [error, setError] = useState<string | null>(null)
+  const [sessionToken, setSessionToken] = useState("")
 
   useEffect(() => {
     async function load() {
@@ -98,6 +100,9 @@ export default function EmployersPage() {
         }
 
         setAuthorized(true)
+
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.access_token) setSessionToken(session.access_token)
 
         const { data: assessments, error: fetchError } = await supabase
           .from("assessments")
@@ -387,6 +392,8 @@ export default function EmployersPage() {
             })}
           </div>
         )}
+
+        {sessionToken && <SupportButton sessionToken={sessionToken} />}
       </main>
     </div>
   )

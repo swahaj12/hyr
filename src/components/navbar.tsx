@@ -106,12 +106,13 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
               {isAdmin && (
                 <>
                   <Link href="/admin" className={linkCls("/admin")}>Dashboard</Link>
-                  <Link href="/employers" className={linkCls("/employers")}>Candidates</Link>
+                  <Link href="/admin/employers" className={linkCls("/admin/employers")}>Employers</Link>
+                  <Link href="/admin/support" className={linkCls("/admin/support")}>Support</Link>
                 </>
               )}
 
-              {/* Messages — visible to all logged-in users */}
-              {user && (
+              {/* Messages — visible to candidates and employers */}
+              {user && !isAdmin && (
                 <Link href="/messages" className={linkCls("/messages")}>
                   Messages{msgBadge}
                 </Link>
@@ -196,13 +197,16 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
             {/* Admin mobile nav */}
             {isAdmin && (
               <>
-                <MobileNavItem href="/admin" icon="admin" label="Admin" active={pathname === "/admin"} />
-                <MobileNavItem href="/employers" icon="candidates" label="Candidates" active={pathname === "/employers"} />
+                <MobileNavItem href="/admin" icon="admin" label="Dashboard" active={pathname === "/admin"} />
+                <MobileNavItem href="/admin/employers" icon="building" label="Employers" active={pathname?.startsWith("/admin/employers") || false} />
+                <MobileNavItem href="/admin/support" icon="support" label="Support" active={pathname?.startsWith("/admin/support") || false} />
               </>
             )}
 
-            {/* Messages — all roles */}
-            <MobileNavItem href="/messages" icon="messages" label="Messages" active={pathname?.startsWith("/messages") || false} badge={unreadCount} />
+            {/* Messages — candidates and employers only */}
+            {!isAdmin && (
+              <MobileNavItem href="/messages" icon="messages" label="Messages" active={pathname?.startsWith("/messages") || false} badge={unreadCount} />
+            )}
           </div>
         )}
       </nav>
@@ -223,6 +227,8 @@ function MobileNavItem({ href, icon, label, active, badge }: {
     candidates: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
     messages: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
     admin: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>,
+    building: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h.01"/><path d="M9 12h.01"/><path d="M9 15h.01"/><path d="M9 18h.01"/></svg>,
+    support: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/></svg>,
   }
 
   return (

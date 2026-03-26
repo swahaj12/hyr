@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabase"
 import { type DomainScore, displayLevel } from "@/lib/scoring"
 import { Navbar } from "@/components/navbar"
 import { PageLoading } from "@/components/loading"
+import { SupportButton } from "@/components/support-dialog"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -42,6 +43,7 @@ export default function DashboardPage() {
   const [profileViews, setProfileViews] = useState(0)
   const [hiringCompanies, setHiringCompanies] = useState<{ company_name: string; hiring_tracks: string[]; hiring_description: string | null }[]>([])
   const [unreadMessages, setUnreadMessages] = useState(0)
+  const [sessionToken, setSessionToken] = useState("")
 
   useEffect(() => {
     async function load() {
@@ -62,6 +64,9 @@ export default function DashboardPage() {
         }
         setUserName(user.user_metadata?.full_name || user.email || "")
         setUserId(user.id)
+
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.access_token) setSessionToken(session.access_token)
 
         const { data, error: fetchError } = await supabase
           .from("assessments")
@@ -558,6 +563,8 @@ export default function DashboardPage() {
             </Card>
           </>
         )}
+
+        {sessionToken && <SupportButton sessionToken={sessionToken} />}
       </main>
     </div>
   )

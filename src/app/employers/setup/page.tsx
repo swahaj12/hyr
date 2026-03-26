@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Navbar } from "@/components/navbar"
 import { PageLoading } from "@/components/loading"
+import { SupportButton } from "@/components/support-dialog"
 
 const TRACKS = [
   { id: "devops", label: "DevOps / SRE" },
@@ -30,6 +31,7 @@ export default function EmployerSetupPage() {
   const [hiringDescription, setHiringDescription] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [sessionToken, setSessionToken] = useState("")
 
   useEffect(() => {
     async function load() {
@@ -48,6 +50,9 @@ export default function EmployerSetupPage() {
         .select("*")
         .eq("user_id", user.id)
         .single()
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.access_token) setSessionToken(session.access_token)
 
       if (profile) {
         setStatus(profile.status as ProfileStatus)
@@ -278,6 +283,7 @@ export default function EmployerSetupPage() {
             </form>
           </CardContent>
         </Card>
+        {sessionToken && <SupportButton sessionToken={sessionToken} />}
       </main>
     </div>
   )
