@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon"
 import { useScroll } from "@/components/ui/use-scroll"
 import { cn } from "@/lib/utils"
@@ -64,7 +64,6 @@ export function Navbar() {
     return () => { document.body.style.overflow = "" }
   }, [open])
 
-  // Close mobile menu on navigation
   useEffect(() => { setOpen(false) }, [pathname])
 
   async function handleSignOut() {
@@ -94,93 +93,123 @@ export function Navbar() {
     links.push({ label: "Pricing", href: "/pricing" })
   }
 
-  function isActive(href: string) {
+  function isActiveFn(href: string) {
     return pathname === href || (href !== "/" && pathname?.startsWith(href))
   }
 
   const roleBadge = isAdmin
-    ? <span className="hidden md:inline text-[10px] px-1.5 py-0.5 rounded font-medium bg-amber-100 text-amber-700">Admin</span>
+    ? <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">Admin</span>
     : isEmployer
-      ? <span className="hidden md:inline text-[10px] px-1.5 py-0.5 rounded font-medium bg-blue-100 text-blue-700">Employer</span>
+      ? <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">Employer</span>
       : null
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 mx-auto w-full max-w-6xl border-b border-transparent md:rounded-md md:border md:transition-all md:ease-out",
-        {
-          "bg-background/95 supports-[backdrop-filter]:bg-background/50 border-border backdrop-blur-lg md:top-4 md:max-w-5xl md:shadow":
-            scrolled && !open,
-          "bg-background": !scrolled && !open,
-          "bg-background/95": open,
-        },
+        "sticky top-0 z-50 mx-auto w-full max-w-6xl md:rounded-xl md:transition-all md:duration-300 md:ease-out",
+        scrolled && !open
+          ? "md:top-3 md:max-w-5xl"
+          : "md:top-0 md:max-w-6xl",
       )}
     >
-      <nav
+      <div
         className={cn(
-          "flex h-14 w-full items-center justify-between px-4 md:h-12 md:transition-all md:ease-out",
-          { "md:px-3": scrolled },
+          "transition-all duration-300 ease-out md:rounded-xl",
+          scrolled && !open
+            ? "bg-gray-950/80 backdrop-blur-xl shadow-lg shadow-black/10 md:border md:border-white/10"
+            : "bg-gray-950",
         )}
       >
-        {/* Logo */}
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          Hyr
-        </Link>
+        <nav
+          className={cn(
+            "flex h-14 w-full items-center justify-between px-4 md:h-12 transition-all duration-300",
+            scrolled ? "md:px-3" : "md:px-4",
+          )}
+        >
+          {/* Logo */}
+          <Link href="/" className="text-lg font-bold tracking-tight text-white">
+            Hyr
+          </Link>
 
-        {/* Desktop links */}
-        {checked && (
-          <div className="hidden items-center gap-1 md:flex">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  buttonVariants({ variant: isActive(link.href) ? "secondary" : "ghost", size: "sm" }),
-                  "relative text-sm",
-                )}
-              >
-                {link.label}
-                {(link.badge ?? 0) > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-                    {(link.badge ?? 0) > 9 ? "9+" : link.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
+          {/* Desktop links */}
+          {checked && (
+            <div className="hidden items-center gap-1 md:flex">
+              {links.map((link) => {
+                const active = isActiveFn(link.href)
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "relative px-3 py-1.5 rounded-lg text-sm transition-colors",
+                      active
+                        ? "bg-white/15 text-white font-medium"
+                        : "text-gray-400 hover:text-white hover:bg-white/10",
+                    )}
+                  >
+                    {link.label}
+                    {(link.badge ?? 0) > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
+                        {(link.badge ?? 0) > 9 ? "9+" : link.badge}
+                      </span>
+                    )}
+                  </Link>
+                )
+              })}
 
-            <div className="w-px h-5 bg-border mx-1" />
+              <div className="w-px h-5 bg-white/15 mx-2" />
 
-            {user ? (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{user.name.split(" ")[0]}</span>
-                {roleBadge}
-                <Button variant="outline" size="sm" onClick={handleSignOut}>
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link href="/auth">
-                  <Button variant="outline" size="sm">Sign In</Button>
-                </Link>
-                <Link href="/assessment">
-                  <Button size="sm">Get Started</Button>
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
+              {user ? (
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xs text-gray-400">{user.name.split(" ")[0]}</span>
+                  {roleBadge}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-white border-white/20 bg-transparent hover:bg-white/10 hover:text-white text-xs"
+                    onClick={handleSignOut}
+                  >
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Link href="/auth">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-white border-white/20 bg-transparent hover:bg-white/10 hover:text-white"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/assessment">
+                    <Button size="sm" className="bg-white text-gray-950 hover:bg-gray-200">
+                      Get Started
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
 
-        {/* Mobile toggle */}
-        <Button size="icon" variant="outline" onClick={() => setOpen(!open)} className="md:hidden">
-          <MenuToggleIcon open={open} className="size-5" duration={300} />
-        </Button>
-      </nav>
+          {/* Mobile toggle */}
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => setOpen(!open)}
+            className="md:hidden text-white border-white/20 bg-transparent hover:bg-white/10"
+          >
+            <MenuToggleIcon open={open} className="size-5" duration={300} />
+          </Button>
+        </nav>
+      </div>
 
       {/* Mobile full-screen menu */}
       <div
         className={cn(
-          "bg-background/95 fixed top-14 right-0 bottom-0 left-0 z-50 flex flex-col overflow-hidden border-y md:hidden",
+          "fixed top-14 right-0 bottom-0 left-0 z-50 flex flex-col overflow-hidden md:hidden",
+          "bg-gray-950/98 backdrop-blur-xl",
           open ? "block" : "hidden",
         )}
       >
@@ -192,51 +221,65 @@ export function Navbar() {
           )}
         >
           <div className="grid gap-y-1">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  buttonVariants({
-                    variant: isActive(link.href) ? "secondary" : "ghost",
-                    className: "justify-start text-base relative",
-                  }),
-                )}
-              >
-                {link.label}
-                {(link.badge ?? 0) > 0 && (
-                  <span className="ml-2 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
-                    {(link.badge ?? 0) > 9 ? "9+" : link.badge}
-                  </span>
-                )}
-              </Link>
-            ))}
+            {links.map((link) => {
+              const active = isActiveFn(link.href)
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center justify-start px-3 py-2.5 rounded-lg text-base transition-colors",
+                    active
+                      ? "bg-white/15 text-white font-medium"
+                      : "text-gray-400 hover:text-white hover:bg-white/10",
+                  )}
+                >
+                  {link.label}
+                  {(link.badge ?? 0) > 0 && (
+                    <span className="ml-2 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+                      {(link.badge ?? 0) > 9 ? "9+" : link.badge}
+                    </span>
+                  )}
+                </Link>
+              )
+            })}
           </div>
 
-          <div className="flex flex-col gap-2 pb-safe">
+          <div className="flex flex-col gap-3 pb-safe">
             {user ? (
               <>
-                <div className="flex items-center gap-2 px-3 py-2">
-                  <div className="w-8 h-8 rounded-full bg-gray-950 text-white flex items-center justify-center text-sm font-bold">
+                <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-sm font-bold shrink-0">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    <p className="text-sm font-medium text-white truncate">{user.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
                   </div>
                   {roleBadge}
                 </div>
-                <Button variant="outline" className="w-full" onClick={handleSignOut}>
+                <Button
+                  variant="outline"
+                  className="w-full text-white border-white/20 bg-transparent hover:bg-white/10 hover:text-white"
+                  onClick={handleSignOut}
+                >
                   Sign Out
                 </Button>
               </>
             ) : (
               <>
                 <Link href="/auth">
-                  <Button variant="outline" className="w-full">Sign In</Button>
+                  <Button
+                    variant="outline"
+                    className="w-full text-white border-white/20 bg-transparent hover:bg-white/10 hover:text-white"
+                  >
+                    Sign In
+                  </Button>
                 </Link>
                 <Link href="/assessment">
-                  <Button className="w-full">Get Started</Button>
+                  <Button className="w-full bg-white text-gray-950 hover:bg-gray-200">
+                    Get Started
+                  </Button>
                 </Link>
               </>
             )}
