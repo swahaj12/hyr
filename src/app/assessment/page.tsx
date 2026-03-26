@@ -145,6 +145,7 @@ export default function AssessmentPage() {
 
   const questionStartRef = useRef(Date.now())
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const submittingRef = useRef(false)
 
   useEffect(() => {
     supabase.auth.getUser()
@@ -383,6 +384,8 @@ export default function AssessmentPage() {
   }, [stage, submitted])
 
   async function finishAssessment(finalAnswers: AnswerState[]) {
+    if (submittingRef.current) return
+    submittingRef.current = true
     setStage("finishing")
     setSubmitted(true)
     if (timerRef.current) clearInterval(timerRef.current)
