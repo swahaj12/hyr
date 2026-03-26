@@ -81,7 +81,9 @@ export default function AuthPage() {
         return
       }
       const userRole = signInData.user?.user_metadata?.role
-      router.push(userRole === "employer" ? "/employers" : "/dashboard")
+      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim())
+      const isAdmin = adminEmails.includes(signInData.user?.email || "")
+      router.push(isAdmin ? "/admin" : userRole === "employer" ? "/employers" : "/dashboard")
     } finally {
       setLoading(false)
     }

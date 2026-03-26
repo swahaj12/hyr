@@ -41,7 +41,7 @@ export default function AdminPage() {
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
-          router.push("/auth")
+          router.push("/admin/login")
           return
         }
 
@@ -96,10 +96,15 @@ export default function AdminPage() {
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center space-y-4">
             <p className="text-lg font-semibold">Access Denied</p>
-            <p className="text-sm text-muted-foreground">You don&apos;t have admin access.</p>
-            <Link href="/dashboard">
-              <Button>Go to Dashboard</Button>
-            </Link>
+            <p className="text-sm text-muted-foreground">You don&apos;t have admin access. Sign in with an authorized admin email.</p>
+            <div className="flex gap-2 justify-center">
+              <Link href="/admin/login">
+                <Button>Admin Sign In</Button>
+              </Link>
+              <Link href="/dashboard">
+                <Button variant="outline">Go to Dashboard</Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
