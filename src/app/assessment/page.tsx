@@ -29,21 +29,66 @@ type Stage =
 
 const levels: CandidateLevel[] = ["junior", "mid", "senior"]
 
-const DOMAIN_OPTIONS = [
-  { key: "kubernetes", label: "Kubernetes", icon: "☸️" },
-  { key: "containers", label: "Docker", icon: "🐳" },
-  { key: "cloud", label: "Cloud / AWS", icon: "☁️" },
-  { key: "cicd", label: "CI/CD", icon: "🔄" },
-  { key: "iac", label: "Terraform / IaC", icon: "🏗️" },
-  { key: "linux", label: "Linux", icon: "🐧" },
-  { key: "monitoring", label: "Monitoring", icon: "📊" },
-  { key: "security", label: "Security", icon: "🔒" },
-  { key: "scripting", label: "Scripting", icon: "📝" },
-  { key: "git", label: "Git", icon: "🔀" },
-  { key: "networking", label: "Networking", icon: "🌐" },
-  { key: "sre", label: "SRE", icon: "🚀" },
-  { key: "finops", label: "FinOps", icon: "💰" },
-]
+const TRACK_DOMAINS: Record<string, { key: string; label: string; icon: string }[]> = {
+  devops: [
+    { key: "kubernetes", label: "Kubernetes", icon: "☸️" },
+    { key: "containers", label: "Docker", icon: "🐳" },
+    { key: "cloud", label: "Cloud / AWS", icon: "☁️" },
+    { key: "cicd", label: "CI/CD", icon: "🔄" },
+    { key: "iac", label: "Terraform / IaC", icon: "🏗️" },
+    { key: "linux", label: "Linux", icon: "🐧" },
+    { key: "monitoring", label: "Monitoring", icon: "📊" },
+    { key: "security", label: "Security", icon: "🔒" },
+    { key: "scripting", label: "Scripting", icon: "📝" },
+    { key: "git", label: "Git", icon: "🔀" },
+    { key: "networking", label: "Networking", icon: "🌐" },
+    { key: "sre", label: "SRE", icon: "🚀" },
+    { key: "finops", label: "FinOps", icon: "💰" },
+  ],
+  frontend: [
+    { key: "html-css", label: "HTML & CSS", icon: "🎨" },
+    { key: "javascript", label: "JavaScript", icon: "⚡" },
+    { key: "typescript", label: "TypeScript", icon: "🔷" },
+    { key: "react", label: "React", icon: "⚛️" },
+    { key: "performance", label: "Performance", icon: "🚀" },
+    { key: "accessibility", label: "Accessibility", icon: "♿" },
+    { key: "testing", label: "Testing", icon: "🧪" },
+    { key: "state-mgmt", label: "State Mgmt", icon: "🔄" },
+    { key: "apis", label: "APIs", icon: "🔌" },
+    { key: "build-tools", label: "Build Tools", icon: "📦" },
+  ],
+  backend: [
+    { key: "databases", label: "Databases", icon: "🗄️" },
+    { key: "apis-design", label: "API Design", icon: "🔌" },
+    { key: "architecture", label: "Architecture", icon: "🏛️" },
+    { key: "security", label: "Security", icon: "🔒" },
+    { key: "caching", label: "Caching", icon: "⚡" },
+    { key: "messaging", label: "Messaging", icon: "📨" },
+    { key: "concurrency", label: "Concurrency", icon: "🔀" },
+    { key: "testing", label: "Testing", icon: "🧪" },
+    { key: "observability", label: "Observability", icon: "📊" },
+    { key: "deployment", label: "Deployment", icon: "🚀" },
+  ],
+  qa: [
+    { key: "test-strategy", label: "Test Strategy", icon: "📋" },
+    { key: "manual-testing", label: "Manual Testing", icon: "🔍" },
+    { key: "automation", label: "Automation", icon: "🤖" },
+    { key: "api-testing", label: "API Testing", icon: "🔌" },
+    { key: "performance-testing", label: "Perf Testing", icon: "📈" },
+    { key: "mobile-testing", label: "Mobile Testing", icon: "📱" },
+    { key: "security-testing", label: "Security Testing", icon: "🛡️" },
+    { key: "test-data", label: "Test Data", icon: "🗃️" },
+    { key: "bug-tracking", label: "Bug Tracking", icon: "🐛" },
+    { key: "ci-cd-testing", label: "CI/CD Testing", icon: "🔄" },
+  ],
+}
+
+const TRACK_META: Record<string, { label: string; icon: string }> = {
+  devops: { label: "DevOps / SRE / Platform", icon: "🛠️" },
+  frontend: { label: "Frontend Engineering", icon: "🎨" },
+  backend: { label: "Backend Engineering", icon: "⚡" },
+  qa: { label: "QA / Testing", icon: "🧪" },
+}
 
 const EXPERIENCE_OPTIONS = [
   { value: "0-1", label: "Less than 1 year", desc: "Just getting started" },
@@ -457,7 +502,7 @@ export default function AssessmentPage() {
             ].map(track => (
               <button
                 key={track.key}
-                onClick={() => track.active && setOnboardTrack(track.key)}
+                onClick={() => { if (track.active) { setOnboardTrack(track.key); setOnboardStrengths([]) } }}
                 disabled={!track.active}
                 className={`w-full text-left rounded-xl border p-5 transition-all ${
                   onboardTrack === track.key
@@ -579,7 +624,7 @@ export default function AssessmentPage() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="grid grid-cols-2 sm:grid-cols-3 gap-2"
           >
-            {DOMAIN_OPTIONS.map(d => {
+            {(TRACK_DOMAINS[onboardTrack] || TRACK_DOMAINS.devops).map(d => {
               const isSelected = onboardStrengths.includes(d.key)
               return (
                 <button
@@ -627,7 +672,7 @@ export default function AssessmentPage() {
   // --- Onboarding: Ready / Summary ---
   if (stage === "onboard-ready") {
     const strengthLabels = onboardStrengths
-      .map(k => DOMAIN_OPTIONS.find(d => d.key === k)?.label || k)
+      .map(k => (TRACK_DOMAINS[onboardTrack] || TRACK_DOMAINS.devops).find(d => d.key === k)?.label || k)
     const expLabel = EXPERIENCE_OPTIONS.find(o => o.value === onboardExperience)?.label || ""
 
     return (
@@ -650,10 +695,10 @@ export default function AssessmentPage() {
             className="rounded-xl border border-gray-700 bg-gray-900 p-6 space-y-4"
           >
             <div className="flex items-center gap-3">
-              <span className="text-2xl">🛠️</span>
+              <span className="text-2xl">{TRACK_META[onboardTrack]?.icon || "🛠️"}</span>
               <div>
                 <p className="text-xs text-gray-500 uppercase tracking-wider">Track</p>
-                <p className="font-semibold">DevOps / SRE / Platform</p>
+                <p className="font-semibold">{TRACK_META[onboardTrack]?.label || onboardTrack}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

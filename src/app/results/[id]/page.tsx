@@ -23,6 +23,7 @@ type AssessmentData = {
   candidateId?: string
   personalityType?: string
   candidateName?: string
+  selfTrack?: string
 }
 
 const LEVEL_LABELS: Record<string, string> = {
@@ -78,6 +79,29 @@ const PERSONALITY_ICONS: Record<string, string> = {
   "The Cloud Native": "☁️",
   "The Automation Engineer": "⚙️",
   "The Full-Stack Ops": "🎯",
+  "The Versatile Engineer": "🎯",
+  "The Pixel Perfectionist": "✨",
+  "The JS Wizard": "🧙",
+  "The Performance Hunter": "🏹",
+  "The Component Architect": "🧩",
+  "The Quality Crafter": "💎",
+  "The Data Whisperer": "🗄️",
+  "The API Artisan": "🔌",
+  "The System Designer": "🏛️",
+  "The Reliability Engineer": "🛡️",
+  "The Security Sentinel": "🔒",
+  "The Test Strategist": "📋",
+  "The Automation Ace": "🤖",
+  "The Bug Hunter": "🐛",
+  "The Security Tester": "🛡️",
+  "The Performance Analyst": "📈",
+}
+
+const TRACK_LABELS: Record<string, string> = {
+  devops: "DevOps",
+  frontend: "Frontend",
+  backend: "Backend",
+  qa: "QA",
 }
 
 export default function ResultsPage() {
@@ -131,6 +155,7 @@ export default function ResultsPage() {
             candidateId: assessment.candidate_id,
             personalityType: assessment.personality_type,
             candidateName: assessment.candidate_name,
+            selfTrack: assessment.self_track,
           })
         }
       } catch {
@@ -232,7 +257,7 @@ export default function ResultsPage() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
                 >
-                  Your DevOps Skill Profile
+                  Your {TRACK_LABELS[data.selfTrack || ""] || "Tech"} Skill Profile
                 </motion.h1>
 
                 {revealStage >= 1 && (
