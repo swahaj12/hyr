@@ -108,6 +108,14 @@ export default function ChatPage() {
           const newMsg = payload.new as Message
           setMessages(prev => {
             if (prev.some(m => m.id === newMsg.id)) return prev
+            // Replace optimistic temp message from the same sender with the real one
+            const hasOptimistic = newMsg.sender_id === userId && prev.some(m => m.id.startsWith("temp-") && m.sender_id === userId && m.content === newMsg.content)
+            if (hasOptimistic) {
+              const tempIdx = prev.findIndex(m => m.id.startsWith("temp-") && m.sender_id === userId && m.content === newMsg.content)
+              const updated = [...prev]
+              updated[tempIdx] = newMsg
+              return updated
+            }
             return [...prev, newMsg]
           })
           if (newMsg.sender_id !== userId) {
