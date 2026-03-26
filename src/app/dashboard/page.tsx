@@ -55,6 +55,11 @@ export default function DashboardPage() {
           router.push("/employers")
           return
         }
+        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim())
+        if (adminEmails.includes(user.email || "")) {
+          router.push("/admin")
+          return
+        }
         setUserName(user.user_metadata?.full_name || user.email || "")
         setUserId(user.id)
 

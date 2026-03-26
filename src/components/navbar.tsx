@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
@@ -57,78 +57,101 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
 
   const isDark = variant === "dark"
   const bg = isDark ? "bg-gray-950 text-white" : "bg-white text-gray-950 border-b border-gray-200"
-  const linkClass = isDark
-    ? "text-sm text-gray-300 hover:text-white transition-colors"
-    : "text-sm text-gray-600 hover:text-gray-950 transition-colors"
-  const activeLinkClass = isDark ? "text-sm text-white font-medium" : "text-sm text-gray-950 font-medium"
 
   const isAdmin = user && ADMIN_EMAILS.includes(user.email)
   const isEmployer = user?.role === "employer"
-  const isCandidate = !isEmployer
+  const isCandidate = !isEmployer && !isAdmin
 
-  function navLinkClass(href: string) {
-    return pathname === href ? activeLinkClass : linkClass
+  function linkCls(href: string) {
+    const active = pathname === href || (href !== "/" && pathname?.startsWith(href))
+    const base = "text-sm transition-colors relative"
+    if (isDark) return `${base} ${active ? "text-white font-medium" : "text-gray-400 hover:text-white"}`
+    return `${base} ${active ? "text-gray-950 font-medium" : "text-gray-500 hover:text-gray-950"}`
   }
+
+  const msgBadge = unreadCount > 0 ? (
+    <span className="absolute -top-1.5 -right-3 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
+      {unreadCount > 9 ? "9+" : unreadCount}
+    </span>
+  ) : null
 
   return (
     <header className={bg}>
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+        {/* Left: logo + links */}
         <div className="flex items-center gap-6">
           <Link href="/" className="text-lg font-bold tracking-tight">
             Hyr
           </Link>
-          <div className="hidden sm:flex items-center gap-4">
-            {user && checked && isCandidate && (
-              <>
-                <Link href="/dashboard" className={navLinkClass("/dashboard")}>
-                  Dashboard
+
+          {checked && (
+            <div className="hidden sm:flex items-center gap-5">
+              {/* Candidate links */}
+              {user && isCandidate && (
+                <>
+                  <Link href="/dashboard" className={linkCls("/dashboard")}>Dashboard</Link>
+                  <Link href="/assessment" className={linkCls("/assessment")}>Assess</Link>
+                </>
+              )}
+
+              {/* Employer links */}
+              {user && isEmployer && (
+                <>
+                  <Link href="/employers" className={linkCls("/employers")}>Candidates</Link>
+                  <Link href="/pricing" className={linkCls("/pricing")}>Pricing</Link>
+                </>
+              )}
+
+              {/* Admin links */}
+              {isAdmin && (
+                <>
+                  <Link href="/admin" className={linkCls("/admin")}>Dashboard</Link>
+                  <Link href="/employers" className={linkCls("/employers")}>Candidates</Link>
+                </>
+              )}
+
+              {/* Messages — visible to all logged-in users */}
+              {user && (
+                <Link href="/messages" className={linkCls("/messages")}>
+                  Messages{msgBadge}
                 </Link>
-                <Link href="/assessment" className={navLinkClass("/assessment")}>
-                  Build Profile
-                </Link>
-              </>
-            )}
-            {(!user || isEmployer || isAdmin) && (
-              <Link href="/employers" className={navLinkClass("/employers")}>
-                {isEmployer ? "Browse Candidates" : "Employers"}
-              </Link>
-            )}
-            {user && checked && (
-              <Link href="/messages" className={`${navLinkClass("/messages")} relative`}>
-                Messages
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </Link>
-            )}
-            {isAdmin && (
-              <Link href="/admin" className={navLinkClass("/admin")}>
-                Admin
-              </Link>
-            )}
-          </div>
+              )}
+
+              {/* Logged-out: show employer CTA */}
+              {!user && (
+                <>
+                  <Link href="/employers" className={linkCls("/employers")}>For Employers</Link>
+                  <Link href="/pricing" className={linkCls("/pricing")}>Pricing</Link>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
+        {/* Right: user info + sign out */}
         <div className="flex items-center gap-3">
           {!checked ? (
             <div className="h-8 w-20" />
           ) : user ? (
             <>
-              <span className={`text-xs hidden sm:inline ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+              <span className={`text-xs hidden sm:inline ${isDark ? "text-gray-500" : "text-gray-400"}`}>
                 {user.name.split(" ")[0]}
               </span>
               {isEmployer && (
-                <span className={`text-xs hidden sm:inline px-1.5 py-0.5 rounded ${isDark ? "bg-blue-900/50 text-blue-300" : "bg-blue-100 text-blue-700"}`}>
+                <span className={`text-[10px] hidden sm:inline px-1.5 py-0.5 rounded font-medium ${isDark ? "bg-blue-900/50 text-blue-300" : "bg-blue-100 text-blue-700"}`}>
                   Employer
+                </span>
+              )}
+              {isAdmin && (
+                <span className={`text-[10px] hidden sm:inline px-1.5 py-0.5 rounded font-medium ${isDark ? "bg-amber-900/50 text-amber-300" : "bg-amber-100 text-amber-700"}`}>
+                  Admin
                 </span>
               )}
               <Button
                 variant="outline"
                 size="sm"
                 className={isDark
-                  ? "text-white border-gray-600 bg-gray-800 hover:bg-gray-700"
+                  ? "text-white border-gray-700 bg-transparent hover:bg-gray-800"
                   : "text-gray-900 border-gray-300 hover:bg-gray-100"
                 }
                 onClick={handleSignOut}
@@ -137,77 +160,83 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
               </Button>
             </>
           ) : (
-            <Link href="/auth">
-              <Button
-                variant={isDark ? "outline" : "default"}
-                size="sm"
-                className={isDark
-                  ? "text-white border-gray-600 bg-gray-800 hover:bg-gray-700"
-                  : ""
-                }
-              >
-                Sign In
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link href="/auth">
+                <Button
+                  variant={isDark ? "outline" : "default"}
+                  size="sm"
+                  className={isDark
+                    ? "text-white border-gray-700 bg-transparent hover:bg-gray-800"
+                    : ""
+                  }
+                >
+                  Sign In
+                </Button>
+              </Link>
+            </div>
           )}
         </div>
 
         {/* Mobile bottom nav */}
-        {checked && (
-          <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex items-center justify-around py-2 px-4 z-40">
-            {user && isCandidate && (
-              <Link
-                href="/dashboard"
-                className={`flex flex-col items-center gap-0.5 text-xs ${pathname === "/dashboard" ? "text-gray-950 font-medium" : "text-gray-500"}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-                Dashboard
-              </Link>
+        {checked && user && (
+          <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex items-center justify-around py-2 px-2 z-40">
+            {/* Candidate mobile nav */}
+            {isCandidate && (
+              <>
+                <MobileNavItem href="/dashboard" icon="dashboard" label="Home" active={pathname === "/dashboard"} />
+                <MobileNavItem href="/assessment" icon="assess" label="Assess" active={pathname === "/assessment"} />
+              </>
             )}
-            {user && isCandidate && (
-              <Link
-                href="/assessment"
-                className={`flex flex-col items-center gap-0.5 text-xs ${pathname === "/assessment" ? "text-gray-950 font-medium" : "text-gray-500"}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
-                Profile
-              </Link>
+
+            {/* Employer mobile nav */}
+            {isEmployer && (
+              <MobileNavItem href="/employers" icon="candidates" label="Candidates" active={pathname === "/employers"} />
             )}
-            {user && (
-              <Link
-                href="/messages"
-                className={`flex flex-col items-center gap-0.5 text-xs relative ${pathname?.startsWith("/messages") ? "text-gray-950 font-medium" : "text-gray-500"}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                Messages
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 right-0 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </Link>
-            )}
-            {(!user || isEmployer || isAdmin) && (
-              <Link
-                href="/employers"
-                className={`flex flex-col items-center gap-0.5 text-xs ${pathname === "/employers" ? "text-gray-950 font-medium" : "text-gray-500"}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                {isEmployer ? "Candidates" : "Employers"}
-              </Link>
-            )}
+
+            {/* Admin mobile nav */}
             {isAdmin && (
-              <Link
-                href="/admin"
-                className={`flex flex-col items-center gap-0.5 text-xs ${pathname === "/admin" ? "text-gray-950 font-medium" : "text-gray-500"}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-                Admin
-              </Link>
+              <>
+                <MobileNavItem href="/admin" icon="admin" label="Admin" active={pathname === "/admin"} />
+                <MobileNavItem href="/employers" icon="candidates" label="Candidates" active={pathname === "/employers"} />
+              </>
             )}
+
+            {/* Messages — all roles */}
+            <MobileNavItem href="/messages" icon="messages" label="Messages" active={pathname?.startsWith("/messages") || false} badge={unreadCount} />
           </div>
         )}
       </nav>
     </header>
+  )
+}
+
+function MobileNavItem({ href, icon, label, active, badge }: {
+  href: string
+  icon: string
+  label: string
+  active: boolean
+  badge?: number
+}) {
+  const icons: Record<string, React.ReactNode> = {
+    dashboard: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>,
+    assess: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>,
+    candidates: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+    messages: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+    admin: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>,
+  }
+
+  return (
+    <Link
+      href={href}
+      className={`flex flex-col items-center gap-0.5 text-xs relative px-2 ${active ? "text-gray-950 font-medium" : "text-gray-400"}`}
+    >
+      {icons[icon]}
+      {label}
+      {(badge ?? 0) > 0 && (
+        <span className="absolute -top-1 right-0 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
+          {(badge ?? 0) > 9 ? "9+" : badge}
+        </span>
+      )}
+    </Link>
   )
 }

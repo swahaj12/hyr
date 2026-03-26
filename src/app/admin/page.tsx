@@ -79,11 +79,15 @@ export default function AdminPage() {
         const { data: { session } } = await supabase.auth.getSession()
         if (session?.access_token) setSessionToken(session.access_token)
 
-        const { data: empData } = await supabase
-          .from("employer_profiles")
-          .select("*")
-          .order("created_at", { ascending: false })
-        if (empData) setEmployers(empData as EmployerRow[])
+        try {
+          const empRes = await fetch("/api/admin/employers", {
+            headers: { Authorization: `Bearer ${session?.access_token || ""}` },
+          })
+          if (empRes.ok) {
+            const { employers: empData } = await empRes.json()
+            if (empData) setEmployers(empData as EmployerRow[])
+          }
+        } catch { /* employer fetch failed silently */ }
 
         const { data, error: fetchError } = await supabase
           .from("assessments")

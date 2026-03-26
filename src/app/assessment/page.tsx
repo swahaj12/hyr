@@ -97,6 +97,13 @@ const EXPERIENCE_OPTIONS = [
   { value: "5+", label: "5+ years", desc: "Seasoned professional" },
 ]
 
+const EXPERIENCE_TO_LEVEL: Record<string, CandidateLevel> = {
+  "0-1": "junior",
+  "1-3": "mid",
+  "3-5": "mid",
+  "5+": "senior",
+}
+
 const MILESTONE_MESSAGES = [
   { at: 10, text: "10 down. 30 to go. You're in the zone." },
   { at: 20, text: "Halfway there. Keep that momentum." },
@@ -148,6 +155,11 @@ export default function AssessmentPage() {
         }
         if (data.user.user_metadata?.role === "employer") {
           router.push("/employers")
+          return
+        }
+        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim())
+        if (adminEmails.includes(data.user.email || "")) {
+          router.push("/admin")
           return
         }
         setUserId(data.user.id)
@@ -741,7 +753,12 @@ export default function AssessmentPage() {
             </Button>
             <Button
               size="lg"
-              onClick={() => setStage("select-level")}
+              onClick={() => {
+                if (onboardExperience && !selectedLevel) {
+                  setSelectedLevel(EXPERIENCE_TO_LEVEL[onboardExperience] || "junior")
+                }
+                setStage("select-level")
+              }}
               className="h-11 px-8 text-base"
             >
               Choose Level
@@ -768,6 +785,7 @@ export default function AssessmentPage() {
             {levels.map((lvl) => {
               const config = LEVEL_CONFIG[lvl]
               const isSelected = selectedLevel === lvl
+              const isRecommended = onboardExperience ? EXPERIENCE_TO_LEVEL[onboardExperience] === lvl : false
               const easyPct = Math.round((config.mix.easy / 40) * 100)
               const medPct = Math.round((config.mix.medium / 40) * 100)
               const hardPct = Math.round((config.mix.hard / 40) * 100)
@@ -779,7 +797,9 @@ export default function AssessmentPage() {
                   className={`w-full text-left rounded-xl border p-5 transition-all ${
                     isSelected
                       ? "border-blue-500 bg-blue-500/10 ring-1 ring-blue-500/50"
-                      : "border-gray-700 bg-gray-900 hover:border-gray-500"
+                      : isRecommended
+                        ? "border-emerald-500/50 bg-emerald-500/5 hover:border-emerald-400"
+                        : "border-gray-700 bg-gray-900 hover:border-gray-500"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -789,6 +809,11 @@ export default function AssessmentPage() {
                         <Badge variant="outline" className="text-xs text-gray-400 border-gray-600">
                           {config.yearsHint}
                         </Badge>
+                        {isRecommended && (
+                          <Badge className="text-[10px] bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                            Recommended for you
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-gray-400">{config.description}</p>
                     </div>
@@ -883,7 +908,7 @@ export default function AssessmentPage() {
                 </li>
                 <li className="flex gap-3">
                   <span className="shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">4</span>
-                  <span>Your results are scored across 13 DevOps domains and shared on your public profile.</span>
+                  <span>Your results are scored across {(TRACK_DOMAINS[onboardTrack] || TRACK_DOMAINS.devops).length} {TRACK_META[onboardTrack]?.label || "tech"} domains and shared on your public profile.</span>
                 </li>
               </ul>
             </div>
