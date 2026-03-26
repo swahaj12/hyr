@@ -82,15 +82,15 @@ export function Navbar() {
     links.push({ label: "Messages", href: "/messages", badge: unreadCount })
   } else if (user && isEmployer) {
     links.push({ label: "Candidates", href: "/employers" })
+    links.push({ label: "Hiring Needs", href: "/employers/hiring-needs" })
     links.push({ label: "Messages", href: "/messages", badge: unreadCount })
-    links.push({ label: "Pricing", href: "/pricing" })
   } else if (isAdmin) {
     links.push({ label: "Dashboard", href: "/admin" })
     links.push({ label: "Employers", href: "/admin/employers" })
     links.push({ label: "Support", href: "/admin/support" })
   } else if (!user && checked) {
-    links.push({ label: "For Employers", href: "/employers" })
-    links.push({ label: "Pricing", href: "/pricing" })
+    links.push({ label: "For Employers", href: "/for-employers" })
+    links.push({ label: "Talent Market", href: "/talent-market" })
   }
 
   function isActiveFn(href: string) {

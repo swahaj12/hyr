@@ -655,15 +655,24 @@ export default function Home() {
                 Skip the screening rounds
               </h2>
               <p className="mt-4 text-gray-400 text-lg leading-relaxed">
-                Browse pre-verified candidates with detailed skill breakdowns. Each profile shows domain scores, trust indicators, and assessment history — so you know exactly what you&apos;re getting before the first interview.
+                Post your hiring needs and we instantly match verified candidates. Near-match candidates are notified to prepare — your talent pipeline grows in real time.
               </p>
-              <div className="mt-8">
-                <Link href="/auth">
+              <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                <Link href="/for-employers">
                   <Button
                     size="lg"
                     className="h-12 px-8 text-base font-semibold bg-emerald-500 text-white hover:!bg-emerald-400 hover:!text-white transition-colors border-0"
                   >
-                    Sign Up as Employer
+                    Learn More
+                  </Button>
+                </Link>
+                <Link href="/talent-market">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="h-12 px-6 text-base border-gray-700 text-gray-300 hover:!bg-gray-800 hover:!text-white"
+                  >
+                    View Talent Market
                   </Button>
                 </Link>
               </div>
@@ -672,10 +681,10 @@ export default function Home() {
             <Reveal>
               <div className="space-y-4">
                 {[
-                  { icon: "🔍", title: "Browse verified profiles", desc: "Search by domain, level, and personality type" },
-                  { icon: "🛡️", title: "Trust indicators on every profile", desc: "See tab-switch counts, assessment history, and verification status" },
-                  { icon: "⚡", title: "Go straight to final interview", desc: "Skip phone screens and take-home tests — skills are already verified" },
-                  { icon: "📊", title: "43+ domains, scored individually", desc: "From Kubernetes to React — see exactly where candidates excel" },
+                  { icon: "🎯", title: "Post hiring needs, get instant matches", desc: "Select required skills — see verified matches in seconds" },
+                  { icon: "🔔", title: "Near-matches prepare for your role", desc: "We notify almost-qualified candidates to complete targeted assessments" },
+                  { icon: "⚡", title: "Skip to final interview", desc: "Technical screening is already done — you just do culture fit" },
+                  { icon: "📊", title: "Talent intelligence you can't get anywhere else", desc: "Percentile rankings, skill heatmaps, and trust scores" },
                 ].map((item) => (
                   <div key={item.title} className="flex gap-4 p-4 rounded-xl border border-gray-800 bg-gray-900/50">
                     <span className="text-2xl shrink-0">{item.icon}</span>
@@ -748,8 +757,11 @@ export default function Home() {
               <Link href="/assessment" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
                 Build Profile
               </Link>
-              <Link href="/employers" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              <Link href="/for-employers" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
                 For Employers
+              </Link>
+              <Link href="/talent-market" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+                Talent Market
               </Link>
               <Link href="/about" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
                 About

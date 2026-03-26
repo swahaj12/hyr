@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { type DomainScore, displayLevel, engineeringPersonality } from "@/lib/scoring"
+import { getReadinessTier, calculatePercentile } from "@/lib/talent-matching"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -71,6 +72,7 @@ export default function ProfilePage() {
   const [showFirstMessage, setShowFirstMessage] = useState(false)
   const [firstMessage, setFirstMessage] = useState("")
   const [sendingMessage, setSendingMessage] = useState(false)
+  const [percentile, setPercentile] = useState<number | null>(null)
 
   useEffect(() => {
     async function detectViewer() {
@@ -148,6 +150,31 @@ export default function ProfilePage() {
           candidateName: name as string,
           assessments: assessments as Assessment[],
         })
+
+        const bestA = assessments.reduce((a: Record<string, unknown>, b: Record<string, unknown>) => {
+          const aPct = (a.total_questions as number) > 0 ? (a.total_score as number) / (a.total_questions as number) : 0
+          const bPct = (b.total_questions as number) > 0 ? (b.total_score as number) / (b.total_questions as number) : 0
+          return aPct >= bPct ? a : b
+        })
+        const candidatePct = (bestA.total_questions as number) > 0
+          ? Math.round(((bestA.total_score as number) / (bestA.total_questions as number)) * 100)
+          : 0
+
+        const { data: allAssessments } = await supabase
+          .from("assessments")
+          .select("total_score, total_questions, candidate_id")
+          .eq("profile_visible", true)
+
+        if (allAssessments) {
+          const candidateBestScores = new Map<string, number>()
+          for (const a of allAssessments) {
+            const pct = a.total_questions > 0 ? Math.round((a.total_score / a.total_questions) * 100) : 0
+            const existing = candidateBestScores.get(a.candidate_id) ?? -1
+            if (pct > existing) candidateBestScores.set(a.candidate_id, pct)
+          }
+          const allScores = Array.from(candidateBestScores.values())
+          setPercentile(calculatePercentile(candidatePct, allScores))
+        }
       } catch {
         setError("Something went wrong. Please try again.")
       }
@@ -234,12 +261,25 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              {/* Trust & stats */}
+              {/* Readiness + Percentile + Trust */}
               <div className="flex flex-wrap items-center justify-center gap-3">
+                {(() => {
+                  const tier = getReadinessTier(bestPct, best.tab_switches ?? 0, totalAssessments)
+                  return (
+                    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold ${tier.color} ${tier.bgColor} border ${tier.borderColor} rounded-full px-3 py-1`}>
+                      {tier.label}
+                    </span>
+                  )
+                })()}
+                {percentile !== null && viewerRole === "employer" && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-200 rounded-full px-3 py-1">
+                    Top {100 - percentile}%
+                  </span>
+                )}
                 {isTrusted ? (
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-full px-3 py-1">
                     <span className="w-2 h-2 rounded-full bg-green-500" />
-                    Verified — no tab switches
+                    Verified
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-full px-3 py-1">

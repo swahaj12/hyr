@@ -4,7 +4,8 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
-import { type DomainScore, displayLevel } from "@/lib/scoring"
+import { type DomainScore, displayLevel, DOMAIN_LABELS } from "@/lib/scoring"
+import { getReadinessTier, TRACK_LABELS } from "@/lib/talent-matching"
 import { Navbar } from "@/components/navbar"
 import { PageLoading } from "@/components/loading"
 import { SupportButton } from "@/components/support-dialog"
@@ -44,6 +45,12 @@ export default function DashboardPage() {
   const [hiringCompanies, setHiringCompanies] = useState<{ company_name: string; hiring_tracks: string[]; hiring_description: string | null }[]>([])
   const [unreadMessages, setUnreadMessages] = useState(0)
   const [sessionToken, setSessionToken] = useState("")
+  const [notifications, setNotifications] = useState<{
+    id: string; type: string; title: string; message: string; skill_gaps: string[];
+    match_pct: number; read: boolean; created_at: string;
+    hiring_need: { title: string; company_name: string; track: string; status: string } | null
+  }[]>([])
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
 
   useEffect(() => {
     async function load() {
@@ -116,6 +123,20 @@ export default function DashboardPage() {
               if (count) setUnreadMessages(count)
             }
           })
+
+        if (session?.access_token) {
+          fetch("/api/candidate/notifications", {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+          })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => {
+              if (d) {
+                setNotifications(d.notifications)
+                setUnreadNotifications(d.unreadCount)
+              }
+            })
+            .catch(() => {})
+        }
 
         if (fetchError) {
           setError("Could not load your assessments. Please refresh the page.")
@@ -222,6 +243,93 @@ export default function DashboardPage() {
               </Link>
             </div>
           </div>
+        )}
+
+        {/* Readiness Tier */}
+        {assessments.length > 0 && latest && (() => {
+          const latestPct = Math.round((latest.total_score / latest.total_questions) * 100)
+          const tier = getReadinessTier(latestPct, latest.domain_scores ? (latest.domain_scores as DomainScore[]).length : 0, assessments.length)
+          return (
+            <div className={`rounded-xl border-2 p-5 ${tier.borderColor} ${tier.bgColor}`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-full ${tier.bgColor} ${tier.color} flex items-center justify-center text-lg font-bold border ${tier.borderColor}`}>
+                  {tier.label === "Interview-Ready" ? "★" : tier.label === "Rising Talent" ? "↑" : tier.label === "Growth Track" ? "◎" : "○"}
+                </div>
+                <div>
+                  <p className={`font-semibold ${tier.color}`}>{tier.label}</p>
+                  <p className="text-xs text-muted-foreground">{tier.description}</p>
+                </div>
+              </div>
+            </div>
+          )
+        })()}
+
+        {/* Opportunity Notifications */}
+        {notifications.length > 0 && (
+          <Card className="border-violet-200 bg-gradient-to-br from-violet-50 to-blue-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2">
+                Opportunities for You
+                {unreadNotifications > 0 && (
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-violet-600 text-white text-[10px] font-bold">
+                    {unreadNotifications}
+                  </span>
+                )}
+              </CardTitle>
+              <CardDescription>Companies are looking for engineers with your skills</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {notifications.slice(0, 5).map(n => (
+                  <div
+                    key={n.id}
+                    className={`rounded-xl border p-4 transition-all ${
+                      !n.read
+                        ? "bg-white border-violet-200 shadow-sm"
+                        : "bg-white/50 border-gray-200"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-semibold text-sm">{n.title}</p>
+                          {!n.read && <span className="w-2 h-2 rounded-full bg-violet-500 shrink-0" />}
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">{n.message}</p>
+                        {n.skill_gaps && n.skill_gaps.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {n.skill_gaps.map(s => (
+                              <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                {DOMAIN_LABELS[s] || s}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-lg font-bold text-violet-700">{n.match_pct}%</p>
+                        <p className="text-[10px] text-muted-foreground">match</p>
+                      </div>
+                    </div>
+                    {n.skill_gaps && n.skill_gaps.length > 0 && (
+                      <div className="mt-3">
+                        <Link href="/assessment">
+                          <Button size="sm" className="h-8 text-xs bg-violet-600 hover:bg-violet-700">
+                            Complete Assessment to Improve Match
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              {notifications.length > 5 && (
+                <p className="text-xs text-center text-muted-foreground mt-3">
+                  +{notifications.length - 5} more opportunity notifications
+                </p>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* Messages shortcut */}
