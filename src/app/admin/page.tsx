@@ -128,6 +128,101 @@ export default function AdminPage() {
           </div>
         )}
 
+        {/* Analytics Overview */}
+        {(() => {
+          const uniqueCandidates = new Set(candidates.map(c => c.candidate_id)).size
+          const avgScore = candidates.length > 0
+            ? Math.round(candidates.reduce((s, c) => s + (c.total_score / c.total_questions) * 100, 0) / candidates.length)
+            : 0
+
+          const trackCounts: Record<string, number> = {}
+          const levelCounts: Record<string, number> = {}
+          const dailyCounts: Record<string, number> = {}
+
+          for (const c of candidates) {
+            const track = (c as Record<string, unknown>).self_track as string || "devops"
+            trackCounts[track] = (trackCounts[track] || 0) + 1
+
+            const lvl = c.overall_level
+            levelCounts[lvl] = (levelCounts[lvl] || 0) + 1
+
+            const day = new Date(c.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            dailyCounts[day] = (dailyCounts[day] || 0) + 1
+          }
+
+          const trackLabels: Record<string, string> = { devops: "DevOps", frontend: "Frontend", backend: "Backend", qa: "QA" }
+          const sortedTracks = Object.entries(trackCounts).sort((a, b) => b[1] - a[1])
+          const maxTrackCount = Math.max(...Object.values(trackCounts), 1)
+
+          const recentDays = Object.entries(dailyCounts).slice(-7)
+          const maxDayCount = Math.max(...recentDays.map(d => d[1]), 1)
+
+          return (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { label: "Total Assessments", value: candidates.length },
+                  { label: "Unique Candidates", value: uniqueCandidates },
+                  { label: "Average Score", value: `${avgScore}%` },
+                  { label: "Active Tracks", value: Object.keys(trackCounts).length },
+                ].map(stat => (
+                  <Card key={stat.label}>
+                    <CardContent className="pt-4 pb-3 text-center">
+                      <p className="text-2xl font-bold">{stat.value}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{stat.label}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Track Distribution</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {sortedTracks.map(([track, count]) => (
+                        <div key={track} className="space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="font-medium">{trackLabels[track] || track}</span>
+                            <span className="text-muted-foreground">{count} ({Math.round((count / candidates.length) * 100)}%)</span>
+                          </div>
+                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${(count / maxTrackCount) * 100}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Recent Activity (last 7 days)</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-end gap-1 h-24">
+                      {recentDays.map(([day, count]) => (
+                        <div key={day} className="flex-1 flex flex-col items-center gap-1">
+                          <div
+                            className="w-full bg-emerald-500 rounded-sm min-h-[2px]"
+                            style={{ height: `${(count / maxDayCount) * 80}px` }}
+                          />
+                          <span className="text-[9px] text-muted-foreground">{day.split(" ")[0]}</span>
+                        </div>
+                      ))}
+                      {recentDays.length === 0 && (
+                        <p className="text-xs text-muted-foreground text-center w-full py-8">No recent activity</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )
+        })()}
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Candidate Assessments</h1>

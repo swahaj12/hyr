@@ -63,8 +63,45 @@ export default function ProfilePage() {
   const params = useParams()
   const [profile, setProfile] = useState<ProfileData | null>(null)
   const [loading, setLoading] = useState(true)
-
   const [error, setError] = useState<string | null>(null)
+  const [viewerRole, setViewerRole] = useState<string | null>(null)
+  const [viewerData, setViewerData] = useState<{ id: string; name: string; email: string } | null>(null)
+  const [interestSent, setInterestSent] = useState(false)
+  const [interestLoading, setInterestLoading] = useState(false)
+  const [interestMessage, setInterestMessage] = useState("")
+  const [showInterestForm, setShowInterestForm] = useState(false)
+
+  useEffect(() => {
+    async function detectViewer() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const role = (user.user_metadata?.role as string) || "candidate"
+        setViewerRole(role)
+        setViewerData({
+          id: user.id,
+          name: user.user_metadata?.name || user.email?.split("@")[0] || "",
+          email: user.email || "",
+        })
+        if (role === "employer" && user.id !== params.id) {
+          supabase.from("profile_views").insert({
+            viewer_id: user.id,
+            candidate_id: params.id,
+            viewer_role: role,
+          }).then(() => {})
+        }
+        const { data: existing } = await supabase
+          .from("employer_interests")
+          .select("id")
+          .eq("employer_id", user.id)
+          .eq("candidate_id", params.id as string)
+          .limit(1)
+        if (existing && existing.length > 0) {
+          setInterestSent(true)
+        }
+      }
+    }
+    detectViewer()
+  }, [params.id])
 
   useEffect(() => {
     async function load() {
@@ -318,6 +355,79 @@ export default function ProfilePage() {
                   )
                 })}
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Employer Interest */}
+        {viewerRole === "employer" && viewerData && params.id !== viewerData.id && (
+          <Card className={interestSent ? "border-emerald-200 bg-emerald-50" : "border-blue-200 bg-blue-50"}>
+            <CardContent className="pt-6">
+              {interestSent ? (
+                <div className="flex items-center gap-3">
+                  <span className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">&#10003;</span>
+                  <div>
+                    <p className="font-semibold text-emerald-900">Interest sent</p>
+                    <p className="text-sm text-emerald-700">The candidate has been notified that you&apos;re interested. They can reach out to you directly.</p>
+                  </div>
+                </div>
+              ) : showInterestForm ? (
+                <div className="space-y-3">
+                  <div>
+                    <p className="font-semibold text-blue-900">Send a message to {profile.candidateName}</p>
+                    <p className="text-sm text-blue-700">They&apos;ll receive an email with your name, company, and message.</p>
+                  </div>
+                  <textarea
+                    value={interestMessage}
+                    onChange={(e) => setInterestMessage(e.target.value)}
+                    placeholder="Hi, we're looking for someone with your skills. Would love to chat about an opportunity..."
+                    className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      disabled={interestLoading}
+                      onClick={async () => {
+                        setInterestLoading(true)
+                        try {
+                          await fetch("/api/employer-interest", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              employerId: viewerData.id,
+                              employerName: viewerData.name,
+                              employerEmail: viewerData.email,
+                              candidateId: params.id,
+                              candidateName: profile.candidateName,
+                              message: interestMessage,
+                            }),
+                          })
+                          setInterestSent(true)
+                        } catch { /* ignore */ }
+                        setInterestLoading(false)
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {interestLoading ? "Sending..." : "Send Interest"}
+                    </Button>
+                    <Button variant="outline" onClick={() => setShowInterestForm(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <p className="font-semibold text-blue-900">Interested in this candidate?</p>
+                    <p className="text-sm text-blue-700">Let them know you&apos;d like to connect. They&apos;ll receive a notification with your details.</p>
+                  </div>
+                  <Button
+                    onClick={() => setShowInterestForm(true)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                  >
+                    Show Interest
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
