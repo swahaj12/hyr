@@ -297,7 +297,7 @@ export default function Home() {
         />
 
         <div className="relative z-10">
-          <Navbar variant="dark" />
+          <Navbar />
 
           <div className="mx-auto max-w-6xl px-4 pb-24 pt-16 sm:px-6 sm:pb-32 sm:pt-20 lg:px-8 lg:pb-36 lg:pt-24">
             <div className="mx-auto max-w-3xl text-center">

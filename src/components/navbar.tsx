@@ -4,16 +4,21 @@ import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon"
+import { useScroll } from "@/components/ui/use-scroll"
+import { cn } from "@/lib/utils"
 import type { UserRole } from "@/lib/use-user"
 
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
 
-type NavVariant = "dark" | "light"
+type NavLink = { label: string; href: string; badge?: number }
 
-export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
+export function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
+  const scrolled = useScroll(10)
+  const [open, setOpen] = useState(false)
   const [user, setUser] = useState<{ email: string; name: string; role: UserRole; id: string } | null>(null)
   const [checked, setChecked] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
@@ -50,199 +55,194 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
     })
   }, [])
 
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+    return () => { document.body.style.overflow = "" }
+  }, [open])
+
+  // Close mobile menu on navigation
+  useEffect(() => { setOpen(false) }, [pathname])
+
   async function handleSignOut() {
     await supabase.auth.signOut()
     router.push("/")
   }
 
-  const isDark = variant === "dark"
-  const bg = isDark ? "bg-gray-950 text-white" : "bg-white text-gray-950 border-b border-gray-200"
-
   const isAdmin = user && ADMIN_EMAILS.includes(user.email)
   const isEmployer = user?.role === "employer"
-  const isCandidate = !isEmployer && !isAdmin
+  const isCandidate = user && !isEmployer && !isAdmin
 
-  function linkCls(href: string) {
-    const active = pathname === href || (href !== "/" && pathname?.startsWith(href))
-    const base = "text-sm transition-colors relative"
-    if (isDark) return `${base} ${active ? "text-white font-medium" : "text-gray-400 hover:text-white"}`
-    return `${base} ${active ? "text-gray-950 font-medium" : "text-gray-500 hover:text-gray-950"}`
+  const links: NavLink[] = []
+  if (user && isCandidate) {
+    links.push({ label: "Dashboard", href: "/dashboard" })
+    links.push({ label: "Assess", href: "/assessment" })
+    links.push({ label: "Messages", href: "/messages", badge: unreadCount })
+  } else if (user && isEmployer) {
+    links.push({ label: "Candidates", href: "/employers" })
+    links.push({ label: "Messages", href: "/messages", badge: unreadCount })
+    links.push({ label: "Pricing", href: "/pricing" })
+  } else if (isAdmin) {
+    links.push({ label: "Dashboard", href: "/admin" })
+    links.push({ label: "Employers", href: "/admin/employers" })
+    links.push({ label: "Support", href: "/admin/support" })
+  } else if (!user && checked) {
+    links.push({ label: "For Employers", href: "/employers" })
+    links.push({ label: "Pricing", href: "/pricing" })
   }
 
-  const msgBadge = unreadCount > 0 ? (
-    <span className="absolute -top-1.5 -right-3 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-      {unreadCount > 9 ? "9+" : unreadCount}
-    </span>
-  ) : null
+  function isActive(href: string) {
+    return pathname === href || (href !== "/" && pathname?.startsWith(href))
+  }
+
+  const roleBadge = isAdmin
+    ? <span className="hidden md:inline text-[10px] px-1.5 py-0.5 rounded font-medium bg-amber-100 text-amber-700">Admin</span>
+    : isEmployer
+      ? <span className="hidden md:inline text-[10px] px-1.5 py-0.5 rounded font-medium bg-blue-100 text-blue-700">Employer</span>
+      : null
 
   return (
-    <header className={bg}>
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        {/* Left: logo + links */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="text-lg font-bold tracking-tight">
-            Hyr
-          </Link>
+    <header
+      className={cn(
+        "sticky top-0 z-50 mx-auto w-full max-w-6xl border-b border-transparent md:rounded-md md:border md:transition-all md:ease-out",
+        {
+          "bg-background/95 supports-[backdrop-filter]:bg-background/50 border-border backdrop-blur-lg md:top-4 md:max-w-5xl md:shadow":
+            scrolled && !open,
+          "bg-background": !scrolled && !open,
+          "bg-background/95": open,
+        },
+      )}
+    >
+      <nav
+        className={cn(
+          "flex h-14 w-full items-center justify-between px-4 md:h-12 md:transition-all md:ease-out",
+          { "md:px-3": scrolled },
+        )}
+      >
+        {/* Logo */}
+        <Link href="/" className="text-lg font-bold tracking-tight">
+          Hyr
+        </Link>
 
-          {checked && (
-            <div className="hidden sm:flex items-center gap-5">
-              {/* Candidate links */}
-              {user && isCandidate && (
-                <>
-                  <Link href="/dashboard" className={linkCls("/dashboard")}>Dashboard</Link>
-                  <Link href="/assessment" className={linkCls("/assessment")}>Assess</Link>
-                </>
-              )}
-
-              {/* Employer links */}
-              {user && isEmployer && (
-                <>
-                  <Link href="/employers" className={linkCls("/employers")}>Candidates</Link>
-                  <Link href="/pricing" className={linkCls("/pricing")}>Pricing</Link>
-                </>
-              )}
-
-              {/* Admin links */}
-              {isAdmin && (
-                <>
-                  <Link href="/admin" className={linkCls("/admin")}>Dashboard</Link>
-                  <Link href="/admin/employers" className={linkCls("/admin/employers")}>Employers</Link>
-                  <Link href="/admin/support" className={linkCls("/admin/support")}>Support</Link>
-                </>
-              )}
-
-              {/* Messages — visible to candidates and employers */}
-              {user && !isAdmin && (
-                <Link href="/messages" className={linkCls("/messages")}>
-                  Messages{msgBadge}
-                </Link>
-              )}
-
-              {/* Logged-out: show employer CTA */}
-              {!user && (
-                <>
-                  <Link href="/employers" className={linkCls("/employers")}>For Employers</Link>
-                  <Link href="/pricing" className={linkCls("/pricing")}>Pricing</Link>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Right: user info + sign out */}
-        <div className="flex items-center gap-3">
-          {!checked ? (
-            <div className="h-8 w-20" />
-          ) : user ? (
-            <>
-              <span className={`text-xs hidden sm:inline ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-                {user.name.split(" ")[0]}
-              </span>
-              {isEmployer && (
-                <span className={`text-[10px] hidden sm:inline px-1.5 py-0.5 rounded font-medium ${isDark ? "bg-blue-900/50 text-blue-300" : "bg-blue-100 text-blue-700"}`}>
-                  Employer
-                </span>
-              )}
-              {isAdmin && (
-                <span className={`text-[10px] hidden sm:inline px-1.5 py-0.5 rounded font-medium ${isDark ? "bg-amber-900/50 text-amber-300" : "bg-amber-100 text-amber-700"}`}>
-                  Admin
-                </span>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                className={isDark
-                  ? "text-white border-gray-700 bg-transparent hover:bg-gray-800"
-                  : "text-gray-900 border-gray-300 hover:bg-gray-100"
-                }
-                onClick={handleSignOut}
+        {/* Desktop links */}
+        {checked && (
+          <div className="hidden items-center gap-1 md:flex">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  buttonVariants({ variant: isActive(link.href) ? "secondary" : "ghost", size: "sm" }),
+                  "relative text-sm",
+                )}
               >
-                Sign Out
-              </Button>
-            </>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link href="/auth">
-                <Button
-                  variant={isDark ? "outline" : "default"}
-                  size="sm"
-                  className={isDark
-                    ? "text-white border-gray-700 bg-transparent hover:bg-gray-800"
-                    : ""
-                  }
-                >
-                  Sign In
-                </Button>
+                {link.label}
+                {(link.badge ?? 0) > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
+                    {(link.badge ?? 0) > 9 ? "9+" : link.badge}
+                  </span>
+                )}
               </Link>
-            </div>
-          )}
-        </div>
+            ))}
 
-        {/* Mobile bottom nav */}
-        {checked && user && (
-          <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex items-center justify-around py-2 px-2 z-40">
-            {/* Candidate mobile nav */}
-            {isCandidate && (
-              <>
-                <MobileNavItem href="/dashboard" icon="dashboard" label="Home" active={pathname === "/dashboard"} />
-                <MobileNavItem href="/assessment" icon="assess" label="Assess" active={pathname === "/assessment"} />
-              </>
-            )}
+            <div className="w-px h-5 bg-border mx-1" />
 
-            {/* Employer mobile nav */}
-            {isEmployer && (
-              <MobileNavItem href="/employers" icon="candidates" label="Candidates" active={pathname === "/employers"} />
-            )}
-
-            {/* Admin mobile nav */}
-            {isAdmin && (
-              <>
-                <MobileNavItem href="/admin" icon="admin" label="Dashboard" active={pathname === "/admin"} />
-                <MobileNavItem href="/admin/employers" icon="building" label="Employers" active={pathname?.startsWith("/admin/employers") || false} />
-                <MobileNavItem href="/admin/support" icon="support" label="Support" active={pathname?.startsWith("/admin/support") || false} />
-              </>
-            )}
-
-            {/* Messages — candidates and employers only */}
-            {!isAdmin && (
-              <MobileNavItem href="/messages" icon="messages" label="Messages" active={pathname?.startsWith("/messages") || false} badge={unreadCount} />
+            {user ? (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">{user.name.split(" ")[0]}</span>
+                {roleBadge}
+                <Button variant="outline" size="sm" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link href="/auth">
+                  <Button variant="outline" size="sm">Sign In</Button>
+                </Link>
+                <Link href="/assessment">
+                  <Button size="sm">Get Started</Button>
+                </Link>
+              </div>
             )}
           </div>
         )}
+
+        {/* Mobile toggle */}
+        <Button size="icon" variant="outline" onClick={() => setOpen(!open)} className="md:hidden">
+          <MenuToggleIcon open={open} className="size-5" duration={300} />
+        </Button>
       </nav>
+
+      {/* Mobile full-screen menu */}
+      <div
+        className={cn(
+          "bg-background/95 fixed top-14 right-0 bottom-0 left-0 z-50 flex flex-col overflow-hidden border-y md:hidden",
+          open ? "block" : "hidden",
+        )}
+      >
+        <div
+          data-slot={open ? "open" : "closed"}
+          className={cn(
+            "data-[slot=open]:animate-in data-[slot=open]:zoom-in-95 data-[slot=closed]:animate-out data-[slot=closed]:zoom-out-95 ease-out",
+            "flex h-full w-full flex-col justify-between gap-y-2 p-4",
+          )}
+        >
+          <div className="grid gap-y-1">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  buttonVariants({
+                    variant: isActive(link.href) ? "secondary" : "ghost",
+                    className: "justify-start text-base relative",
+                  }),
+                )}
+              >
+                {link.label}
+                {(link.badge ?? 0) > 0 && (
+                  <span className="ml-2 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+                    {(link.badge ?? 0) > 9 ? "9+" : link.badge}
+                  </span>
+                )}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-2 pb-safe">
+            {user ? (
+              <>
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-950 text-white flex items-center justify-center text-sm font-bold">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  {roleBadge}
+                </div>
+                <Button variant="outline" className="w-full" onClick={handleSignOut}>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/auth">
+                  <Button variant="outline" className="w-full">Sign In</Button>
+                </Link>
+                <Link href="/assessment">
+                  <Button className="w-full">Get Started</Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </header>
-  )
-}
-
-function MobileNavItem({ href, icon, label, active, badge }: {
-  href: string
-  icon: string
-  label: string
-  active: boolean
-  badge?: number
-}) {
-  const icons: Record<string, React.ReactNode> = {
-    dashboard: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>,
-    assess: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>,
-    candidates: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-    messages: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
-    admin: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>,
-    building: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h.01"/><path d="M9 12h.01"/><path d="M9 15h.01"/><path d="M9 18h.01"/></svg>,
-    support: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/></svg>,
-  }
-
-  return (
-    <Link
-      href={href}
-      className={`flex flex-col items-center gap-0.5 text-xs relative px-2 ${active ? "text-gray-950 font-medium" : "text-gray-400"}`}
-    >
-      {icons[icon]}
-      {label}
-      {(badge ?? 0) > 0 && (
-        <span className="absolute -top-1 right-0 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
-          {(badge ?? 0) > 9 ? "9+" : badge}
-        </span>
-      )}
-    </Link>
   )
 }
