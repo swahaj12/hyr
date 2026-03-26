@@ -73,12 +73,12 @@ export default function AboutPage() {
           <h2 className="text-2xl font-bold text-gray-950">Built for Pakistan&apos;s Tech Industry</h2>
           <p className="text-gray-600 text-lg leading-relaxed">
             Pakistan&apos;s tech sector is growing fast, but the skills gap between what universities
-            teach and what companies need remains wide. Hyr is built to close that gap — starting
-            with DevOps, with Frontend, Backend, and QA tracks launching soon.
+            teach and what companies need remains wide. Hyr is built to close that gap — with
+            DevOps, Frontend, Backend, and QA tracks all live today.
           </p>
           <p className="text-gray-600 text-lg leading-relaxed">
-            Whether you&apos;re a fresh graduate proving your first skills or a senior engineer
-            looking for your next role, Hyr gives you a verified profile that speaks for itself.
+            Whether you&apos;re a fresh graduate building your first career profile or a senior engineer
+            looking for your next role, Hyr connects you with companies that value verified skills over resumes.
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export default function AboutPage() {
               </div>
               <div className="flex gap-3">
                 <Link href="/assessment">
-                  <Button>Take Assessment</Button>
+                  <Button>Build Your Profile</Button>
                 </Link>
                 <Link href="/employers">
                   <Button variant="outline">Browse Candidates</Button>

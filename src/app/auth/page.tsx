@@ -96,9 +96,9 @@ export default function AuthPage() {
           </Link>
           <CardDescription>
             {mode === "signin"
-              ? "Sign in to continue"
+              ? "Welcome back"
               : mode === "signup"
-                ? "Create your account"
+                ? "Create your career profile"
                 : "Reset your password"}
           </CardDescription>
         </CardHeader>

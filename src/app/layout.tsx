@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hyr — Prove Your Tech Skills",
+  title: "Hyr — Get Discovered by Top Tech Companies",
   description:
-    "Free 15-minute tech skills assessment. Get a verified skill profile and get hired faster. DevOps, Frontend, Backend & more.",
+    "Build a verified skill profile in 15 minutes. Employers on Hyr browse engineers by actual skills — not resumes. DevOps, Frontend, Backend & QA.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hyr-snowy.vercel.app"),
   icons: {
     icon: [
@@ -25,9 +25,9 @@ export const metadata: Metadata = {
     apple: "/favicon-hyr.png",
   },
   openGraph: {
-    title: "Hyr — Prove Your Tech Skills",
+    title: "Hyr — Get Discovered by Top Tech Companies",
     description:
-      "Take a free 15-minute assessment. Get a verified skill profile across multiple engineering domains. Show employers exactly what you can do.",
+      "Build a verified skill profile. Employers browse you by domain scores, trust signals, and engineering type — no applications needed.",
     siteName: "Hyr",
     type: "website",
     images: [
@@ -35,15 +35,15 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Hyr — Prove Your Tech Skills. Get Hired Faster.",
+        alt: "Hyr — Where companies discover verified engineers.",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hyr — Prove Your Tech Skills",
+    title: "Hyr — Get Discovered by Top Tech Companies",
     description:
-      "Free 15-minute tech skills assessment. Get a verified profile and get hired faster.",
+      "Build a verified skill profile in 15 minutes. Companies on Hyr find engineers by actual skills — not resumes.",
     images: ["/og-image.png"],
   },
 };

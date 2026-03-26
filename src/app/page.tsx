@@ -53,20 +53,20 @@ const tracks = [
 const steps = [
   {
     n: "01",
-    title: "Choose Your Track",
-    body: "Pick your engineering discipline and experience level. Each track has a tailored mix of easy, medium, and hard questions.",
+    title: "Build Your Profile",
+    body: "Pick your engineering track and experience level. In 15 minutes, you'll have a verified skill breakdown that replaces your resume.",
     accent: "from-blue-500 to-cyan-400",
   },
   {
     n: "02",
-    title: "Answer 40 Questions",
-    body: "Scenario-based questions with a ticking timer. No theory dumps — real situations you'd face on the job. Takes about 15 minutes.",
+    title: "Go Live to Employers",
+    body: "Your profile is instantly visible to hiring companies. They see domain scores, trust indicators, and your engineering personality — no applications needed.",
     accent: "from-violet-500 to-purple-400",
   },
   {
     n: "03",
-    title: "Get Your Verified Profile",
-    body: "Receive a detailed skill breakdown across every domain in your track. Share your public profile link with employers — skip the screening rounds.",
+    title: "Land the Interview",
+    body: "Employers reach out when your profile matches what they need. Skip the phone screens — you've already proven your skills.",
     accent: "from-emerald-500 to-green-400",
   },
 ]
@@ -83,10 +83,10 @@ const sampleDomains = [
 ]
 
 const statItems = [
-  { value: 4, label: "Tracks", suffix: "" },
-  { value: 15, label: "Minutes", suffix: "" },
-  { value: 40, label: "Questions", suffix: "" },
-  { value: 0, label: "Forever", suffix: "", display: "Free" },
+  { value: 4, label: "Engineering Tracks", suffix: "" },
+  { value: 43, label: "Domains Verified", suffix: "+" },
+  { value: 516, label: "Scenario Questions", suffix: "+" },
+  { value: 0, label: "For Candidates", suffix: "", display: "Free" },
 ]
 
 function AnimatedNumber({ value, display, suffix = "" }: { value: number; display?: string; suffix?: string }) {
@@ -308,7 +308,7 @@ export default function Home() {
               >
                 <span className="inline-flex items-center gap-2 rounded-full border border-gray-700 bg-gray-900/80 px-4 py-1.5 text-xs font-medium text-gray-300 backdrop-blur-sm mb-8">
                   <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  Free for candidates — always
+                  Where companies discover verified engineers
                 </span>
               </motion.div>
 
@@ -318,8 +318,8 @@ export default function Home() {
                 transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl"
               >
-                Prove Your Tech Skills.{" "}
-                <span className="animate-gradient-text">Get Hired Faster.</span>
+                Get Discovered by{" "}
+                <span className="animate-gradient-text">Top Tech Companies.</span>
               </motion.h1>
 
               <motion.p
@@ -328,8 +328,7 @@ export default function Home() {
                 transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
                 className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-gray-400 sm:text-lg lg:text-xl"
               >
-                Take a 15-minute assessment. Get a verified skill profile.
-                Share it with employers. Skip the screening rounds.
+                Complete one 15-minute assessment. Your verified skill profile goes live to hiring companies instantly. No applications. No cover letters. No waiting.
               </motion.p>
 
               <motion.div
@@ -345,14 +344,14 @@ export default function Home() {
                     size="lg"
                     className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
                   >
-                    Take Free Assessment
+                    Build Your Profile
                   </Button>
                 </motion.div>
                 <a
-                  href="#tracks"
+                  href="#how-it-works"
                   className="text-sm text-gray-400 hover:text-white transition-colors underline underline-offset-4 decoration-gray-600 hover:decoration-gray-400"
                 >
-                  Explore tracks
+                  See how it works
                 </a>
               </motion.div>
             </div>
@@ -391,12 +390,12 @@ export default function Home() {
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center">
-            <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">Assessment Tracks</p>
+            <p className="text-sm font-semibold uppercase tracking-wider text-blue-400">Career Tracks</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Choose your engineering discipline
+              Pick your path. Get discovered.
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-gray-400 text-lg">
-              Each track tests the skills that actually matter for the role — scenario-based, timed, and verified.
+              Each track creates a verified skill profile that employers browse to find their next hire.
             </p>
           </Reveal>
 
@@ -446,7 +445,7 @@ export default function Home() {
                       href={track.href}
                       className="block w-full rounded-lg bg-white text-gray-950 text-center py-2.5 text-sm font-semibold hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
                     >
-                      Start Assessment
+                      Build Profile
                     </Link>
                   </motion.div>
                 </div>
@@ -462,10 +461,10 @@ export default function Home() {
           <Reveal className="text-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-600">How It Works</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
-              Three steps to your verified profile
+              From assessment to interview in three steps
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-gray-600 text-lg">
-              No resumes. No whiteboard. No BS.
+              No resumes. No applications. No waiting.
             </p>
           </Reveal>
 
@@ -494,19 +493,19 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
             <Reveal direction="left">
-              <p className="text-sm font-semibold uppercase tracking-wider text-violet-600">Your Profile</p>
+              <p className="text-sm font-semibold uppercase tracking-wider text-violet-600">Your Career Profile</p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
-                A skill profile employers actually trust
+                The profile that gets you hired
               </h2>
               <p className="mt-4 text-gray-600 text-lg leading-relaxed">
-                No more &ldquo;rate yourself 1-10&rdquo; nonsense. Your Hyr profile shows verified scores across every domain — backed by timed, scenario-based questions with anti-cheat monitoring.
+                Employers on Hyr don&apos;t read resumes — they browse verified skill profiles. Your Hyr profile shows exactly what you can do, backed by anti-cheat monitoring and domain-level scoring.
               </p>
               <ul className="mt-8 space-y-4">
                 {[
-                  "Domain-level scores with visual breakdown",
-                  "Trust badge \u2014 tab switches tracked and displayed",
-                  "Shareable link \u2014 send to any employer",
-                  "Assessment history shows growth over time",
+                  "Verified scores across every domain in your track",
+                  "Trust indicators \u2014 employers see integrity signals",
+                  "One link replaces your resume for every application",
+                  "Retake anytime to show your growth trajectory",
                 ].map((item, i) => (
                   <motion.li
                     key={item}
@@ -597,7 +596,7 @@ export default function Home() {
           <Reveal className="text-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">Why Hyr</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
-              Built for how hiring should work
+              A career platform, not a testing tool
             </h2>
           </Reveal>
 
@@ -605,20 +604,20 @@ export default function Home() {
             {[
               {
                 title: "For Candidates",
-                desc: "Prove your skills once, share everywhere. No more repeating the same screening calls for every company.",
-                items: ["Free forever", "15-minute assessment", "Shareable profile link", "Track your growth"],
+                desc: "Get discovered by companies looking for your exact skills. One assessment creates a career profile that works for every opportunity.",
+                items: ["Free forever — no hidden fees", "Profile visible to hiring companies", "One link replaces your resume", "Retake to show career growth"],
                 gradient: "from-blue-500 to-cyan-400",
               },
               {
-                title: "Anti-Cheat Built In",
-                desc: "Employers trust Hyr results because we make cheating impractical — not just difficult.",
-                items: ["Timed questions (12-20s)", "Tab switch tracking", "Copy/paste disabled", "Reasoning-based answers"],
+                title: "Trusted & Verified",
+                desc: "Employers trust Hyr profiles because every score is backed by anti-cheat measures and integrity signals.",
+                items: ["Timed scenario-based questions", "Tab switch monitoring", "Copy/paste disabled", "Reasoning over memorization"],
                 gradient: "from-violet-500 to-purple-400",
               },
               {
                 title: "For Employers",
-                desc: "Stop wasting weeks on screening. See verified skill profiles and go straight to the final interview.",
-                items: ["Verified scores per domain", "Trust indicators", "Assessment history", "Browse candidates"],
+                desc: "Browse verified engineers and go straight to the final interview. No screening calls. No take-home tests.",
+                items: ["Search by skill, level, and domain", "See integrity and trust signals", "Domain-level score breakdowns", "Assessment history and growth"],
                 gradient: "from-emerald-500 to-green-400",
               },
             ].map((card) => (
@@ -676,7 +675,7 @@ export default function Home() {
                   { icon: "🔍", title: "Browse verified profiles", desc: "Search by domain, level, and personality type" },
                   { icon: "🛡️", title: "Trust indicators on every profile", desc: "See tab-switch counts, assessment history, and verification status" },
                   { icon: "⚡", title: "Go straight to final interview", desc: "Skip phone screens and take-home tests — skills are already verified" },
-                  { icon: "📊", title: "13 domains, scored individually", desc: "From Kubernetes to FinOps — see exactly where candidates excel" },
+                  { icon: "📊", title: "43+ domains, scored individually", desc: "From Kubernetes to React — see exactly where candidates excel" },
                 ].map((item) => (
                   <div key={item.title} className="flex gap-4 p-4 rounded-xl border border-gray-800 bg-gray-900/50">
                     <span className="text-2xl shrink-0">{item.icon}</span>
@@ -709,11 +708,10 @@ export default function Home() {
         <div className="relative z-10 mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
           <Reveal>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-              Ready to prove what you know?
+              Your next interview is one assessment away.
             </h2>
             <p className="mt-6 text-gray-400 text-lg max-w-xl mx-auto">
-              15 minutes. 40 questions. A profile that speaks for itself.
-              No credit card. No strings. Just skills.
+              Build your verified profile in 15 minutes. Companies on Hyr are already looking for engineers like you.
             </p>
             <div className="pt-8">
               <motion.div
@@ -727,7 +725,7 @@ export default function Home() {
                   size="lg"
                   className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
                 >
-                  Start Free Assessment
+                  Build Your Profile
                 </Button>
               </motion.div>
             </div>
@@ -741,14 +739,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <span className="text-white font-bold text-lg">Hyr</span>
-              <span className="text-gray-600 text-sm">&middot; Tech skills verification</span>
+              <span className="text-gray-600 text-sm">&middot; Where companies discover verified engineers</span>
             </div>
             <div className="flex items-center gap-6">
               <Link href="/auth" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
                 Sign In
               </Link>
               <Link href="/assessment" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
-                Assessment
+                Build Profile
               </Link>
               <Link href="/employers" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
                 For Employers

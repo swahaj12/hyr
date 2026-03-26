@@ -724,10 +724,10 @@ export default function AssessmentPage() {
             className="mt-6 text-center"
           >
             <p className="text-gray-400 text-lg">
-              Now let&apos;s see if the data agrees.
+              Let&apos;s build your verified profile.
             </p>
             <p className="text-sm text-gray-500 mt-2">
-              Choose your assessment level and prove what you know.
+              Complete the assessment and go live to employers.
             </p>
           </motion.div>
 
@@ -855,6 +855,10 @@ export default function AssessmentPage() {
       <div className="min-h-screen bg-gray-950 text-white">
         <div className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
           <div className="text-center space-y-2 mb-10">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-medium text-emerald-400 mb-4">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              After this, your profile goes live to employers
+            </div>
             <h1 className="text-3xl font-bold">Before You Begin</h1>
             <p className="text-gray-400">
               {config.label} Assessment &middot; 40 questions &middot; ~15 minutes
@@ -995,8 +999,8 @@ export default function AssessmentPage() {
           className="text-center space-y-4"
         >
           <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full mx-auto" />
-          <p className="text-lg font-semibold">Calculating your results...</p>
-          <p className="text-sm text-gray-400">Analyzing {answers.length} answers across 13 domains</p>
+          <p className="text-lg font-semibold">Building your verified profile...</p>
+          <p className="text-sm text-gray-400">Scoring {answers.length} answers across your domains</p>
         </motion.div>
       </div>
     )

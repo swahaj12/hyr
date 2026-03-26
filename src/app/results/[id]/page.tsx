@@ -216,7 +216,7 @@ export default function ResultsPage() {
           <div className="text-center space-y-4">
             <p className="text-gray-500">{error || "Assessment not found."}</p>
             <Link href="/dashboard">
-              <Button>Go to Dashboard</Button>
+              <Button>Go to Career Hub</Button>
             </Link>
           </div>
         </div>
@@ -386,6 +386,38 @@ export default function ResultsPage() {
               </motion.div>
             )}
           </div>
+        )}
+
+        {/* You're Live Card */}
+        {revealStage >= 3 && candidateId && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="rounded-xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50 p-6">
+              <div className="flex items-start gap-4">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-emerald-900 text-lg">Your profile is now live</h3>
+                  <p className="text-emerald-700 text-sm mt-1 leading-relaxed">
+                    Employers browsing Hyr can now discover you based on your verified skills. Your domain scores, trust indicators, and engineering type are all visible to hiring companies.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3 mt-3">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-100 rounded-full px-3 py-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      Visible to employers
+                    </span>
+                    <span className="text-xs text-emerald-600">
+                      Improve your score anytime by retaking the assessment
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         )}
 
         {/* Personality Type Card */}
@@ -572,9 +604,9 @@ export default function ResultsPage() {
               <CardContent className="pt-6">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
-                    <h3 className="font-semibold">Share Your Profile</h3>
+                    <h3 className="font-semibold">Boost Your Visibility</h3>
                     <p className="text-sm text-muted-foreground">
-                      Send your profile link to employers to showcase all your verified skills.
+                      Share your verified profile to reach more employers and hiring managers.
                     </p>
                   </div>
                   <div className="flex gap-2 flex-wrap">
@@ -595,7 +627,8 @@ export default function ResultsPage() {
                           size="sm"
                           onClick={() => {
                             const url = `${window.location.origin}/profile/${candidateId}`
-                            const text = `I just completed my DevOps skills assessment on @HyrPK — ${overallPct}% overall (${displayLevel(level)})`
+                            const trackName = TRACK_LABELS[data.selfTrack || ""] || "tech"
+                            const text = `My verified ${trackName} skill profile is live on @HyrPK — ${overallPct}% overall (${displayLevel(level)}). Companies can now find me based on my actual skills.`
                             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank", "noopener")
                           }}
                         >
@@ -618,7 +651,7 @@ export default function ResultsPage() {
                       </>
                     )}
                     <Link href="/dashboard">
-                      <Button>Go to Dashboard</Button>
+                      <Button>Go to Career Hub</Button>
                     </Link>
                   </div>
                 </div>

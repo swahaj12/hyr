@@ -372,7 +372,7 @@ export default function ProfilePage() {
         {/* Footer */}
         <div className="text-center py-4">
           <p className="text-xs text-muted-foreground">
-            Verified by Hyr — DevOps skills assessment platform
+            Verified by Hyr — where companies discover verified engineers
           </p>
         </div>
       </main>

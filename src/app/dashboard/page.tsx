@@ -97,7 +97,7 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Welcome back, {userName.split(" ")[0] || "there"}</h1>
-            <p className="text-muted-foreground">Your DevOps assessment dashboard</p>
+            <p className="text-muted-foreground">Your career profile</p>
           </div>
           {assessments.length > 0 && userId && (
             <div className="flex items-center gap-3">
@@ -142,6 +142,31 @@ export default function DashboardPage() {
           )}
         </div>
 
+        {/* Profile Status */}
+        {assessments.length > 0 && userId && (
+          <div className={`rounded-xl border-2 p-5 ${profileVisible ? "border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50" : "border-gray-200 bg-gray-50"}`}>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className={`w-3 h-3 rounded-full ${profileVisible ? "bg-emerald-500 animate-pulse" : "bg-gray-400"}`} />
+                <div>
+                  <p className={`font-semibold text-sm ${profileVisible ? "text-emerald-900" : "text-gray-700"}`}>
+                    {profileVisible ? "Your profile is live — employers can discover you" : "Your profile is hidden from employers"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {profileVisible
+                      ? "Companies browsing Hyr can find you by your skills, level, and engineering type"
+                      : "Toggle visibility above to let employers find your profile"
+                    }
+                  </p>
+                </div>
+              </div>
+              <Link href={`/profile/${userId}`} className="shrink-0">
+                <Button variant="outline" size="sm">View Public Profile</Button>
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Progress Tracking */}
         {assessments.length >= 2 && (() => {
           const latestPct = Math.round((assessments[0].total_score / assessments[0].total_questions) * 100)
@@ -172,13 +197,12 @@ export default function DashboardPage() {
             <CardContent className="pt-6">
               <div className="text-center space-y-4 py-8">
                 <div className="text-5xl">&#127919;</div>
-                <h2 className="text-xl font-semibold">Take Your First Assessment</h2>
+                <h2 className="text-xl font-semibold">Build Your Career Profile</h2>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                  Answer 40 scenario-based DevOps questions in ~15 minutes. Get a verified skill
-                  profile across 13 domains.
+                  Complete a 15-minute assessment to create your verified skill profile. Once live, employers can discover you based on your actual skills — no applications needed.
                 </p>
                 <Link href="/assessment">
-                  <Button size="lg">Start Assessment</Button>
+                  <Button size="lg">Build Your Profile</Button>
                 </Link>
               </div>
             </CardContent>
@@ -227,7 +251,7 @@ export default function DashboardPage() {
                         <Button variant="outline">View Full Results</Button>
                       </Link>
                       <Link href="/assessment">
-                        <Button>Retake Assessment</Button>
+                        <Button>Improve Your Profile</Button>
                       </Link>
                     </div>
                   </div>
