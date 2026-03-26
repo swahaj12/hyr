@@ -40,6 +40,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [interests, setInterests] = useState<{ employer_name: string; employer_email: string; message: string | null; created_at: string }[]>([])
   const [profileViews, setProfileViews] = useState(0)
+  const [hiringCompanies, setHiringCompanies] = useState<{ company_name: string; hiring_tracks: string[]; hiring_description: string | null }[]>([])
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   useEffect(() => {
     async function load() {
@@ -78,6 +80,31 @@ export default function DashboardPage() {
           .eq("viewer_role", "employer")
           .then(({ count }) => {
             if (count) setProfileViews(count)
+          })
+
+        supabase
+          .from("employer_profiles")
+          .select("company_name, hiring_tracks, hiring_description")
+          .eq("status", "active")
+          .then(({ data: empData }) => {
+            if (empData) setHiringCompanies(empData as typeof hiringCompanies)
+          })
+
+        supabase
+          .from("conversations")
+          .select("id")
+          .or(`candidate_id.eq.${user.id}`)
+          .then(async ({ data: convs }) => {
+            if (convs && convs.length > 0) {
+              const convIds = convs.map(c => c.id)
+              const { count } = await supabase
+                .from("messages")
+                .select("id", { count: "exact", head: true })
+                .in("conversation_id", convIds)
+                .eq("read", false)
+                .neq("sender_id", user.id)
+              if (count) setUnreadMessages(count)
+            }
           })
 
         if (fetchError) {
@@ -185,6 +212,68 @@ export default function DashboardPage() {
               </Link>
             </div>
           </div>
+        )}
+
+        {/* Messages shortcut */}
+        {assessments.length > 0 && unreadMessages > 0 && (
+          <Link href="/messages">
+            <Card className="border-blue-200 bg-blue-50 hover:shadow-md transition-all cursor-pointer">
+              <CardContent className="pt-4 pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">💬</span>
+                    <div>
+                      <p className="font-semibold text-blue-900 text-sm">
+                        {unreadMessages} unread message{unreadMessages !== 1 ? "s" : ""}
+                      </p>
+                      <p className="text-xs text-blue-700">From employers interested in your profile</p>
+                    </div>
+                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><path d="m9 18 6-6-6-6"/></svg>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        )}
+
+        {/* Companies Actively Hiring */}
+        {assessments.length > 0 && hiringCompanies.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                Companies Actively Hiring
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              </CardTitle>
+              <CardDescription>These companies are looking for engineers on Hyr</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {hiringCompanies.map((company, i) => (
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
+                    <div className="w-10 h-10 rounded-lg bg-gray-950 text-white flex items-center justify-center text-sm font-bold shrink-0">
+                      {company.company_name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm">{company.company_name}</p>
+                      <div className="flex gap-1.5 mt-1 flex-wrap">
+                        {(company.hiring_tracks || []).map(track => (
+                          <Badge key={track} variant="outline" className="text-[10px]">
+                            {track === "devops" ? "DevOps" : track === "frontend" ? "Frontend" : track === "backend" ? "Backend" : track === "qa" ? "QA" : track}
+                          </Badge>
+                        ))}
+                      </div>
+                      {company.hiring_description && (
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{company.hiring_description}</p>
+                      )}
+                    </div>
+                    <Badge className="text-[10px] bg-emerald-100 text-emerald-700 border-emerald-200 shrink-0">
+                      Hiring
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Employer Activity */}

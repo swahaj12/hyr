@@ -14,17 +14,37 @@ type NavVariant = "dark" | "light"
 export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
   const pathname = usePathname()
   const router = useRouter()
-  const [user, setUser] = useState<{ email: string; name: string; role: UserRole } | null>(null)
+  const [user, setUser] = useState<{ email: string; name: string; role: UserRole; id: string } | null>(null)
   const [checked, setChecked] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
         setUser({
+          id: data.user.id,
           email: data.user.email || "",
           name: data.user.user_metadata?.full_name || data.user.email || "",
           role: (data.user.user_metadata?.role as UserRole) || "candidate",
         })
+
+        supabase
+          .from("conversations")
+          .select("id")
+          .or(`employer_id.eq.${data.user.id},candidate_id.eq.${data.user.id}`)
+          .then(({ data: convs }) => {
+            if (convs && convs.length > 0) {
+              supabase
+                .from("messages")
+                .select("id", { count: "exact", head: true })
+                .in("conversation_id", convs.map(c => c.id))
+                .eq("read", false)
+                .neq("sender_id", data.user!.id)
+                .then(({ count }) => {
+                  if (count) setUnreadCount(count)
+                })
+            }
+          })
       }
       setChecked(true)
     })
@@ -71,6 +91,16 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
             {(!user || isEmployer || isAdmin) && (
               <Link href="/employers" className={navLinkClass("/employers")}>
                 {isEmployer ? "Browse Candidates" : "Employers"}
+              </Link>
+            )}
+            {user && checked && (
+              <Link href="/messages" className={`${navLinkClass("/messages")} relative`}>
+                Messages
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </Link>
             )}
             {isAdmin && (
@@ -141,6 +171,20 @@ export function Navbar({ variant = "dark" }: { variant?: NavVariant }) {
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
                 Profile
+              </Link>
+            )}
+            {user && (
+              <Link
+                href="/messages"
+                className={`flex flex-col items-center gap-0.5 text-xs relative ${pathname?.startsWith("/messages") ? "text-gray-950 font-medium" : "text-gray-500"}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Messages
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 right-0 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </Link>
             )}
             {(!user || isEmployer || isAdmin) && (

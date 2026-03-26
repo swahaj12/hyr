@@ -24,15 +24,39 @@ type CandidateRow = {
   candidate_name: string
 }
 
+type EmployerRow = {
+  id: string
+  user_id: string
+  company_name: string
+  company_website: string | null
+  hiring_tracks: string[]
+  hiring_description: string | null
+  status: string
+  created_at: string
+}
+
+type AdminTab = "candidates" | "employers"
+
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
+
+const TRACK_LABELS: Record<string, string> = {
+  devops: "DevOps",
+  frontend: "Frontend",
+  backend: "Backend",
+  qa: "QA",
+}
 
 export default function AdminPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState(false)
+  const [activeTab, setActiveTab] = useState<AdminTab>("candidates")
   const [candidates, setCandidates] = useState<CandidateRow[]>([])
+  const [employers, setEmployers] = useState<EmployerRow[]>([])
   const [search, setSearch] = useState("")
   const [levelFilter, setLevelFilter] = useState("")
+  const [sessionToken, setSessionToken] = useState("")
+  const [activatingId, setActivatingId] = useState<string | null>(null)
 
   const [error, setError] = useState<string | null>(null)
 
@@ -51,6 +75,15 @@ export default function AdminPage() {
           return
         }
         setAuthorized(true)
+
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.access_token) setSessionToken(session.access_token)
+
+        const { data: empData } = await supabase
+          .from("employer_profiles")
+          .select("*")
+          .order("created_at", { ascending: false })
+        if (empData) setEmployers(empData as EmployerRow[])
 
         const { data, error: fetchError } = await supabase
           .from("assessments")
@@ -122,6 +155,32 @@ export default function AdminPage() {
 
   const levels = [...new Set(candidates.map((c) => c.overall_level))]
 
+  const pendingEmployers = employers.filter(e => e.status === "pending")
+
+  async function handleEmployerAction(profileId: string, action: "activate" | "reject") {
+    setActivatingId(profileId)
+    try {
+      const res = await fetch("/api/employer-activate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify({ employerProfileId: profileId, action }),
+      })
+      if (res.ok) {
+        setEmployers(prev =>
+          prev.map(e =>
+            e.id === profileId
+              ? { ...e, status: action === "activate" ? "active" : "rejected" }
+              : e
+          )
+        )
+      }
+    } catch { /* ignore */ }
+    setActivatingId(null)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -132,6 +191,174 @@ export default function AdminPage() {
             {error}
           </div>
         )}
+
+        {/* Tab Switcher */}
+        <div className="flex gap-2 rounded-lg border border-border bg-muted/40 p-1 w-fit">
+          <Button
+            variant={activeTab === "candidates" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("candidates")}
+          >
+            Candidates ({candidates.length})
+          </Button>
+          <Button
+            variant={activeTab === "employers" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setActiveTab("employers")}
+            className="relative"
+          >
+            Employers ({employers.length})
+            {pendingEmployers.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
+                {pendingEmployers.length}
+              </span>
+            )}
+          </Button>
+        </div>
+
+        {/* Employer Management Tab */}
+        {activeTab === "employers" && (
+          <div className="space-y-6">
+            {pendingEmployers.length > 0 && (
+              <div className="rounded-lg border-2 border-amber-200 bg-amber-50 p-4">
+                <p className="font-semibold text-amber-900">
+                  {pendingEmployers.length} employer{pendingEmployers.length !== 1 ? "s" : ""} awaiting approval
+                </p>
+              </div>
+            )}
+
+            <Card>
+              <CardHeader>
+                <CardTitle>All Employer Accounts</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {employers.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">No employer sign-ups yet.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-2 font-medium">Company</th>
+                          <th className="text-left py-3 px-2 font-medium hidden sm:table-cell">Website</th>
+                          <th className="text-left py-3 px-2 font-medium">Hiring For</th>
+                          <th className="text-left py-3 px-2 font-medium">Status</th>
+                          <th className="text-left py-3 px-2 font-medium hidden sm:table-cell">Date</th>
+                          <th className="text-right py-3 px-2 font-medium">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {employers.map(emp => (
+                          <tr key={emp.id} className="border-b hover:bg-gray-50">
+                            <td className="py-3 px-2">
+                              <div>
+                                <p className="font-medium">{emp.company_name}</p>
+                                {emp.hiring_description && (
+                                  <p className="text-xs text-muted-foreground mt-0.5 max-w-[200px] truncate">
+                                    {emp.hiring_description}
+                                  </p>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-3 px-2 hidden sm:table-cell">
+                              {emp.company_website ? (
+                                <a
+                                  href={emp.company_website}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:underline text-xs"
+                                >
+                                  {emp.company_website.replace(/^https?:\/\//, "")}
+                                </a>
+                              ) : (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-2">
+                              <div className="flex gap-1 flex-wrap">
+                                {(emp.hiring_tracks || []).map(t => (
+                                  <Badge key={t} variant="outline" className="text-xs">
+                                    {TRACK_LABELS[t] || t}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="py-3 px-2">
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${
+                                  emp.status === "active"
+                                    ? "bg-green-50 text-green-700 border-green-200"
+                                    : emp.status === "pending"
+                                      ? "bg-amber-50 text-amber-700 border-amber-200"
+                                      : "bg-red-50 text-red-700 border-red-200"
+                                }`}
+                              >
+                                {emp.status}
+                              </Badge>
+                            </td>
+                            <td className="py-3 px-2 text-muted-foreground hidden sm:table-cell">
+                              {new Date(emp.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="py-3 px-2 text-right">
+                              <div className="flex gap-1 justify-end">
+                                {emp.status === "pending" && (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      disabled={activatingId === emp.id}
+                                      onClick={() => handleEmployerAction(emp.id, "activate")}
+                                      className="bg-green-600 hover:bg-green-700 text-white text-xs"
+                                    >
+                                      {activatingId === emp.id ? "..." : "Activate"}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={activatingId === emp.id}
+                                      onClick={() => handleEmployerAction(emp.id, "reject")}
+                                      className="text-xs"
+                                    >
+                                      Reject
+                                    </Button>
+                                  </>
+                                )}
+                                {emp.status === "active" && (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={activatingId === emp.id}
+                                    onClick={() => handleEmployerAction(emp.id, "reject")}
+                                    className="text-xs"
+                                  >
+                                    Deactivate
+                                  </Button>
+                                )}
+                                {emp.status === "rejected" && (
+                                  <Button
+                                    size="sm"
+                                    disabled={activatingId === emp.id}
+                                    onClick={() => handleEmployerAction(emp.id, "activate")}
+                                    className="text-xs"
+                                  >
+                                    Activate
+                                  </Button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "candidates" && (<>
+        {/* existing candidates content below */}
 
         {/* Analytics Overview */}
         {(() => {
@@ -339,6 +566,7 @@ export default function AdminPage() {
             )}
           </CardContent>
         </Card>
+        </>)}
       </main>
     </div>
   )

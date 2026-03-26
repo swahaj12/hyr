@@ -66,10 +66,11 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null)
   const [viewerRole, setViewerRole] = useState<string | null>(null)
   const [viewerData, setViewerData] = useState<{ id: string; name: string; email: string } | null>(null)
-  const [interestSent, setInterestSent] = useState(false)
-  const [interestLoading, setInterestLoading] = useState(false)
-  const [interestMessage, setInterestMessage] = useState("")
-  const [showInterestForm, setShowInterestForm] = useState(false)
+  const [employerStatus, setEmployerStatus] = useState<string | null>(null)
+  const [existingConversationId, setExistingConversationId] = useState<string | null>(null)
+  const [showFirstMessage, setShowFirstMessage] = useState(false)
+  const [firstMessage, setFirstMessage] = useState("")
+  const [sendingMessage, setSendingMessage] = useState(false)
 
   useEffect(() => {
     async function detectViewer() {
@@ -79,7 +80,7 @@ export default function ProfilePage() {
         setViewerRole(role)
         setViewerData({
           id: user.id,
-          name: user.user_metadata?.name || user.email?.split("@")[0] || "",
+          name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "",
           email: user.email || "",
         })
         if (role === "employer" && user.id !== params.id) {
@@ -88,15 +89,21 @@ export default function ProfilePage() {
             candidate_id: params.id,
             viewer_role: role,
           }).then(() => {})
-        }
-        const { data: existing } = await supabase
-          .from("employer_interests")
-          .select("id")
-          .eq("employer_id", user.id)
-          .eq("candidate_id", params.id as string)
-          .limit(1)
-        if (existing && existing.length > 0) {
-          setInterestSent(true)
+
+          const { data: empProfile } = await supabase
+            .from("employer_profiles")
+            .select("status")
+            .eq("user_id", user.id)
+            .single()
+          setEmployerStatus(empProfile?.status || null)
+
+          const { data: conv } = await supabase
+            .from("conversations")
+            .select("id")
+            .eq("employer_id", user.id)
+            .eq("candidate_id", params.id as string)
+            .single()
+          if (conv) setExistingConversationId(conv.id)
         }
       }
     }
@@ -359,73 +366,111 @@ export default function ProfilePage() {
           </Card>
         )}
 
-        {/* Employer Interest */}
+        {/* Employer Action — Paywall or Message */}
         {viewerRole === "employer" && viewerData && params.id !== viewerData.id && (
-          <Card className={interestSent ? "border-emerald-200 bg-emerald-50" : "border-blue-200 bg-blue-50"}>
+          <Card className={employerStatus === "active" ? "border-blue-200 bg-blue-50" : "border-gray-200 bg-gray-50"}>
             <CardContent className="pt-6">
-              {interestSent ? (
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">&#10003;</span>
-                  <div>
-                    <p className="font-semibold text-emerald-900">Interest sent</p>
-                    <p className="text-sm text-emerald-700">The candidate has been notified that you&apos;re interested. They can reach out to you directly.</p>
+              {employerStatus === "active" ? (
+                existingConversationId ? (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                      <p className="font-semibold text-blue-900">You have an active conversation</p>
+                      <p className="text-sm text-blue-700">Continue your conversation with {profile.candidateName}.</p>
+                    </div>
+                    <Link href={`/messages/${existingConversationId}`}>
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white shrink-0">
+                        Open Conversation
+                      </Button>
+                    </Link>
                   </div>
-                </div>
-              ) : showInterestForm ? (
-                <div className="space-y-3">
-                  <div>
-                    <p className="font-semibold text-blue-900">Send a message to {profile.candidateName}</p>
-                    <p className="text-sm text-blue-700">They&apos;ll receive an email with your name, company, and message.</p>
+                ) : showFirstMessage ? (
+                  <div className="space-y-3">
+                    <div>
+                      <p className="font-semibold text-blue-900">Start a conversation with {profile.candidateName}</p>
+                      <p className="text-sm text-blue-700">Your message will be delivered through Hyr&apos;s secure messaging.</p>
+                    </div>
+                    <textarea
+                      value={firstMessage}
+                      onChange={(e) => setFirstMessage(e.target.value)}
+                      placeholder="Hi, we're looking for someone with your skills. Would love to chat about an opportunity..."
+                      className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        disabled={sendingMessage || !firstMessage.trim()}
+                        onClick={async () => {
+                          setSendingMessage(true)
+                          try {
+                            const { data: conv } = await supabase
+                              .from("conversations")
+                              .insert({
+                                employer_id: viewerData.id,
+                                candidate_id: params.id,
+                              })
+                              .select("id")
+                              .single()
+
+                            if (conv) {
+                              await supabase.from("messages").insert({
+                                conversation_id: conv.id,
+                                sender_id: viewerData.id,
+                                content: firstMessage.trim(),
+                              })
+                              setExistingConversationId(conv.id)
+                              setShowFirstMessage(false)
+                            }
+                          } catch { /* ignore */ }
+                          setSendingMessage(false)
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        {sendingMessage ? "Sending..." : "Send Message"}
+                      </Button>
+                      <Button variant="outline" onClick={() => setShowFirstMessage(false)}>
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
-                  <textarea
-                    value={interestMessage}
-                    onChange={(e) => setInterestMessage(e.target.value)}
-                    placeholder="Hi, we're looking for someone with your skills. Would love to chat about an opportunity..."
-                    className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <div className="flex gap-2">
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                      <p className="font-semibold text-blue-900">Interested in {profile.candidateName}?</p>
+                      <p className="text-sm text-blue-700">Start a secure conversation through Hyr messaging.</p>
+                    </div>
                     <Button
-                      disabled={interestLoading}
-                      onClick={async () => {
-                        setInterestLoading(true)
-                        try {
-                          await fetch("/api/employer-interest", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              employerId: viewerData.id,
-                              employerName: viewerData.name,
-                              employerEmail: viewerData.email,
-                              candidateId: params.id,
-                              candidateName: profile.candidateName,
-                              message: interestMessage,
-                            }),
-                          })
-                          setInterestSent(true)
-                        } catch { /* ignore */ }
-                        setInterestLoading(false)
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      onClick={() => setShowFirstMessage(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
                     >
-                      {interestLoading ? "Sending..." : "Send Interest"}
-                    </Button>
-                    <Button variant="outline" onClick={() => setShowInterestForm(false)}>
-                      Cancel
+                      Start Conversation
                     </Button>
                   </div>
+                )
+              ) : employerStatus === "pending" ? (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div>
+                    <p className="font-semibold text-gray-900">Account Under Review</p>
+                    <p className="text-sm text-muted-foreground">Your employer account is being reviewed. Once activated, you can message candidates directly.</p>
+                  </div>
+                  <Link href="/employers/setup">
+                    <Button variant="outline" className="shrink-0">Check Status</Button>
+                  </Link>
                 </div>
               ) : (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
-                    <p className="font-semibold text-blue-900">Interested in this candidate?</p>
-                    <p className="text-sm text-blue-700">Let them know you&apos;d like to connect. They&apos;ll receive a notification with your details.</p>
+                    <p className="font-semibold text-gray-900">Connect with {profile.candidateName}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Set up your company profile to start messaging verified candidates.
+                    </p>
                   </div>
-                  <Button
-                    onClick={() => setShowInterestForm(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
-                  >
-                    Show Interest
-                  </Button>
+                  <div className="flex gap-2 shrink-0">
+                    <Link href="/employers/setup">
+                      <Button>Set Up Company Profile</Button>
+                    </Link>
+                    <Link href="/pricing">
+                      <Button variant="outline">View Pricing</Button>
+                    </Link>
+                  </div>
                 </div>
               )}
             </CardContent>

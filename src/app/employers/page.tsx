@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { type DomainScore, displayLevel } from "@/lib/scoring"
@@ -58,6 +59,7 @@ const DOMAIN_KEY_MAP: Record<string, string> = {
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
 
 export default function EmployersPage() {
+  const router = useRouter()
   const [candidates, setCandidates] = useState<CandidateProfile[]>([])
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState(false)
@@ -81,6 +83,20 @@ export default function EmployersPage() {
           setLoading(false)
           return
         }
+
+        if (role === "employer" && !isAdmin) {
+          const { data: empProfile } = await supabase
+            .from("employer_profiles")
+            .select("status")
+            .eq("user_id", user.id)
+            .single()
+
+          if (!empProfile) {
+            router.push("/employers/setup")
+            return
+          }
+        }
+
         setAuthorized(true)
 
         const { data: assessments, error: fetchError } = await supabase
