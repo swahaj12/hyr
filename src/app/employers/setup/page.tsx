@@ -77,10 +77,15 @@ export default function EmployerSetupPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
+      let website = companyWebsite.trim()
+      if (website && !website.startsWith("http://") && !website.startsWith("https://")) {
+        website = `https://${website}`
+      }
+
       const payload = {
         user_id: user.id,
         company_name: companyName.trim(),
-        company_website: companyWebsite.trim() || null,
+        company_website: website || null,
         hiring_tracks: hiringTracks,
         hiring_description: hiringDescription.trim() || null,
         status: "pending",
@@ -231,9 +236,9 @@ export default function EmployerSetupPage() {
                   id="company-website"
                   value={companyWebsite}
                   onChange={e => setCompanyWebsite(e.target.value)}
-                  placeholder="https://example.com"
-                  type="url"
+                  placeholder="www.example.com"
                 />
+                <p className="text-[11px] text-muted-foreground">e.g. www.example.com or https://example.com</p>
               </div>
 
               <div className="space-y-2">
