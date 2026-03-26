@@ -24,6 +24,30 @@ export async function GET(req: NextRequest) {
 
     const admin = createClient(supabaseUrl, serviceRoleKey)
 
+    // If ?id= is provided, return full messages for that conversation
+    const convId = req.nextUrl.searchParams.get("id")
+    if (convId) {
+      const { data: conv } = await admin.from("conversations").select("*").eq("id", convId).single()
+      if (!conv) return NextResponse.json({ error: "Not found" }, { status: 404 })
+
+      const [empRes, candRes, msgsRes] = await Promise.all([
+        admin.from("employer_profiles").select("company_name").eq("user_id", conv.employer_id).single(),
+        admin.from("assessments").select("candidate_name").eq("candidate_id", conv.candidate_id).limit(1).single(),
+        admin.from("messages").select("*").eq("conversation_id", convId).order("created_at", { ascending: true }),
+      ])
+
+      return NextResponse.json({
+        conversation: {
+          id: conv.id,
+          employerName: empRes.data?.company_name || "Unknown Employer",
+          candidateName: candRes.data?.candidate_name || "Unknown Candidate",
+          employerId: conv.employer_id,
+          candidateId: conv.candidate_id,
+        },
+        messages: msgsRes.data || [],
+      })
+    }
+
     const { data: conversations, error: convErr } = await admin
       .from("conversations")
       .select("*")

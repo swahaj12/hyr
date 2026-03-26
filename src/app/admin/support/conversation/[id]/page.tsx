@@ -56,14 +56,13 @@ export default function AdminConversationViewerPage() {
       const { data: { session } } = await supabase.auth.getSession()
       const token = session?.access_token || ""
 
-      const res = await fetch("/api/admin/conversations", {
+      const res = await fetch(`/api/admin/conversations?id=${conversationId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
 
       if (!res.ok) { router.push("/admin/support"); return }
 
-      const { conversations } = await res.json()
-      const conv = conversations?.find((c: { id: string }) => c.id === conversationId)
+      const { conversation: conv, messages: msgs } = await res.json()
 
       if (!conv) { router.push("/admin/support"); return }
 
@@ -71,13 +70,6 @@ export default function AdminConversationViewerPage() {
       setCandidateName(conv.candidateName)
       setEmployerId(conv.employerId)
       setCandidateId(conv.candidateId)
-
-      const { data: msgs } = await supabase
-        .from("messages")
-        .select("*")
-        .eq("conversation_id", conversationId)
-        .order("created_at", { ascending: true })
-
       setMessages((msgs || []) as MessageRow[])
       setLoading(false)
     }
