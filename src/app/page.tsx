@@ -335,18 +335,30 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
+                className="mt-10 flex flex-col items-center gap-5"
               >
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                  <Button
-                    nativeButton={false}
-                    render={<Link href="/assessment" />}
-                    size="lg"
-                    className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
-                  >
-                    Build Your Profile
-                  </Button>
-                </motion.div>
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                    <Button
+                      nativeButton={false}
+                      render={<Link href="/assessment" />}
+                      size="lg"
+                      className="h-12 px-8 text-base font-semibold bg-white text-gray-950 hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
+                    >
+                      I&apos;m a Candidate
+                    </Button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+                    <Button
+                      nativeButton={false}
+                      render={<Link href="/for-employers" />}
+                      size="lg"
+                      className="h-12 px-8 text-base font-semibold bg-emerald-500 text-white hover:!bg-emerald-400 hover:!text-white transition-colors border-0"
+                    >
+                      I&apos;m Hiring
+                    </Button>
+                  </motion.div>
+                </div>
                 <a
                   href="#how-it-works"
                   className="text-sm text-gray-400 hover:text-white transition-colors underline underline-offset-4 decoration-gray-600 hover:decoration-gray-400"
