@@ -26,12 +26,26 @@ type Stats = {
 
 export default function ForEmployersPage() {
   const [stats, setStats] = useState<Stats | null>(null)
+  const [ctaHref, setCtaHref] = useState("/auth")
 
   useEffect(() => {
     fetch("/api/talent-stats")
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d) setStats(d) })
       .catch(() => {})
+
+    import("@/lib/supabase").then(({ supabase }) => {
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          const role = user.user_metadata?.role
+          if (role === "employer") {
+            setCtaHref("/employers/hiring-needs/new")
+          } else {
+            setCtaHref("/employers/setup")
+          }
+        }
+      })
+    })
   }, [])
 
   const totalCandidates = stats?.publicCandidates || stats?.totalCandidates || 0
@@ -81,7 +95,7 @@ export default function ForEmployersPage() {
               <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}
                 className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
               >
-                <Link href="/auth">
+                <Link href={ctaHref}>
                   <Button size="lg" className="h-12 px-8 text-base font-semibold bg-emerald-500 text-white hover:bg-emerald-400 border-0">
                     Start Hiring
                   </Button>
@@ -480,7 +494,7 @@ export default function ForEmployersPage() {
               Post your first hiring need in 2 minutes. See instant matches. Watch your pipeline grow.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/auth">
+              <Link href={ctaHref}>
                 <Button size="lg" className="h-12 px-8 text-base font-semibold bg-emerald-500 text-white hover:bg-emerald-400 border-0">
                   Start Hiring — Free
                 </Button>
