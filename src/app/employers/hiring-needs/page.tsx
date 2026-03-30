@@ -46,22 +46,29 @@ export default function HiringNeedsPage() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user || user.user_metadata?.role !== "employer") {
-        router.push("/auth")
-        return
-      }
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user || user.user_metadata?.role !== "employer") {
+          router.push("/auth")
+          return
+        }
 
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.access_token) return
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session?.access_token) {
+          setLoading(false)
+          return
+        }
 
-      const res = await fetch("/api/hiring-needs", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      })
+        const res = await fetch("/api/hiring-needs", {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        })
 
-      if (res.ok) {
-        const { needs: data } = await res.json()
-        setNeeds(data)
+        if (res.ok) {
+          const { needs: data } = await res.json()
+          setNeeds(data)
+        }
+      } catch {
+        // silently fail, show empty state
       }
       setLoading(false)
     }

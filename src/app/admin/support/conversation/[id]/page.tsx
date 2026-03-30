@@ -16,8 +16,6 @@ type MessageRow = {
   created_at: string
 }
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
-
 function formatTime(dateStr: string): string {
   const d = new Date(dateStr)
   const now = new Date()
@@ -48,13 +46,18 @@ export default function AdminConversationViewerPage() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user || !ADMIN_EMAILS.includes(user.email || "")) {
-        router.push("/admin")
-        return
-      }
+      if (!user) { router.push("/admin"); return }
 
       const { data: { session } } = await supabase.auth.getSession()
       const token = session?.access_token || ""
+
+      try {
+        const verifyRes = await fetch("/api/admin/verify", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const { isAdmin } = await verifyRes.json()
+        if (!isAdmin) { router.push("/admin"); return }
+      } catch { router.push("/admin"); return }
 
       const res = await fetch(`/api/admin/conversations?id=${conversationId}`, {
         headers: { Authorization: `Bearer ${token}` },

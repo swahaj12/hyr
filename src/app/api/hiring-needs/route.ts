@@ -5,7 +5,7 @@ import { matchCandidateToNeed, type CandidateMatchProfile, type MatchResult, TRA
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim())
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean)
 
 function getServiceClient() {
   return createClient(supabaseUrl, serviceKey)
@@ -180,6 +180,11 @@ export async function PATCH(req: NextRequest) {
 
   if (!id || !status) {
     return NextResponse.json({ error: "ID and status required" }, { status: 400 })
+  }
+
+  const validStatuses = ["active", "paused", "closed", "expired"]
+  if (!validStatuses.includes(status)) {
+    return NextResponse.json({ error: "Invalid status value" }, { status: 400 })
   }
 
   const { data: need } = await admin

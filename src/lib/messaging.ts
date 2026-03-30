@@ -33,52 +33,72 @@ export async function getConversations(userId: string): Promise<ConversationWith
 
   if (!convs || convs.length === 0) return []
 
-  const enriched: ConversationWithMeta[] = []
+  const convIds = convs.map(c => c.id)
 
+  // Batch: get all messages for these conversations at once
+  const { data: allMessages } = await supabase
+    .from("messages")
+    .select("id, conversation_id, sender_id, content, created_at, read")
+    .in("conversation_id", convIds)
+    .order("created_at", { ascending: false })
+
+  // Batch: get other user names
+  const otherIds = new Set<string>()
+  const convRoles = new Map<string, { isEmployer: boolean; otherId: string }>()
   for (const c of convs) {
     const isEmployer = c.employer_id === userId
     const otherId = isEmployer ? c.candidate_id : c.employer_id
+    otherIds.add(otherId)
+    convRoles.set(c.id, { isEmployer, otherId })
+  }
 
-    const { data: lastMsg } = await supabase
-      .from("messages")
-      .select("content, created_at")
-      .eq("conversation_id", c.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single()
+  // Batch fetch candidate names
+  const { data: candidateNames } = await supabase
+    .from("assessments")
+    .select("candidate_id, candidate_name")
+    .in("candidate_id", Array.from(otherIds))
 
-    const { count } = await supabase
-      .from("messages")
-      .select("id", { count: "exact", head: true })
-      .eq("conversation_id", c.id)
-      .eq("read", false)
-      .neq("sender_id", userId)
+  // Batch fetch employer names
+  const { data: employerNames } = await supabase
+    .from("employer_profiles")
+    .select("user_id, company_name")
+    .in("user_id", Array.from(otherIds))
+
+  const candidateNameMap = new Map<string, string>()
+  if (candidateNames) {
+    for (const c of candidateNames) {
+      if (c.candidate_name) candidateNameMap.set(c.candidate_id, c.candidate_name)
+    }
+  }
+  const employerNameMap = new Map<string, string>()
+  if (employerNames) {
+    for (const e of employerNames) {
+      if (e.company_name) employerNameMap.set(e.user_id, e.company_name)
+    }
+  }
+
+  const enriched: ConversationWithMeta[] = []
+
+  for (const c of convs) {
+    const role = convRoles.get(c.id)!
+    const msgs = (allMessages || []).filter(m => m.conversation_id === c.id)
+    const lastMsg = msgs[0] || null
+    const unreadCount = msgs.filter(m => !m.read && m.sender_id !== userId).length
 
     let otherName = "User"
-    if (isEmployer) {
-      const { data: assess } = await supabase
-        .from("assessments")
-        .select("candidate_name")
-        .eq("candidate_id", otherId)
-        .limit(1)
-        .single()
-      otherName = assess?.candidate_name || "Candidate"
+    if (role.isEmployer) {
+      otherName = candidateNameMap.get(role.otherId) || "Candidate"
     } else {
-      const { data: empProfile } = await supabase
-        .from("employer_profiles")
-        .select("company_name")
-        .eq("user_id", otherId)
-        .single()
-      otherName = empProfile?.company_name || "Employer"
+      otherName = employerNameMap.get(role.otherId) || "Employer"
     }
 
     enriched.push({
       ...c,
       otherName,
-      otherRole: isEmployer ? "candidate" : "employer",
+      otherRole: role.isEmployer ? "candidate" : "employer",
       lastMessage: lastMsg?.content || null,
       lastMessageAt: lastMsg?.created_at || c.created_at,
-      unreadCount: count || 0,
+      unreadCount,
     })
   }
 

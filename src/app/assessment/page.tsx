@@ -149,7 +149,7 @@ export default function AssessmentPage() {
 
   useEffect(() => {
     supabase.auth.getUser()
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         if (!data.user) {
           router.push("/auth")
           return
@@ -158,10 +158,16 @@ export default function AssessmentPage() {
           router.push("/employers")
           return
         }
-        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim())
-        if (adminEmails.includes(data.user.email || "")) {
-          router.push("/admin")
-          return
+        // Check admin status server-side
+        const session = await supabase.auth.getSession()
+        if (session.data.session?.access_token) {
+          try {
+            const verifyRes = await fetch("/api/admin/verify", {
+              headers: { Authorization: `Bearer ${session.data.session.access_token}` },
+            })
+            const { isAdmin } = await verifyRes.json()
+            if (isAdmin) { router.push("/admin"); return }
+          } catch { /* not admin, continue */ }
         }
         setUserId(data.user.id)
         setUserName(data.user.user_metadata?.full_name || data.user.email || "")

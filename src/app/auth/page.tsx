@@ -81,8 +81,18 @@ export default function AuthPage() {
         return
       }
       const userRole = signInData.user?.user_metadata?.role
-      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim())
-      const isAdmin = adminEmails.includes(signInData.user?.email || "")
+      // Check admin status via server-side endpoint
+      let isAdmin = false
+      try {
+        const session = await supabase.auth.getSession()
+        if (session.data.session?.access_token) {
+          const verifyRes = await fetch("/api/admin/verify", {
+            headers: { Authorization: `Bearer ${session.data.session.access_token}` },
+          })
+          const verifyData = await verifyRes.json()
+          isAdmin = verifyData.isAdmin
+        }
+      } catch { /* not admin */ }
       router.push(isAdmin ? "/admin" : userRole === "employer" ? "/employers" : "/dashboard")
     } finally {
       setLoading(false)

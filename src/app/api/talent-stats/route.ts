@@ -4,14 +4,15 @@ import { type DomainScore, displayLevel, DOMAIN_LABELS } from "@/lib/scoring"
 import { TRACK_DOMAINS, TRACK_LABELS } from "@/lib/talent-matching"
 
 export async function GET() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-  if (!serviceKey) {
-    return NextResponse.json({ error: "Server config missing" }, { status: 500 })
-  }
+    if (!serviceKey) {
+      return NextResponse.json({ error: "Server config missing" }, { status: 500 })
+    }
 
-  const admin = createClient(supabaseUrl, serviceKey)
+    const admin = createClient(supabaseUrl, serviceKey)
 
   const { data: assessments } = await admin
     .from("assessments")
@@ -134,4 +135,7 @@ export async function GET() {
     activeEmployers,
     skillsByTrack,
   })
+  } catch {
+    return NextResponse.json({ error: "Internal error" }, { status: 500 })
+  }
 }

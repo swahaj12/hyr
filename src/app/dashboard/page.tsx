@@ -64,16 +64,21 @@ export default function DashboardPage() {
           router.push("/employers")
           return
         }
-        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim())
-        if (adminEmails.includes(user.email || "")) {
-          router.push("/admin")
-          return
+
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.access_token) {
+          setSessionToken(session.access_token)
+          // Check admin status server-side
+          try {
+            const verifyRes = await fetch("/api/admin/verify", {
+              headers: { Authorization: `Bearer ${session.access_token}` },
+            })
+            const { isAdmin } = await verifyRes.json()
+            if (isAdmin) { router.push("/admin"); return }
+          } catch { /* not admin, continue */ }
         }
         setUserName(user.user_metadata?.full_name || user.email || "")
         setUserId(user.id)
-
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session?.access_token) setSessionToken(session.access_token)
 
         const { data, error: fetchError } = await supabase
           .from("assessments")

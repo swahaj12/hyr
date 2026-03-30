@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "DevOps Assessment — Hyr",
-  description: "40 scenario-based DevOps questions across 13 domains. Timed, anti-cheat monitored, and free.",
+  title: "Skills Assessment — Hyr",
+  description: "40 scenario-based questions across multiple domains. Timed, anti-cheat monitored, and free.",
 }
 
 export default function AssessmentLayout({ children }: { children: React.ReactNode }) {

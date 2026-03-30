@@ -68,20 +68,27 @@ export default function HiringNeedMatchesPage() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { router.push("/auth"); return }
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) { router.push("/auth"); return }
 
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session?.access_token) return
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session?.access_token) {
+          setLoading(false)
+          return
+        }
 
-      const res = await fetch(`/api/hiring-needs?id=${id}`, {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      })
+        const res = await fetch(`/api/hiring-needs?id=${encodeURIComponent(id)}`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        })
 
-      if (res.ok) {
-        const data = await res.json()
-        setNeed(data.need)
-        setMatches(data.matches)
+        if (res.ok) {
+          const data = await res.json()
+          setNeed(data.need)
+          setMatches(data.matches)
+        }
+      } catch {
+        // silently fail
       }
       setLoading(false)
     }

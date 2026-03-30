@@ -124,8 +124,18 @@ export default function ResultsPage() {
         if (encoded) {
           try {
             const parsed = JSON.parse(atob(decodeURIComponent(encoded)))
-            setData(parsed)
-          } catch { /* ignore */ }
+            // Validate the parsed data has expected shape before rendering
+            if (parsed && typeof parsed === "object" && Array.isArray(parsed.domainScores) && typeof parsed.total === "number") {
+              // Sanitize string fields to prevent XSS
+              if (parsed.candidateName) parsed.candidateName = String(parsed.candidateName).slice(0, 100)
+              if (parsed.level) parsed.level = String(parsed.level).slice(0, 50)
+              if (parsed.personalityType) parsed.personalityType = String(parsed.personalityType).slice(0, 100)
+              if (parsed.selfTrack) parsed.selfTrack = String(parsed.selfTrack).slice(0, 50)
+              setData(parsed)
+            }
+          } catch {
+            setError("Invalid results data.")
+          }
         }
         setIsOwner(true)
         setLoading(false)
@@ -180,14 +190,18 @@ export default function ResultsPage() {
           .from("assessments")
           .select("total_score, total_questions")
         if (allScores && allScores.length > 1) {
-          const pcts = allScores.map((a: Record<string, unknown>) =>
-            Math.round(((a.total_score as number) / (a.total_questions as number)) * 100)
-          )
+          const pcts = allScores
+            .filter((a: Record<string, unknown>) => (a.total_questions as number) > 0)
+            .map((a: Record<string, unknown>) =>
+              Math.round(((a.total_score as number) / (a.total_questions as number)) * 100)
+            )
           const myPct = tt > 0 ? Math.round((tc / tt) * 100) : 0
           const below = pcts.filter(p => p < myPct).length
           setPercentile(Math.round((below / pcts.length) * 100))
         }
-      } catch { /* ignore */ }
+      } catch {
+        // Percentile calculation failed, leave as null
+      }
     }
     computePercentile()
   }, [data, loading])

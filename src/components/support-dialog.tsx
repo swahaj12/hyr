@@ -34,8 +34,12 @@ export function SupportButton({ sessionToken }: SupportDialogProps) {
         setSubject("")
         setMessage("")
         setTimeout(() => { setSuccess(false); setOpen(false) }, 2000)
+      } else {
+        alert("Failed to submit ticket. Please try again.")
       }
-    } catch { /* ignore */ }
+    } catch {
+      alert("Network error. Please check your connection and try again.")
+    }
     setSubmitting(false)
   }
 

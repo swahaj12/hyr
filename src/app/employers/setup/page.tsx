@@ -81,6 +81,21 @@ export default function EmployerSetupPage() {
       if (website && !website.startsWith("http://") && !website.startsWith("https://")) {
         website = `https://${website}`
       }
+      // Validate URL to prevent javascript: and other dangerous schemes
+      if (website) {
+        try {
+          const parsed = new URL(website)
+          if (!["http:", "https:"].includes(parsed.protocol)) {
+            setError("Website must be an http or https URL")
+            setSubmitting(false)
+            return
+          }
+        } catch {
+          setError("Invalid website URL")
+          setSubmitting(false)
+          return
+        }
+      }
 
       const payload = {
         user_id: user.id,

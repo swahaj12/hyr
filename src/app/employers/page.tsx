@@ -28,12 +28,6 @@ type CandidateProfile = {
   selfExperience: string | null
 }
 
-const LEVEL_LABELS: Record<string, string> = {
-  junior: "Junior",
-  mid: "Mid-Level",
-  senior: "Senior",
-}
-
 const DOMAIN_FILTERS = [
   "All Domains",
   "Kubernetes", "Docker", "Cloud / AWS", "Terraform / IaC",
@@ -57,8 +51,6 @@ const DOMAIN_KEY_MAP: Record<string, string> = {
   "FinOps": "finops",
 }
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
-
 export default function EmployersPage() {
   const router = useRouter()
   const [candidates, setCandidates] = useState<CandidateProfile[]>([])
@@ -76,11 +68,22 @@ export default function EmployersPage() {
     async function load() {
       try {
         const { data: { user } } = await supabase.auth.getUser()
+        if (!user) { setAuthorized(false); setLoading(false); return }
 
-        const role = user?.user_metadata?.role
-        const isAdmin = user && ADMIN_EMAILS.includes(user.email || "")
+        const { data: { session } } = await supabase.auth.getSession()
+        const token = session?.access_token || ""
 
-        if (!user || (role !== "employer" && !isAdmin)) {
+        const role = user.user_metadata?.role
+        let isAdmin = false
+        try {
+          const verifyRes = await fetch("/api/admin/verify", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          const verifyData = await verifyRes.json()
+          isAdmin = verifyData.isAdmin
+        } catch { /* not admin */ }
+
+        if (role !== "employer" && !isAdmin) {
           setAuthorized(false)
           setLoading(false)
           return
@@ -101,8 +104,7 @@ export default function EmployersPage() {
 
         setAuthorized(true)
 
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session?.access_token) setSessionToken(session.access_token)
+        if (token) setSessionToken(token)
 
         const { data: assessments, error: fetchError } = await supabase
           .from("assessments")

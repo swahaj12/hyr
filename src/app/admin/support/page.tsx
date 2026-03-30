@@ -42,8 +42,6 @@ type SupportMessage = {
 
 type SupportTab = "conversations" | "tickets"
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
-
 export default function AdminSupportPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
@@ -54,7 +52,7 @@ export default function AdminSupportPage() {
   const [messages, setMessages] = useState<SupportMessage[]>([])
   const [sessionToken, setSessionToken] = useState("")
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null)
-  const [replyText, setReplyText] = useState("")
+  const [replyTexts, setReplyTexts] = useState<Record<string, string>>({})
   const [replying, setReplying] = useState(false)
 
   useEffect(() => {
@@ -62,13 +60,18 @@ export default function AdminSupportPage() {
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) { router.push("/admin/login"); return }
-        if (!ADMIN_EMAILS.includes(user.email || "")) {
-          setAuthorized(false); setLoading(false); return
-        }
-        setAuthorized(true)
 
         const { data: { session } } = await supabase.auth.getSession()
         const token = session?.access_token || ""
+
+        const verifyRes = await fetch("/api/admin/verify", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const { isAdmin } = await verifyRes.json()
+        if (!isAdmin) {
+          setAuthorized(false); setLoading(false); return
+        }
+        setAuthorized(true)
         setSessionToken(token)
 
         const [convsRes, ticketsRes] = await Promise.all([
@@ -108,13 +111,14 @@ export default function AdminSupportPage() {
   }
 
   async function handleReply(ticketId: string) {
-    if (!replyText.trim()) return
+    const text = replyTexts[ticketId] || ""
+    if (!text.trim()) return
     setReplying(true)
     try {
       const res = await fetch("/api/admin/support", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${sessionToken}` },
-        body: JSON.stringify({ action: "reply", ticketId, message: replyText }),
+        body: JSON.stringify({ action: "reply", ticketId, message: text }),
       })
       if (res.ok) {
         setMessages(prev => [...prev, {
@@ -122,10 +126,10 @@ export default function AdminSupportPage() {
           ticket_id: ticketId,
           sender_id: "admin",
           is_admin: true,
-          content: replyText.trim(),
+          content: text.trim(),
           created_at: new Date().toISOString(),
         }])
-        setReplyText("")
+        setReplyTexts(prev => ({ ...prev, [ticketId]: "" }))
       }
     } catch { /* ignore */ }
     setReplying(false)
@@ -261,14 +265,14 @@ export default function AdminSupportPage() {
                             <input
                               type="text"
                               placeholder="Reply to this ticket..."
-                              value={expandedTicket === ticket.id ? replyText : ""}
-                              onChange={(e) => setReplyText(e.target.value)}
+                              value={replyTexts[ticket.id] || ""}
+                              onChange={(e) => setReplyTexts(prev => ({ ...prev, [ticket.id]: e.target.value }))}
                               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleReply(ticket.id) } }}
                               className="flex-1 border rounded-md px-3 py-2 text-sm"
                             />
                             <Button
                               size="sm"
-                              disabled={replying || !replyText.trim()}
+                              disabled={replying || !(replyTexts[ticket.id] || "").trim()}
                               onClick={() => handleReply(ticket.id)}
                             >
                               {replying ? "..." : "Reply"}

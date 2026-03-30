@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Hyr — Get Discovered by Top Tech Companies",
   description:
     "Build a verified skill profile in 15 minutes. Employers on Hyr browse engineers by actual skills — not resumes. DevOps, Frontend, Backend & QA.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hyr-snowy.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://hyr.pk"),
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },

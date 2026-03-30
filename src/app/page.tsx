@@ -786,7 +786,7 @@ export default function Home() {
               </Link>
             </div>
             <p className="text-xs text-gray-600">
-              &copy; 2026 Hyr. Built for engineers.
+              &copy; {new Date().getFullYear()} Hyr. Built for engineers.
             </p>
           </div>
         </div>

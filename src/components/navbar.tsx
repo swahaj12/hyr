@@ -10,8 +10,6 @@ import { useScroll } from "@/components/ui/use-scroll"
 import { cn } from "@/lib/utils"
 import type { UserRole } from "@/lib/use-user"
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
-
 type NavLink = { label: string; href: string; badge?: number }
 
 export function Navbar() {
@@ -22,16 +20,32 @@ export function Navbar() {
   const [user, setUser] = useState<{ email: string; name: string; role: UserRole; id: string } | null>(null)
   const [checked, setChecked] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (data.user) {
+        const meta = data.user.user_metadata || {}
         setUser({
           id: data.user.id,
           email: data.user.email || "",
-          name: data.user.user_metadata?.full_name || data.user.email || "",
-          role: (data.user.user_metadata?.role as UserRole) || "candidate",
+          name: meta.full_name || data.user.email || "",
+          role: (meta.role as UserRole) || "candidate",
         })
+
+        // Check admin status via server-side endpoint
+        try {
+          const session = await supabase.auth.getSession()
+          if (session.data.session?.access_token) {
+            const res = await fetch("/api/admin/verify", {
+              headers: { Authorization: `Bearer ${session.data.session.access_token}` },
+            })
+            if (res.ok) {
+              const { isAdmin: admin } = await res.json()
+              setIsAdmin(admin)
+            }
+          }
+        } catch { /* fallback: not admin */ }
 
         supabase
           .from("conversations")
@@ -71,7 +85,6 @@ export function Navbar() {
     router.push("/")
   }
 
-  const isAdmin = user && ADMIN_EMAILS.includes(user.email)
   const isEmployer = user?.role === "employer"
   const isCandidate = user && !isEmployer && !isAdmin
 

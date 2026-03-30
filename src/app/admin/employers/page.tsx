@@ -22,8 +22,6 @@ type EmployerRow = {
   created_at: string
 }
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
-
 const TRACK_LABELS: Record<string, string> = {
   devops: "DevOps",
   frontend: "Frontend",
@@ -40,21 +38,28 @@ export default function AdminEmployersPage() {
   const [statusFilter, setStatusFilter] = useState("")
   const [sessionToken, setSessionToken] = useState("")
   const [activatingId, setActivatingId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) { router.push("/admin/login"); return }
-        if (!ADMIN_EMAILS.includes(user.email || "")) {
+
+        const { data: { session } } = await supabase.auth.getSession()
+        const token = session?.access_token || ""
+
+        // Verify admin status server-side
+        const verifyRes = await fetch("/api/admin/verify", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const { isAdmin } = await verifyRes.json()
+        if (!isAdmin) {
           setAuthorized(false)
           setLoading(false)
           return
         }
         setAuthorized(true)
-
-        const { data: { session } } = await supabase.auth.getSession()
-        const token = session?.access_token || ""
         setSessionToken(token)
 
         const res = await fetch("/api/admin/employers", {
@@ -64,7 +69,9 @@ export default function AdminEmployersPage() {
           const { employers: data } = await res.json()
           if (data) setEmployers(data as EmployerRow[])
         }
-      } catch { /* ignore */ }
+      } catch {
+        setError("Failed to load data. Please refresh.")
+      }
       setLoading(false)
     }
     load()

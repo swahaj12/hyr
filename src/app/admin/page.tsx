@@ -45,8 +45,6 @@ type PlatformStats = {
 
 type AdminTab = "overview" | "candidates" | "employers"
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@hyr.pk,chkk@hyr.pk").split(",").map(e => e.trim())
-
 const TRACK_LABELS: Record<string, string> = {
   devops: "DevOps",
   frontend: "Frontend",
@@ -83,15 +81,26 @@ export default function AdminPage() {
           return
         }
 
-        if (!ADMIN_EMAILS.includes(user.email || "")) {
+        const { data: { session } } = await supabase.auth.getSession()
+        const token = session?.access_token || ""
+
+        // Verify admin status server-side
+        try {
+          const verifyRes = await fetch("/api/admin/verify", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          const { isAdmin } = await verifyRes.json()
+          if (!isAdmin) {
+            setAuthorized(false)
+            setLoading(false)
+            return
+          }
+        } catch {
           setAuthorized(false)
           setLoading(false)
           return
         }
         setAuthorized(true)
-
-        const { data: { session } } = await supabase.auth.getSession()
-        const token = session?.access_token || ""
 
         const [empRes, statsRes] = await Promise.all([
           fetch("/api/admin/employers", { headers: { Authorization: `Bearer ${token}` } }).catch(() => null),

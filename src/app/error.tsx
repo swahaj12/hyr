@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Navbar } from "@/components/navbar"
 
 export default function Error({
   error,
@@ -11,17 +11,9 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
-  useEffect(() => {
-    console.error("Application error:", error)
-  }, [error])
-
   return (
     <div className="min-h-screen bg-gray-950 text-white flex flex-col">
-      <nav className="mx-auto flex max-w-6xl w-full items-center px-4 py-3 sm:px-6">
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          Hyr
-        </Link>
-      </nav>
+      <Navbar />
 
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="text-center space-y-6 max-w-md">
@@ -56,7 +48,7 @@ export default function Error({
 
       <footer className="text-center py-6">
         <p className="text-xs text-gray-600">
-          &copy; 2026 Hyr. Tech skills verification.
+          &copy; {new Date().getFullYear()} Hyr. Tech skills verification.
         </p>
       </footer>
     </div>

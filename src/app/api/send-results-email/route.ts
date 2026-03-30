@@ -1,7 +1,31 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
+import { createClient } from "@supabase/supabase-js"
 
-export async function POST(request: Request) {
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+}
+
+export async function POST(request: NextRequest) {
   try {
+    // Authenticate the request
+    const token = request.headers.get("Authorization")?.replace("Bearer ", "")
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    const client = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    const { data: { user } } = await client.auth.getUser(token)
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const body = await request.json()
     const { email, name, score, total, level, assessmentId, profileId } = body
 
@@ -9,9 +33,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
+    // Only allow sending to the authenticated user's own email
+    if (user.email !== email) {
+      return NextResponse.json({ error: "Can only send results to your own email" }, { status: 403 })
+    }
+
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://hyr-snowy.vercel.app"
     const pct = total > 0 ? Math.round((score / total) * 100) : 0
-    const firstName = (name || "there").split(" ")[0]
+    const firstName = escapeHtml((name || "there").split(" ")[0])
 
     const resultsUrl = `${siteUrl}/results/${assessmentId}`
     const profileUrl = `${siteUrl}/profile/${profileId}`
@@ -30,7 +59,7 @@ export async function POST(request: Request) {
             ${pct}%
           </p>
           <p style="font-size: 14px; color: #6b7280; margin: 4px 0 0;">
-            ${score}/${total} correct &middot; ${level}
+            ${Number(score) || 0}/${Number(total) || 0} correct &middot; ${escapeHtml(String(level || ""))}
           </p>
         </div>
 
