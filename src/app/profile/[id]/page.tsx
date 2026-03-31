@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import { supabase } from "@/lib/supabase"
-import { type DomainScore, displayLevel, engineeringPersonality } from "@/lib/scoring"
+import { type DomainScore, displayLevel, engineeringPersonality, DOMAIN_LABELS } from "@/lib/scoring"
 import { getReadinessTier, calculatePercentile } from "@/lib/talent-matching"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -75,6 +75,10 @@ export default function ProfilePage() {
   const [firstMessage, setFirstMessage] = useState("")
   const [sendingMessage, setSendingMessage] = useState(false)
   const [percentile, setPercentile] = useState<number | null>(null)
+  const [candidateProfile, setCandidateProfile] = useState<{
+    headline?: string; skills?: string[]; track?: string;
+    linkedin_url?: string; resume_url?: string
+  } | null>(null)
 
   useEffect(() => {
     async function detectViewer() {
@@ -152,6 +156,16 @@ export default function ProfilePage() {
           candidateName: name as string,
           assessments: assessments as Assessment[],
         })
+
+        // Load candidate profile (skills, headline, links)
+        supabase
+          .from("candidate_profiles")
+          .select("headline, skills, track, linkedin_url, resume_url")
+          .eq("user_id", candidateId)
+          .single()
+          .then(({ data: cp }) => {
+            if (cp) setCandidateProfile(cp)
+          })
 
         const bestA = assessments.reduce((a: Record<string, unknown>, b: Record<string, unknown>) => {
           const aPct = (a.total_questions as number) > 0 ? (a.total_score as number) / (a.total_questions as number) : 0
@@ -245,7 +259,11 @@ export default function ProfilePage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold">{profile.candidateName}</h1>
-                <p className="text-muted-foreground text-sm">{personality.title}</p>
+                {candidateProfile?.headline ? (
+                  <p className="text-muted-foreground text-sm">{candidateProfile.headline}</p>
+                ) : (
+                  <p className="text-muted-foreground text-sm">{personality.title}</p>
+                )}
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -302,17 +320,20 @@ export default function ProfilePage() {
 
         {/* Personality Type */}
         <motion.div variants={staggerItem}>
-        <div className="relative rounded-xl border-2 border-gray-900 bg-gray-950 text-white p-6 overflow-hidden">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
-            <span className="text-4xl">{personalityIcon}</span>
-            <div className="text-center sm:text-left">
-              <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Engineering Type</p>
-              <h3 className="text-xl font-bold">{personality.title}</h3>
-              <p className="text-sm text-gray-400 mt-1">{personality.tagline}</p>
+        <Link href={`/personality/${encodeURIComponent(personality.title)}`} className="block group">
+          <div className="relative rounded-xl border-2 border-gray-900 bg-gray-950 text-white p-6 overflow-hidden group-hover:border-blue-500 transition-colors">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
+              <span className="text-4xl">{personalityIcon}</span>
+              <div className="text-center sm:text-left flex-1">
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Engineering Type</p>
+                <h3 className="text-xl font-bold">{personality.title}</h3>
+                <p className="text-sm text-gray-400 mt-1">{personality.tagline}</p>
+              </div>
+              <span className="text-gray-500 group-hover:text-blue-400 transition-colors text-sm hidden sm:block">Explore →</span>
             </div>
           </div>
-        </div>
+        </Link>
         </motion.div>
 
         {/* Best Assessment — Domain Breakdown */}
@@ -368,6 +389,90 @@ export default function ProfilePage() {
                     <span className="text-xs text-green-600">{d.pct}%</span>
                   </span>
                 ))}
+              </div>
+            </CardContent>
+          </Card>
+          </motion.div>
+        )}
+
+        {/* Skill Verification — cross-reference profile skills vs assessment domains */}
+        {candidateProfile?.skills && candidateProfile.skills.length > 0 && (
+          <motion.div variants={staggerItem}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span>🔍</span> Skill Verification
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Skills claimed in profile cross-referenced with assessment performance
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {candidateProfile.skills.map((skill) => {
+                  const domainMatch = bestDomains.find(d => d.domain === skill)
+                  const verified = domainMatch && domainMatch.pct >= 55
+                  const strong = domainMatch && domainMatch.pct >= 70
+                  const label = (DOMAIN_LABELS as Record<string, string>)[skill] || skill
+                  return (
+                    <span
+                      key={skill}
+                      className={`inline-flex items-center gap-1.5 text-sm font-medium rounded-full px-3 py-1 border ${
+                        strong
+                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800"
+                          : verified
+                          ? "bg-blue-50 dark:bg-blue-950/30 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800"
+                          : domainMatch
+                          ? "bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200 border-amber-200 dark:border-amber-800"
+                          : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"
+                      }`}
+                    >
+                      {strong ? "✓" : verified ? "◐" : domainMatch ? "△" : "○"} {label}
+                      {domainMatch && <span className="text-xs opacity-70">{domainMatch.pct}%</span>}
+                    </span>
+                  )
+                })}
+              </div>
+              <div className="flex flex-wrap gap-4 mt-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1"><span className="text-emerald-500">✓</span> Strong (70%+)</span>
+                <span className="flex items-center gap-1"><span className="text-blue-500">◐</span> Verified (55%+)</span>
+                <span className="flex items-center gap-1"><span className="text-amber-500">△</span> Developing</span>
+                <span className="flex items-center gap-1"><span className="text-gray-400">○</span> Not assessed</span>
+              </div>
+            </CardContent>
+          </Card>
+          </motion.div>
+        )}
+
+        {/* Candidate Links */}
+        {candidateProfile && (candidateProfile.linkedin_url || candidateProfile.resume_url) && (
+          <motion.div variants={staggerItem}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Links</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-3">
+                {candidateProfile.linkedin_url && (
+                  <a
+                    href={candidateProfile.linkedin_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    🔗 LinkedIn
+                  </a>
+                )}
+                {candidateProfile.resume_url && (
+                  <a
+                    href={candidateProfile.resume_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    📄 Resume (PDF)
+                  </a>
+                )}
               </div>
             </CardContent>
           </Card>

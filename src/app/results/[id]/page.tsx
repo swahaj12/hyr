@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { motion, useSpring } from "motion/react"
 import { supabase } from "@/lib/supabase"
 import { type DomainScore, overallLevel, displayLevel, engineeringPersonality, type PersonalityType } from "@/lib/scoring"
@@ -11,6 +12,11 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Navbar } from "@/components/navbar"
 import { PageLoading } from "@/components/loading"
+
+const PDFDownloadLink = dynamic(
+  () => import("@react-pdf/renderer").then(mod => mod.PDFDownloadLink),
+  { ssr: false },
+)
 
 type AssessmentData = {
   domainScores: DomainScore[]
@@ -448,17 +454,20 @@ export default function ResultsPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="relative rounded-xl border-2 border-gray-900 bg-gray-950 text-white p-6 overflow-hidden">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-              <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
-                <span className="text-4xl">{personalityIcon}</span>
-                <div className="text-center sm:text-left">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{isOwner ? "Your" : ""} Engineering Type</p>
-                  <h3 className="text-xl font-bold">{personality.title}</h3>
-                  <p className="text-sm text-gray-400 mt-1">{personality.tagline}</p>
+            <Link href={`/personality/${encodeURIComponent(personality.title)}`} className="block group">
+              <div className="relative rounded-xl border-2 border-gray-900 bg-gray-950 text-white p-6 overflow-hidden group-hover:border-blue-500 transition-colors">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
+                  <span className="text-4xl">{personalityIcon}</span>
+                  <div className="text-center sm:text-left flex-1">
+                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{isOwner ? "Your" : ""} Engineering Type</p>
+                    <h3 className="text-xl font-bold">{personality.title}</h3>
+                    <p className="text-sm text-gray-400 mt-1">{personality.tagline}</p>
+                  </div>
+                  <span className="text-gray-500 group-hover:text-blue-400 transition-colors text-sm hidden sm:block">Explore →</span>
                 </div>
               </div>
-            </div>
+            </Link>
           </motion.div>
         )}
 
@@ -670,6 +679,35 @@ export default function ResultsPage() {
                           >
                             {copied ? "Copied!" : "Copy Link"}
                           </Button>
+                          <PDFDownloadLink
+                            document={
+                              (() => {
+                                const { CareerPassportPDF } = require("@/components/career-passport-pdf")
+                                return (
+                                  <CareerPassportPDF
+                                    name={displayName}
+                                    personalityTitle={personality?.title || ""}
+                                    personalityTagline={personality?.tagline || ""}
+                                    overallPct={overallPct}
+                                    score={totalCorrect}
+                                    total={total}
+                                    level={displayLevel(level)}
+                                    assessedLevel={data.assessedLevel ? (LEVEL_LABELS[data.assessedLevel] || data.assessedLevel) : ""}
+                                    domains={data.domainScores}
+                                    profileUrl={`${typeof window !== "undefined" ? window.location.origin : ""}/profile/${candidateId}`}
+                                    date={data.completedAt ? new Date(data.completedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : ""}
+                                  />
+                                )
+                              })()
+                            }
+                            fileName={`hyr-career-passport-${displayName.toLowerCase().replace(/\s+/g, "-")}.pdf`}
+                          >
+                            {({ loading: pdfLoading }) => (
+                              <Button variant="outline" size="sm" disabled={pdfLoading}>
+                                {pdfLoading ? "Generating..." : "Download PDF"}
+                              </Button>
+                            )}
+                          </PDFDownloadLink>
                         </>
                       )}
                       <Link href="/dashboard">

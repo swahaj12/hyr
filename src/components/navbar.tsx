@@ -102,6 +102,7 @@ export function Navbar() {
     links.push({ label: "Candidates", href: "/employers" })
     links.push({ label: "Hiring Needs", href: "/employers/hiring-needs" })
     links.push({ label: "Pipeline", href: "/employers/pipeline" })
+    links.push({ label: "Analytics", href: "/employers/analytics" })
     links.push({ label: "Messages", href: "/messages", badge: unreadCount })
   } else if (isAdmin) {
     links.push({ label: "Dashboard", href: "/admin" })

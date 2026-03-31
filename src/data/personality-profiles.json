@@ -1,0 +1,212 @@
+{
+  "The Infrastructure Architect": {
+    "emoji": "🏗️",
+    "track": "devops",
+    "overview": "You thrive in designing and maintaining the foundational systems that everything else runs on. Kubernetes clusters, cloud infrastructure, and IaC templates are your domain. You think in terms of scalability, reliability, and cost efficiency.",
+    "strengths": ["Cloud architecture design", "Infrastructure as Code", "Container orchestration", "Cost optimization"],
+    "growthAreas": ["Application-level monitoring", "Security hardening", "FinOps maturity"],
+    "idealRoles": ["Cloud Architect", "Platform Engineer", "Infrastructure Lead", "DevOps Engineer"],
+    "famousQuote": "\"Any sufficiently advanced infrastructure is indistinguishable from magic.\"",
+    "workStyle": "You prefer building systems that scale themselves. You document everything and automate what others do manually. Your PRs often include Terraform modules others reuse for months."
+  },
+  "The Pipeline Builder": {
+    "emoji": "🔧",
+    "track": "devops",
+    "overview": "Your superpower is making code flow smoothly from a developer's commit to production. CI/CD pipelines, Git workflows, and deployment strategies are second nature to you.",
+    "strengths": ["CI/CD pipeline design", "Git workflow optimization", "Release management", "Build automation"],
+    "growthAreas": ["Infrastructure design", "Security scanning integration", "Performance testing in pipelines"],
+    "idealRoles": ["DevOps Engineer", "Release Engineer", "Build & Deploy Lead", "Platform Engineer"],
+    "famousQuote": "\"If deploying scares you, you're not deploying often enough.\"",
+    "workStyle": "You believe in small, frequent deployments. Your pipelines catch issues before humans notice them. You're the person everyone thanks when Friday deploys go smoothly."
+  },
+  "The Guardian": {
+    "emoji": "🛡️",
+    "track": "devops",
+    "overview": "Security, monitoring, and reliability are your pillars. You ensure systems are observable, incidents are handled gracefully, and vulnerabilities are patched before they're exploited.",
+    "strengths": ["Security best practices", "Monitoring & alerting", "Incident response", "SRE practices"],
+    "growthAreas": ["Cloud cost optimization", "CI/CD automation", "Container orchestration at scale"],
+    "idealRoles": ["SRE", "Security Engineer", "DevSecOps Engineer", "Reliability Lead"],
+    "famousQuote": "\"The best incident is the one your monitoring caught before users noticed.\"",
+    "workStyle": "You write runbooks before they're needed. Your dashboards tell stories. When the pager goes off, you're calm — because you've already planned for this."
+  },
+  "The Cloud Native": {
+    "emoji": "☁️",
+    "track": "devops",
+    "overview": "Containers and cloud services are your native language. You think in microservices, service meshes, and managed services. If it runs on Kubernetes, you've probably deployed it.",
+    "strengths": ["Kubernetes expertise", "Container optimization", "Cloud-native architecture", "Service mesh"],
+    "growthAreas": ["Bare-metal operations", "Legacy system migration", "Cost management"],
+    "idealRoles": ["Cloud Native Engineer", "Kubernetes Administrator", "Platform Engineer", "Solutions Architect"],
+    "famousQuote": "\"Why manage servers when they can manage themselves?\"",
+    "workStyle": "You containerize everything. Your Helm charts are versioned, your manifests are clean, and your clusters self-heal. You believe in immutable infrastructure."
+  },
+  "The Automation Engineer": {
+    "emoji": "⚙️",
+    "track": "devops",
+    "overview": "If a task exists, you've probably automated it. Scripting, IaC, and CI/CD are your tools for eliminating toil and making teams more productive.",
+    "strengths": ["Scripting & automation", "Infrastructure as Code", "CI/CD optimization", "Toil reduction"],
+    "growthAreas": ["Monitoring strategy", "Security automation", "Cloud architecture"],
+    "idealRoles": ["Automation Engineer", "DevOps Engineer", "Site Reliability Engineer", "Tools Engineer"],
+    "famousQuote": "\"The first time you do it manually, the second time you write a script.\"",
+    "workStyle": "You hate repetitive tasks with a passion. Your scripts have scripts. Teams come to you when they want their 3-hour process done in 3 minutes."
+  },
+  "The Pixel Perfectionist": {
+    "emoji": "🎨",
+    "track": "frontend",
+    "overview": "You craft interfaces that are visually stunning and meticulously polished. Every pixel matters, every animation is intentional, and accessibility is never an afterthought.",
+    "strengths": ["CSS mastery", "Responsive design", "Accessibility (a11y)", "Design system implementation"],
+    "growthAreas": ["JavaScript performance", "State management complexity", "Build tooling"],
+    "idealRoles": ["UI Engineer", "Design Systems Engineer", "Frontend Developer", "Creative Technologist"],
+    "famousQuote": "\"Good design is obvious. Great design is transparent.\"",
+    "workStyle": "You zoom in to 200% to check alignment. Your CSS is clean and semantic. You test on every browser and screen size because you care about every user."
+  },
+  "The JS Wizard": {
+    "emoji": "✨",
+    "track": "frontend",
+    "overview": "JavaScript and TypeScript are extensions of your thinking. You write clean, type-safe code that others can maintain. Complex logic and state management are your playground.",
+    "strengths": ["Advanced JavaScript", "TypeScript expertise", "State management", "Code architecture"],
+    "growthAreas": ["Visual design implementation", "Accessibility patterns", "Performance optimization"],
+    "idealRoles": ["Senior Frontend Engineer", "Full-Stack Developer", "TypeScript Lead", "Architecture Lead"],
+    "famousQuote": "\"Types are not constraints — they're documentation that never gets stale.\"",
+    "workStyle": "Your PRs introduce zero `any` types. You refactor with confidence because TypeScript has your back. Complex async flows don't scare you — they excite you."
+  },
+  "The Performance Hunter": {
+    "emoji": "⚡",
+    "track": "frontend",
+    "overview": "You live for Core Web Vitals and bundle sizes. Every millisecond counts, and you know exactly where the bottleneck is before others even notice the lag.",
+    "strengths": ["Web performance", "Bundle optimization", "API integration", "Build tool configuration"],
+    "growthAreas": ["Accessibility deep dives", "Design implementation", "Complex state patterns"],
+    "idealRoles": ["Performance Engineer", "Frontend Architect", "Senior Frontend Developer", "Technical Lead"],
+    "famousQuote": "\"The fastest code is the code that never runs.\"",
+    "workStyle": "You profile before you optimize. Lighthouse scores are your KPIs. You've reduced bundle sizes that others thought were already minimal."
+  },
+  "The Component Architect": {
+    "emoji": "🧩",
+    "track": "frontend",
+    "overview": "You design component systems that are reusable, composable, and maintainable. Your components work in isolation and compose beautifully together.",
+    "strengths": ["React component design", "State management patterns", "TypeScript integration", "Design system architecture"],
+    "growthAreas": ["CSS deep dives", "Performance profiling", "Accessibility testing"],
+    "idealRoles": ["Design Systems Engineer", "Frontend Architect", "React Lead", "Senior Frontend Developer"],
+    "famousQuote": "\"A good component is one you never have to read the source code to use.\"",
+    "workStyle": "Your components have clear prop interfaces, sensible defaults, and zero surprises. Other developers love using your code because it just works."
+  },
+  "The Quality Crafter": {
+    "emoji": "✅",
+    "track": "frontend",
+    "overview": "You build UIs that are accessible, tested, and bulletproof. Quality isn't something you add at the end — it's baked into every component you write.",
+    "strengths": ["Frontend testing", "Accessibility compliance", "TypeScript rigor", "Code quality"],
+    "growthAreas": ["Visual polish", "Performance optimization", "Complex animations"],
+    "idealRoles": ["QA-minded Frontend Dev", "Accessibility Engineer", "Senior Frontend Developer", "Test Lead"],
+    "famousQuote": "\"If it's not tested, it's broken — you just don't know it yet.\"",
+    "workStyle": "Your components ship with tests. You check screen reader behavior. You catch edge cases in code review that no one else sees."
+  },
+  "The Data Whisperer": {
+    "emoji": "🗄️",
+    "track": "backend",
+    "overview": "You think in schemas, queries, and data flows. Database optimization, caching strategies, and data modeling are where you shine.",
+    "strengths": ["Database design", "Query optimization", "Caching strategies", "Data architecture"],
+    "growthAreas": ["API design patterns", "Security hardening", "Message queue patterns"],
+    "idealRoles": ["Database Engineer", "Backend Developer", "Data Engineer", "Technical Lead"],
+    "famousQuote": "\"Normalize until it hurts, denormalize until it works.\"",
+    "workStyle": "You EXPLAIN ANALYZE before shipping. Your indexes are intentional. You know when to cache, when to denormalize, and when to add a read replica."
+  },
+  "The API Artisan": {
+    "emoji": "🔌",
+    "track": "backend",
+    "overview": "You design APIs that other developers love to consume. Clean endpoints, thoughtful error handling, and comprehensive documentation are your hallmarks.",
+    "strengths": ["API design", "Authentication & security", "System architecture", "Documentation"],
+    "growthAreas": ["Database optimization", "Caching at scale", "Message-driven architectures"],
+    "idealRoles": ["API Developer", "Backend Engineer", "Solutions Architect", "Developer Experience Engineer"],
+    "famousQuote": "\"A great API is one where the happy path is obvious and the errors are helpful.\"",
+    "workStyle": "Your OpenAPI specs are complete before the first line of code. Your error messages help developers debug. Your endpoints follow consistent naming that just makes sense."
+  },
+  "The System Designer": {
+    "emoji": "📐",
+    "track": "backend",
+    "overview": "You think in distributed systems, event-driven architectures, and message flows. Scaling challenges excite you, and you can whiteboard a system design in minutes.",
+    "strengths": ["System architecture", "Message queues & events", "Concurrency patterns", "Distributed systems"],
+    "growthAreas": ["Operational monitoring", "DevOps integration", "Frontend collaboration"],
+    "idealRoles": ["System Architect", "Senior Backend Engineer", "Staff Engineer", "Technical Lead"],
+    "famousQuote": "\"Every system design decision is a trade-off. Know what you're trading.\"",
+    "workStyle": "You draw diagrams before writing code. Your services are loosely coupled but highly cohesive. CAP theorem isn't abstract to you — it's a daily consideration."
+  },
+  "The Reliability Engineer": {
+    "emoji": "🔒",
+    "track": "backend",
+    "overview": "Your services stay up when everything else goes down. Circuit breakers, graceful degradation, and observability are your bread and butter.",
+    "strengths": ["Service reliability", "Deployment strategies", "Concurrency handling", "Observability"],
+    "growthAreas": ["API design elegance", "Database deep optimization", "Security audit patterns"],
+    "idealRoles": ["Backend SRE", "Platform Engineer", "Senior Backend Developer", "Reliability Lead"],
+    "famousQuote": "\"Hope is not a strategy. Redundancy is.\"",
+    "workStyle": "Your services have health checks, circuit breakers, and retry logic. You've read about every outage postmortem you can find. You plan for failure because you know it's inevitable."
+  },
+  "The Security Sentinel": {
+    "emoji": "🔐",
+    "track": "backend",
+    "overview": "You build backends that are secure by default. OWASP top 10, authentication flows, and data protection are always on your mind.",
+    "strengths": ["Security best practices", "API security", "Database security", "Auth implementation"],
+    "growthAreas": ["Performance optimization", "System design at scale", "Caching strategies"],
+    "idealRoles": ["Security Engineer", "Backend Developer", "DevSecOps Engineer", "AppSec Lead"],
+    "famousQuote": "\"Security is not a feature. It's a requirement.\"",
+    "workStyle": "You review PRs for SQL injection before logic errors. Your auth flows follow OWASP guidelines. Input validation is your first instinct, not an afterthought."
+  },
+  "The Test Strategist": {
+    "emoji": "📋",
+    "track": "qa",
+    "overview": "You design quality into the process from day one. Test plans, risk analysis, and coverage strategies are how you ensure nothing slips through the cracks.",
+    "strengths": ["Test strategy design", "Test data management", "CI/CD testing", "Risk-based testing"],
+    "growthAreas": ["Automation framework design", "Performance testing tools", "Security testing techniques"],
+    "idealRoles": ["QA Lead", "Test Manager", "Quality Architect", "SDET"],
+    "famousQuote": "\"Quality is not an act, it is a habit.\"",
+    "workStyle": "You map test cases to requirements. Your test plans cover happy paths, edge cases, and failure modes. Teams trust your assessments because they're thorough and data-driven."
+  },
+  "The Automation Ace": {
+    "emoji": "🤖",
+    "track": "qa",
+    "overview": "You make testing fast, reliable, and repeatable. Automation frameworks, API testing, and CI integration are your specialties.",
+    "strengths": ["Test automation", "API testing", "CI/CD integration", "Framework design"],
+    "growthAreas": ["Manual exploratory testing", "Visual testing", "Mobile-specific testing"],
+    "idealRoles": ["SDET", "Automation Engineer", "QA Developer", "Test Platform Engineer"],
+    "famousQuote": "\"Automate what's repetitive. Explore what's complex.\"",
+    "workStyle": "Your test suites run in minutes, not hours. Your page objects are reusable. You integrated tests into CI before anyone asked you to."
+  },
+  "The Bug Hunter": {
+    "emoji": "🔍",
+    "track": "qa",
+    "overview": "You have an uncanny ability to find defects that others miss. Exploratory testing, edge case thinking, and thorough bug reports are your trademarks.",
+    "strengths": ["Exploratory testing", "Bug documentation", "Test strategy", "Edge case discovery"],
+    "growthAreas": ["Automation skills", "API testing depth", "Performance profiling"],
+    "idealRoles": ["QA Analyst", "Test Engineer", "Quality Assurance Lead", "Exploratory Tester"],
+    "famousQuote": "\"Every bug has a story. Find it, document it, prevent it.\"",
+    "workStyle": "You ask 'what if' more than anyone else. Your bug reports are so detailed that developers can reproduce on the first try. You think like a user, not a developer."
+  },
+  "The Security Tester": {
+    "emoji": "🕵️",
+    "track": "qa",
+    "overview": "You think like an attacker to protect users. Penetration testing mindset, API security validation, and performance under attack are your focus areas.",
+    "strengths": ["Security testing", "API security validation", "Performance testing", "Threat modeling"],
+    "growthAreas": ["Functional test design", "Test data strategies", "Mobile testing breadth"],
+    "idealRoles": ["Security QA", "Penetration Tester", "AppSec Analyst", "Security Test Lead"],
+    "famousQuote": "\"Test the locks before someone else picks them.\"",
+    "workStyle": "Your test cases include SQL injection attempts and auth bypass scenarios. You read CVE reports for fun. Your API security tests catch what scanners miss."
+  },
+  "The Performance Analyst": {
+    "emoji": "📊",
+    "track": "qa",
+    "overview": "You know exactly where the system will break under load. Performance benchmarks, bottleneck analysis, and capacity planning are your expertise.",
+    "strengths": ["Performance testing", "Load & stress testing", "Mobile testing", "Test data generation"],
+    "growthAreas": ["Security testing techniques", "Test automation frameworks", "Exploratory testing skills"],
+    "idealRoles": ["Performance Engineer", "Load Test Specialist", "QA Engineer", "Capacity Planner"],
+    "famousQuote": "\"Performance is a feature. Slowness is a bug.\"",
+    "workStyle": "Your JMeter/k6 scripts simulate real user patterns. Your reports include percentiles, not just averages. You've prevented production outages with pre-launch load tests."
+  },
+  "The Versatile Engineer": {
+    "emoji": "🎯",
+    "track": "general",
+    "overview": "You're balanced across the board — no single weakness, strong everywhere. Your adaptability makes you invaluable in any team and any situation.",
+    "strengths": ["Cross-domain knowledge", "Adaptability", "Team collaboration", "Quick learning"],
+    "growthAreas": ["Deep specialization in one area", "Building a personal brand", "Mentoring in a specialty"],
+    "idealRoles": ["Full-Stack Developer", "Tech Lead", "Consulting Engineer", "Staff Engineer"],
+    "famousQuote": "\"The best engineers don't just go deep — they go wide enough to connect the dots.\"",
+    "workStyle": "You're the person who can jump between frontend, backend, and infrastructure. Teams love having you because you understand the full picture and communicate across domains."
+  }
+}
