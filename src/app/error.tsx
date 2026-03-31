@@ -16,7 +16,7 @@ export default function Error({
       <Navbar />
 
       <div className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center space-y-6 max-w-md">
+        <div className="text-center space-y-6 max-w-md animate-fade-up">
           <div className="space-y-2">
             <p className="text-6xl font-bold text-gray-800">Oops</p>
             <h1 className="text-2xl sm:text-3xl font-bold">Something went wrong</h1>

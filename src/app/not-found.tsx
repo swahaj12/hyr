@@ -8,7 +8,7 @@ export default function NotFound() {
       <Navbar />
 
       <div className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center space-y-6 max-w-md">
+        <div className="text-center space-y-6 max-w-md animate-fade-up">
           <div className="space-y-2">
             <p className="text-7xl sm:text-8xl font-bold text-gray-800">404</p>
             <h1 className="text-2xl sm:text-3xl font-bold">Page not found</h1>

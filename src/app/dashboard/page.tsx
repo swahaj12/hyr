@@ -7,11 +7,13 @@ import { supabase } from "@/lib/supabase"
 import { type DomainScore, displayLevel, DOMAIN_LABELS } from "@/lib/scoring"
 import { getReadinessTier, TRACK_LABELS } from "@/lib/talent-matching"
 import { Navbar } from "@/components/navbar"
-import { PageLoading } from "@/components/loading"
+import { PageLoading, DashboardSkeleton } from "@/components/loading"
 import { SupportButton } from "@/components/support-dialog"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { FadeIn, StaggerList, staggerItem, PageTransition, ProgressRing } from "@/components/motion-primitives"
+import { motion } from "motion/react"
 
 type Assessment = {
   id: string
@@ -161,7 +163,7 @@ export default function DashboardPage() {
   }, [router])
 
   if (loading) {
-    return <><Navbar /><PageLoading /></>
+    return <><Navbar /><DashboardSkeleton /></>
   }
 
   const latest = assessments[0]
@@ -170,14 +172,15 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <main className="max-w-5xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
+      <PageTransition>
+      <StaggerList stagger={0.1} className="max-w-5xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <motion.div variants={staggerItem} className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             {error}
-          </div>
+          </motion.div>
         )}
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <motion.div variants={staggerItem} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">Welcome back, {userName.split(" ")[0] || "there"}</h1>
             <p className="text-muted-foreground">Your career profile</p>
@@ -223,11 +226,11 @@ export default function DashboardPage() {
               </Button>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Profile Status */}
         {assessments.length > 0 && userId && (
-          <div className={`rounded-xl border-2 p-5 ${profileVisible ? "border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50" : "border-gray-200 bg-gray-50"}`}>
+          <motion.div variants={staggerItem} className={`rounded-xl border-2 p-5 ${profileVisible ? "border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50" : "border-gray-200 bg-gray-50"}`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className={`w-3 h-3 rounded-full ${profileVisible ? "bg-emerald-500 animate-pulse" : "bg-gray-400"}`} />
@@ -247,7 +250,7 @@ export default function DashboardPage() {
                 <Button variant="outline" size="sm">View Public Profile</Button>
               </Link>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Readiness Tier */}
@@ -255,7 +258,7 @@ export default function DashboardPage() {
           const latestPct = Math.round((latest.total_score / latest.total_questions) * 100)
           const tier = getReadinessTier(latestPct, latest.domain_scores ? (latest.domain_scores as DomainScore[]).length : 0, assessments.length)
           return (
-            <div className={`rounded-xl border-2 p-5 ${tier.borderColor} ${tier.bgColor}`}>
+            <motion.div variants={staggerItem} className={`rounded-xl border-2 p-5 ${tier.borderColor} ${tier.bgColor}`}>
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 rounded-full ${tier.bgColor} ${tier.color} flex items-center justify-center text-lg font-bold border ${tier.borderColor}`}>
                   {tier.label === "Interview-Ready" ? "★" : tier.label === "Rising Talent" ? "↑" : tier.label === "Growth Track" ? "◎" : "○"}
@@ -265,12 +268,13 @@ export default function DashboardPage() {
                   <p className="text-xs text-muted-foreground">{tier.description}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )
         })()}
 
         {/* Opportunity Notifications */}
         {notifications.length > 0 && (
+          <motion.div variants={staggerItem}>
           <Card className="border-violet-200 bg-gradient-to-br from-violet-50 to-blue-50">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2">
@@ -335,12 +339,14 @@ export default function DashboardPage() {
               )}
             </CardContent>
           </Card>
+          </motion.div>
         )}
 
         {/* Messages shortcut */}
         {assessments.length > 0 && unreadMessages > 0 && (
+          <motion.div variants={staggerItem}>
           <Link href="/messages">
-            <Card className="border-blue-200 bg-blue-50 hover:shadow-md transition-all cursor-pointer">
+            <Card className="border-blue-200 bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
               <CardContent className="pt-4 pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -357,10 +363,12 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </Link>
+          </motion.div>
         )}
 
         {/* Companies Actively Hiring */}
         {assessments.length > 0 && hiringCompanies.length > 0 && (
+          <motion.div variants={staggerItem}>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -397,10 +405,12 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         )}
 
         {/* Employer Activity */}
         {assessments.length > 0 && (interests.length > 0 || profileViews > 0) && (
+          <motion.div variants={staggerItem}>
           <Card>
             <CardHeader>
               <CardTitle>Employer Activity</CardTitle>
@@ -447,6 +457,7 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         )}
 
         {/* Progress Tracking */}
@@ -456,9 +467,12 @@ export default function DashboardPage() {
           const delta = latestPct - previousPct
           if (delta === 0) return null
           return (
-            <div className={`rounded-xl border p-4 flex items-center gap-3 ${
-              delta > 0 ? "border-green-200 bg-green-50" : "border-amber-200 bg-amber-50"
-            }`}>
+            <motion.div
+              variants={staggerItem}
+              className={`rounded-xl border p-4 flex items-center gap-3 ${
+                delta > 0 ? "border-green-200 bg-green-50" : "border-amber-200 bg-amber-50"
+              }`}
+            >
               <span className={`text-2xl font-bold ${delta > 0 ? "text-green-700" : "text-amber-700"}`}>
                 {delta > 0 ? "+" : ""}{delta}%
               </span>
@@ -470,16 +484,17 @@ export default function DashboardPage() {
                   {previousPct}% &rarr; {latestPct}%
                 </p>
               </div>
-            </div>
+            </motion.div>
           )
         })()}
 
         {assessments.length === 0 ? (
+          <motion.div variants={staggerItem}>
           <Card>
             <CardContent className="pt-6">
               <div className="text-center space-y-4 py-8">
-                <div className="text-5xl">&#127919;</div>
-                <h2 className="text-xl font-semibold">Build Your Career Profile</h2>
+                <div className="text-5xl animate-float">&#127891;</div>
+                <h2 className="text-xl font-semibold">Your journey starts here</h2>
                 <p className="text-muted-foreground max-w-md mx-auto">
                   Complete a 15-minute assessment to create your verified skill profile. Once live, employers can discover you based on your actual skills — no applications needed.
                 </p>
@@ -489,10 +504,12 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         ) : (
           <>
             {/* Latest Result Summary */}
             {latest && (
+              <motion.div variants={staggerItem}>
               <Card>
                 <CardHeader>
                   <CardTitle>Latest Assessment</CardTitle>
@@ -552,7 +569,7 @@ export default function DashboardPage() {
                           </div>
                           <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${
+                              className={`h-full rounded-full transition-all duration-700 ${
                                 d.pct >= 70
                                   ? "bg-emerald-500"
                                   : d.pct >= 40
@@ -568,10 +585,12 @@ export default function DashboardPage() {
                   )}
                 </CardContent>
               </Card>
+              </motion.div>
             )}
 
             {/* Progress Chart */}
             {assessments.length >= 2 && (
+              <motion.div variants={staggerItem}>
               <Card>
                 <CardHeader>
                   <CardTitle>Score Progression</CardTitle>
@@ -633,9 +652,11 @@ export default function DashboardPage() {
                   })()}
                 </CardContent>
               </Card>
+              </motion.div>
             )}
 
             {/* All Assessments */}
+            <motion.div variants={staggerItem}>
             <Card>
               <CardHeader>
                 <CardTitle>All Assessments</CardTitle>
@@ -674,11 +695,13 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
+            </motion.div>
           </>
         )}
 
         {sessionToken && <SupportButton sessionToken={sessionToken} />}
-      </main>
+      </StaggerList>
+      </PageTransition>
     </div>
   )
 }

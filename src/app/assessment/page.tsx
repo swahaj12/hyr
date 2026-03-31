@@ -1030,11 +1030,37 @@ export default function AssessmentPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center space-y-4"
+          className="text-center space-y-6"
         >
-          <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full mx-auto" />
-          <p className="text-lg font-semibold">Building your verified profile...</p>
-          <p className="text-sm text-gray-400">Scoring {answers.length} answers across your domains</p>
+          {/* Expanding ring */}
+          <div className="relative w-20 h-20 mx-auto">
+            <motion.div
+              className="absolute inset-0 rounded-full border-2 border-emerald-400/50"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: [0.8, 1.6, 1.6], opacity: [0.8, 0.3, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+            />
+            <motion.div
+              className="absolute inset-0 rounded-full border-2 border-emerald-400/30"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: [0.8, 2, 2], opacity: [0.6, 0.1, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut", delay: 0.3 }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.2 }}
+                className="text-3xl"
+              >
+                ✓
+              </motion.div>
+            </div>
+          </div>
+          <div>
+            <p className="text-lg font-semibold">Building your verified profile...</p>
+            <p className="text-sm text-gray-400 mt-1">Scoring {answers.length} answers across your domains</p>
+          </div>
         </motion.div>
       </div>
     )
@@ -1051,8 +1077,15 @@ export default function AssessmentPage() {
   return (
     <div className="min-h-screen bg-gray-950 text-white select-none">
       {/* Tab switch warning overlay */}
+      <AnimatePresence>
       {tabWarning && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+        >
           <Card className="max-w-md bg-gray-900 border-yellow-500 text-white">
             <CardContent className="pt-6 space-y-4 text-center">
               <div className="w-16 h-16 rounded-full bg-yellow-500/20 flex items-center justify-center mx-auto">
@@ -1072,8 +1105,9 @@ export default function AssessmentPage() {
               </Button>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
 
       {/* Copy blocked toast */}
       {copyWarning && (
@@ -1123,25 +1157,37 @@ export default function AssessmentPage() {
               )}
             </div>
           </div>
-          <div className={`${timerBg} rounded-full px-4 py-2 text-center min-w-[64px]`}>
+          <div className={`${timerBg} rounded-full px-4 py-2 text-center min-w-[64px] ${timeLeft <= 5 ? "animate-pulse" : ""}`}>
             <p className={`text-2xl font-mono font-bold ${timerColor}`}>{timeLeft}</p>
           </div>
         </div>
 
-        <Progress value={progressPct} className="h-1.5" />
+        <Progress value={progressPct} className="h-1.5 transition-all duration-500" />
 
         {/* Question */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIdx}
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -24 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="space-y-6"
+          >
         <div className="space-y-2">
           <h2 className="text-lg font-semibold leading-snug">{currentQ.question}</h2>
         </div>
 
         {/* Options */}
         <div className="space-y-3">
-          {currentQ.options.map((opt) => {
+          {currentQ.options.map((opt, optIdx) => {
             const isSelected = selected === opt.id
             return (
-              <button
+              <motion.button
                 key={opt.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: optIdx * 0.04 }}
                 onClick={() => {
                   setSelected(opt.id)
                   setTimeout(() => advance(opt.id), 200)
@@ -1162,10 +1208,12 @@ export default function AssessmentPage() {
                   </span>
                   <p className="text-sm leading-relaxed text-gray-200">{opt.text}</p>
                 </div>
-              </button>
+              </motion.button>
             )
           })}
         </div>
+          </motion.div>
+        </AnimatePresence>
 
         <p className="text-xs text-gray-600 text-center">
           Select an answer or wait for the timer. You cannot go back.

@@ -10,7 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Navbar } from "@/components/navbar"
-import { PageLoading } from "@/components/loading"
+import { PageLoading, ProfileSkeleton } from "@/components/loading"
+import { FadeIn, ScaleIn, StaggerList, staggerItem, PageTransition } from "@/components/motion-primitives"
+import { motion } from "motion/react"
 
 type Assessment = {
   id: string
@@ -187,7 +189,7 @@ export default function ProfilePage() {
     return (
       <>
         <Navbar />
-        <PageLoading />
+        <ProfileSkeleton />
       </>
     )
   }
@@ -231,8 +233,10 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
+      <PageTransition>
+      <StaggerList stagger={0.1} className="max-w-4xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
         {/* Profile Header */}
+        <motion.div variants={staggerItem}>
         <Card>
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
@@ -294,8 +298,10 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
 
         {/* Personality Type */}
+        <motion.div variants={staggerItem}>
         <div className="relative rounded-xl border-2 border-gray-900 bg-gray-950 text-white p-6 overflow-hidden">
           <div className="absolute top-0 right-0 w-40 h-40 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="relative z-10 flex flex-col sm:flex-row items-center gap-4">
@@ -307,8 +313,10 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+        </motion.div>
 
         {/* Best Assessment — Domain Breakdown */}
+        <motion.div variants={staggerItem}>
         <Card>
           <CardHeader>
             <CardTitle>Skill Breakdown</CardTitle>
@@ -340,9 +348,11 @@ export default function ProfilePage() {
             ))}
           </CardContent>
         </Card>
+        </motion.div>
 
         {/* Strengths */}
         {strongDomains.length > 0 && (
+          <motion.div variants={staggerItem}>
           <Card>
             <CardHeader>
               <CardTitle className="text-green-700">Top Skills</CardTitle>
@@ -361,10 +371,12 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         )}
 
         {/* Assessment History */}
         {totalAssessments > 1 && (
+          <motion.div variants={staggerItem}>
           <Card>
             <CardHeader>
               <CardTitle>Assessment History</CardTitle>
@@ -404,6 +416,7 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+          </motion.div>
         )}
 
         {/* Employer Action — Paywall or Message */}
@@ -570,7 +583,8 @@ export default function ProfilePage() {
             Verified by Hyr — where companies discover verified engineers
           </p>
         </div>
-      </main>
+      </StaggerList>
+      </PageTransition>
     </div>
   )
 }

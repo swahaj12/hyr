@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, type FormEvent } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import { motion } from "motion/react"
 import { supabase } from "@/lib/supabase"
 import { getMessages, sendMessage, markMessagesRead, type Message } from "@/lib/messaging"
 import { Button } from "@/components/ui/button"
@@ -195,8 +196,11 @@ export default function ChatPage() {
           {messages.map(msg => {
             const isMine = msg.sender_id === userId
             return (
-              <div
+              <motion.div
                 key={msg.id}
+                initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                 className={`flex ${isMine ? "justify-end" : "justify-start"}`}
               >
                 <div
@@ -211,7 +215,7 @@ export default function ChatPage() {
                     {formatTime(msg.created_at)}
                   </p>
                 </div>
-              </div>
+              </motion.div>
             )
           })}
           <div ref={bottomRef} />

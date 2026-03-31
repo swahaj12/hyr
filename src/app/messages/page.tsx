@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Navbar } from "@/components/navbar"
 import { PageLoading } from "@/components/loading"
+import { FadeIn, StaggerList, staggerItem, PageTransition } from "@/components/motion-primitives"
+import { motion } from "motion/react"
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -52,31 +54,34 @@ export default function MessagesPage() {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
 
+      <PageTransition>
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-0">
-        <div>
+        <FadeIn>
           <h1 className="text-2xl font-bold">Messages</h1>
           <p className="text-muted-foreground text-sm">Your conversations with {userId ? "employers and candidates" : "others"}</p>
-        </div>
+        </FadeIn>
 
         {conversations.length === 0 ? (
+          <FadeIn delay={0.15}>
           <Card>
             <CardContent className="pt-8 pb-8 text-center space-y-3">
-              <div className="text-4xl">💬</div>
+              <div className="text-4xl animate-float">✉️</div>
               <h2 className="text-lg font-semibold">No conversations yet</h2>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                 When an employer reaches out through your profile, the conversation will appear here.
               </p>
             </CardContent>
           </Card>
+          </FadeIn>
         ) : (
-          <div className="space-y-2">
+          <StaggerList stagger={0.06} className="space-y-2">
             {conversations.map(conv => (
+              <motion.div key={conv.id} variants={staggerItem}>
               <Link
-                key={conv.id}
                 href={`/messages/${conv.id}`}
                 className="block"
               >
-                <Card className={`hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 ${conv.unreadCount > 0 ? "border-blue-200 bg-blue-50/50" : ""}`}>
+                <Card className={`hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 ${conv.unreadCount > 0 ? "border-blue-200 bg-blue-50/50 animate-glow-pulse" : ""}`}>
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gray-950 text-white flex items-center justify-center text-sm font-bold shrink-0">
@@ -111,10 +116,12 @@ export default function MessagesPage() {
                   </CardContent>
                 </Card>
               </Link>
+              </motion.div>
             ))}
-          </div>
+          </StaggerList>
         )}
       </main>
+      </PageTransition>
     </div>
   )
 }

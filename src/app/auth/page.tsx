@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { motion, AnimatePresence } from "motion/react"
 
 import { supabase } from "@/lib/supabase"
 import {
@@ -99,19 +100,34 @@ export default function AuthPage() {
     }
   }
 
+  const ease = [0.16, 1, 0.3, 1] as const
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <Card className="mx-4 w-full max-w-md">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [...ease] }}
+        className="mx-4 w-full max-w-md"
+      >
+      <Card>
         <CardHeader>
           <Link href="/" className="text-xl font-bold tracking-tight text-gray-950 hover:opacity-80 transition-opacity">
             Hyr
           </Link>
-          <CardDescription>
+          <CardTitle className="text-lg">
             {mode === "signin"
               ? "Welcome back"
               : mode === "signup"
-                ? "Create your career profile"
+                ? "Start your journey"
                 : "Reset your password"}
+          </CardTitle>
+          <CardDescription className="text-sm">
+            {mode === "signin"
+              ? "Sign in to your account"
+              : mode === "signup"
+                ? "15 minutes to a verified skill profile"
+                : "We'll send you a reset link"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -137,33 +153,46 @@ export default function AuthPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={mode}
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.25, ease: [...ease] }}
+                className="space-y-4"
+              >
             {mode === "signup" && (
               <>
                 <div className="space-y-2">
                   <Label>I am a</Label>
                   <div className="grid grid-cols-2 gap-2">
-                    <button
+                    <motion.button
                       type="button"
                       onClick={() => setRole("candidate")}
-                      className={`rounded-lg border p-3 text-center text-sm font-medium transition-all ${
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`rounded-lg border p-3 text-center text-sm font-medium transition-colors ${
                         role === "candidate"
                           ? "border-primary bg-primary/5 ring-1 ring-primary"
                           : "border-border hover:border-gray-400"
                       }`}
                     >
-                      Candidate
-                    </button>
-                    <button
+                      🎓 Candidate
+                    </motion.button>
+                    <motion.button
                       type="button"
                       onClick={() => setRole("employer")}
-                      className={`rounded-lg border p-3 text-center text-sm font-medium transition-all ${
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`rounded-lg border p-3 text-center text-sm font-medium transition-colors ${
                         role === "employer"
                           ? "border-primary bg-primary/5 ring-1 ring-primary"
                           : "border-border hover:border-gray-400"
                       }`}
                     >
-                      Employer
-                    </button>
+                      🏢 Employer
+                    </motion.button>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -218,14 +247,26 @@ export default function AuthPage() {
             )}
 
             {error && (
-              <div className="rounded-md bg-red-50 border border-red-200 p-3">
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="rounded-md bg-red-50 border border-red-200 p-3"
+              >
                 <p className="text-sm text-red-700">{error}</p>
-              </div>
+              </motion.div>
             )}
             {success && (
-              <div className="rounded-md bg-green-50 border border-green-200 p-3">
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+                className="rounded-md bg-green-50 border border-green-200 p-3"
+              >
                 <p className="text-sm text-green-700">{success}</p>
-              </div>
+              </motion.div>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
@@ -237,6 +278,8 @@ export default function AuthPage() {
                     ? "Create Account"
                     : "Send Reset Link"}
             </Button>
+              </motion.div>
+            </AnimatePresence>
           </form>
 
           <p className="text-center text-sm text-muted-foreground">
@@ -277,6 +320,7 @@ export default function AuthPage() {
           </p>
         </CardContent>
       </Card>
+      </motion.div>
     </div>
   )
 }
