@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { useTheme } from "next-themes"
 import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { MenuToggleIcon } from "@/components/ui/menu-toggle-icon"
@@ -16,11 +17,15 @@ export function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const scrolled = useScroll(10)
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [open, setOpen] = useState(false)
   const [user, setUser] = useState<{ email: string; name: string; role: UserRole; id: string } | null>(null)
   const [checked, setChecked] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -96,6 +101,7 @@ export function Navbar() {
   } else if (user && isEmployer) {
     links.push({ label: "Candidates", href: "/employers" })
     links.push({ label: "Hiring Needs", href: "/employers/hiring-needs" })
+    links.push({ label: "Pipeline", href: "/employers/pipeline" })
     links.push({ label: "Messages", href: "/messages", badge: unreadCount })
   } else if (isAdmin) {
     links.push({ label: "Dashboard", href: "/admin" })
@@ -171,6 +177,21 @@ export function Navbar() {
               })}
 
               <div className="w-px h-5 bg-white/15 mx-2" />
+
+              {/* Dark mode toggle */}
+              {mounted && (
+                <button
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="px-2 py-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                  title={theme === "dark" ? "Light mode" : "Dark mode"}
+                >
+                  {theme === "dark" ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                  )}
+                </button>
+              )}
 
               {user ? (
                 <div className="flex items-center gap-2.5">

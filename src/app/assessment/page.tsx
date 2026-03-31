@@ -433,9 +433,16 @@ export default function AssessmentPage() {
       }))
       await supabase.from("assessment_answers").insert(rows)
 
+      const { data: { session: currentSession } } = await supabase.auth.getSession()
+      const authHeaders: Record<string, string> = { "Content-Type": "application/json" }
+      if (currentSession?.access_token) {
+        authHeaders.Authorization = `Bearer ${currentSession.access_token}`
+      }
+
+      // Send results email
       fetch("/api/send-results-email", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders,
         body: JSON.stringify({
           email: (await supabase.auth.getUser()).data.user?.email,
           name: userName,
@@ -444,6 +451,24 @@ export default function AssessmentPage() {
           level,
           assessmentId: assessment.id,
           profileId: userId,
+        }),
+      }).catch(() => {})
+
+      // Trigger matching engine — find hiring needs this candidate matches
+      fetch("/api/candidate/post-assessment", {
+        method: "POST",
+        headers: authHeaders,
+        body: JSON.stringify({ assessmentId: assessment.id }),
+      }).catch(() => {})
+
+      // Server-side integrity validation
+      fetch("/api/candidate/validate-assessment", {
+        method: "POST",
+        headers: authHeaders,
+        body: JSON.stringify({
+          assessmentId: assessment.id,
+          track: onboardTrack,
+          answers: finalAnswers.map(a => ({ time_taken_ms: a.time_taken_ms })),
         }),
       }).catch(() => {})
 

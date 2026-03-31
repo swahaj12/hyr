@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import { sendEmployerStatusNotification } from "@/lib/email"
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean)
 
@@ -44,6 +45,20 @@ export async function POST(req: NextRequest) {
 
     if (updateErr) {
       return NextResponse.json({ error: updateErr.message }, { status: 500 })
+    }
+
+    // Send email notification to the employer
+    const { data: profile } = await adminClient
+      .from("employer_profiles")
+      .select("user_id, company_name")
+      .eq("id", employerProfileId)
+      .single()
+
+    if (profile) {
+      const { data: { user: empUser } } = await adminClient.auth.admin.getUserById(profile.user_id)
+      if (empUser?.email) {
+        sendEmployerStatusNotification(empUser.email, profile.company_name, newStatus as "active" | "rejected").catch(() => {})
+      }
     }
 
     return NextResponse.json({ success: true, status: newStatus })

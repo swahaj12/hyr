@@ -6,6 +6,7 @@ import Link from "next/link"
 import { supabase } from "@/lib/supabase"
 import { type DomainScore, displayLevel, DOMAIN_LABELS } from "@/lib/scoring"
 import { getReadinessTier, TRACK_LABELS } from "@/lib/talent-matching"
+import learningResources from "@/data/learning-resources.json"
 import { Navbar } from "@/components/navbar"
 import { PageLoading, DashboardSkeleton } from "@/components/loading"
 import { SupportButton } from "@/components/support-dialog"
@@ -248,6 +249,9 @@ export default function DashboardPage() {
               </div>
               <Link href={`/profile/${userId}`} className="shrink-0">
                 <Button variant="outline" size="sm">View Public Profile</Button>
+              </Link>
+              <Link href="/profile/edit" className="shrink-0">
+                <Button variant="outline" size="sm">Edit Profile</Button>
               </Link>
             </div>
           </motion.div>
@@ -507,6 +511,39 @@ export default function DashboardPage() {
           </motion.div>
         ) : (
           <>
+            {/* Retake prompt — show if latest assessment > 30 days old */}
+            {latest && (() => {
+              const daysSinceLastAssessment = Math.floor((Date.now() - new Date(latest.created_at).getTime()) / 86400000)
+              if (daysSinceLastAssessment < 30) return null
+              const hasOpportunities = notifications.length > 0
+              return (
+                <motion.div variants={staggerItem}>
+                  <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">🔄</span>
+                        <div>
+                          <p className="font-semibold text-blue-900 text-sm">
+                            Time to refresh your profile
+                          </p>
+                          <p className="text-xs text-blue-700 mt-0.5">
+                            Your last assessment was {daysSinceLastAssessment} days ago.
+                            {hasOpportunities
+                              ? ` Retake to improve your match with ${notifications.length} active opportunity${notifications.length > 1 ? "ies" : ""}.`
+                              : " A fresh assessment keeps your profile competitive."}
+                          </p>
+                        </div>
+                      </div>
+                      <Link href="/assessment" className="shrink-0">
+                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                          Retake Assessment
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </motion.div>
+              )
+            })()}
             {/* Latest Result Summary */}
             {latest && (
               <motion.div variants={staggerItem}>
@@ -555,32 +592,46 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Quick domain bars */}
+                  {/* Quick domain bars with skill gap guidance */}
                   {latest.domain_scores && (
                     <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                      {(latest.domain_scores as DomainScore[]).map((d) => (
-                        <div
-                          key={d.domain}
-                          className="bg-gray-50 rounded-lg p-3 space-y-1"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium truncate">{d.domainLabel}</span>
-                            <span className="text-xs text-muted-foreground">{d.pct}%</span>
+                      {(latest.domain_scores as DomainScore[]).map((d) => {
+                        const resources = (learningResources as Record<string, { title: string; url: string; type: string }[]>)[d.domain]
+                        const needsImprovement = d.pct < 50
+                        return (
+                          <div
+                            key={d.domain}
+                            className="bg-gray-50 rounded-lg p-3 space-y-1"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium truncate">{d.domainLabel}</span>
+                              <span className="text-xs text-muted-foreground">{d.pct}%</span>
+                            </div>
+                            <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-700 ${
+                                  d.pct >= 70
+                                    ? "bg-emerald-500"
+                                    : d.pct >= 40
+                                      ? "bg-yellow-500"
+                                      : "bg-red-500"
+                                }`}
+                                style={{ width: `${d.pct}%` }}
+                              />
+                            </div>
+                            {needsImprovement && resources && resources.length > 0 && (
+                              <a
+                                href={resources[0].url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[10px] text-blue-600 hover:text-blue-800 hover:underline block mt-1"
+                              >
+                                Improve this skill →
+                              </a>
+                            )}
                           </div>
-                          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all duration-700 ${
-                                d.pct >= 70
-                                  ? "bg-emerald-500"
-                                  : d.pct >= 40
-                                    ? "bg-yellow-500"
-                                    : "bg-red-500"
-                              }`}
-                              style={{ width: `${d.pct}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   )}
                 </CardContent>

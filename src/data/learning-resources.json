@@ -1,0 +1,166 @@
+{
+  "linux": [
+    { "title": "Linux Journey — Free Interactive Course", "url": "https://linuxjourney.com", "type": "course" },
+    { "title": "The Linux Command Line — Free Book", "url": "https://linuxcommand.org/tlcl.php", "type": "book" }
+  ],
+  "networking": [
+    { "title": "Computer Networking Full Course — freeCodeCamp", "url": "https://www.youtube.com/watch?v=qiQR5rTSshw", "type": "video" },
+    { "title": "Networking Fundamentals — Cisco", "url": "https://skillsforall.com/course/networking-basics", "type": "course" }
+  ],
+  "git": [
+    { "title": "Learn Git Branching — Interactive", "url": "https://learngitbranching.js.org", "type": "course" },
+    { "title": "Pro Git Book — Free", "url": "https://git-scm.com/book/en/v2", "type": "book" }
+  ],
+  "scripting": [
+    { "title": "Bash Scripting Tutorial — Ryan's Tutorials", "url": "https://ryanstutorials.net/bash-scripting-tutorial/", "type": "course" },
+    { "title": "Shell Scripting — Linux Documentation", "url": "https://tldp.org/LDP/abs/html/", "type": "book" }
+  ],
+  "cloud": [
+    { "title": "AWS Cloud Practitioner Essentials — Free", "url": "https://explore.skillbuilder.aws/learn/course/external/view/elearning/134/aws-cloud-practitioner-essentials", "type": "course" },
+    { "title": "Cloud Computing Concepts — Coursera", "url": "https://www.coursera.org/learn/cloud-computing", "type": "course" }
+  ],
+  "containers": [
+    { "title": "Docker Getting Started — Official", "url": "https://docs.docker.com/get-started/", "type": "docs" },
+    { "title": "Docker for Beginners — freeCodeCamp", "url": "https://www.youtube.com/watch?v=fqMOX6JJhGo", "type": "video" }
+  ],
+  "kubernetes": [
+    { "title": "Kubernetes Basics — Official Tutorial", "url": "https://kubernetes.io/docs/tutorials/kubernetes-basics/", "type": "docs" },
+    { "title": "KillerCoda — Free Interactive Labs", "url": "https://killercoda.com/playgrounds/scenario/kubernetes", "type": "lab" }
+  ],
+  "iac": [
+    { "title": "Terraform Get Started — HashiCorp", "url": "https://developer.hashicorp.com/terraform/tutorials/aws-get-started", "type": "course" },
+    { "title": "Infrastructure as Code Crash Course — TechWorld", "url": "https://www.youtube.com/watch?v=POPP2WTJ8es", "type": "video" }
+  ],
+  "cicd": [
+    { "title": "GitHub Actions Quickstart — Official", "url": "https://docs.github.com/en/actions/quickstart", "type": "docs" },
+    { "title": "CI/CD Pipeline Tutorial — GitLab", "url": "https://docs.gitlab.com/ee/ci/quick_start/", "type": "docs" }
+  ],
+  "monitoring": [
+    { "title": "Prometheus Getting Started — Official", "url": "https://prometheus.io/docs/prometheus/latest/getting_started/", "type": "docs" },
+    { "title": "Grafana Fundamentals — Free", "url": "https://grafana.com/tutorials/grafana-fundamentals/", "type": "course" }
+  ],
+  "security": [
+    { "title": "OWASP Top Ten — Security Guide", "url": "https://owasp.org/www-project-top-ten/", "type": "docs" },
+    { "title": "Cybersecurity Essentials — Cisco", "url": "https://skillsforall.com/course/cybersecurity-essentials", "type": "course" }
+  ],
+  "sre": [
+    { "title": "SRE Book — Google (Free Online)", "url": "https://sre.google/sre-book/table-of-contents/", "type": "book" },
+    { "title": "Site Reliability Engineering — Coursera", "url": "https://www.coursera.org/learn/site-reliability-engineering-slos", "type": "course" }
+  ],
+  "finops": [
+    { "title": "FinOps Foundation — Free Training", "url": "https://learn.finops.org/", "type": "course" },
+    { "title": "AWS Cost Optimization — Free", "url": "https://explore.skillbuilder.aws/learn/course/external/view/elearning/97/aws-cloud-economics", "type": "course" }
+  ],
+  "html-css": [
+    { "title": "MDN Web Docs — HTML & CSS", "url": "https://developer.mozilla.org/en-US/docs/Learn/HTML", "type": "docs" },
+    { "title": "freeCodeCamp — Responsive Web Design", "url": "https://www.freecodecamp.org/learn/responsive-web-design/", "type": "course" }
+  ],
+  "javascript": [
+    { "title": "JavaScript.info — Modern Tutorial", "url": "https://javascript.info/", "type": "course" },
+    { "title": "Eloquent JavaScript — Free Book", "url": "https://eloquentjavascript.net/", "type": "book" }
+  ],
+  "typescript": [
+    { "title": "TypeScript Handbook — Official", "url": "https://www.typescriptlang.org/docs/handbook/", "type": "docs" },
+    { "title": "Total TypeScript — Free Beginners Course", "url": "https://www.totaltypescript.com/tutorials/beginners-typescript", "type": "course" }
+  ],
+  "react": [
+    { "title": "React Official Tutorial", "url": "https://react.dev/learn", "type": "docs" },
+    { "title": "Full React Course — freeCodeCamp", "url": "https://www.youtube.com/watch?v=bMknfKXIFA8", "type": "video" }
+  ],
+  "performance": [
+    { "title": "Web Performance — web.dev", "url": "https://web.dev/learn/performance", "type": "docs" },
+    { "title": "Chrome DevTools Performance — Google", "url": "https://developer.chrome.com/docs/devtools/performance/", "type": "docs" }
+  ],
+  "accessibility": [
+    { "title": "Web Accessibility — W3C WAI", "url": "https://www.w3.org/WAI/fundamentals/", "type": "docs" },
+    { "title": "A11y Project — Practical Accessibility", "url": "https://www.a11yproject.com/", "type": "docs" }
+  ],
+  "testing": [
+    { "title": "Testing Library Docs — Official", "url": "https://testing-library.com/docs/", "type": "docs" },
+    { "title": "JavaScript Testing — Kent C. Dodds", "url": "https://testingjavascript.com/", "type": "course" }
+  ],
+  "state-mgmt": [
+    { "title": "Managing State — React Docs", "url": "https://react.dev/learn/managing-state", "type": "docs" },
+    { "title": "Zustand — Lightweight State", "url": "https://zustand-demo.pmnd.rs/", "type": "docs" }
+  ],
+  "apis": [
+    { "title": "REST API Tutorial", "url": "https://restfulapi.net/", "type": "docs" },
+    { "title": "Fetching Data — React Docs", "url": "https://react.dev/reference/react/use", "type": "docs" }
+  ],
+  "build-tools": [
+    { "title": "Vite Getting Started — Official", "url": "https://vitejs.dev/guide/", "type": "docs" },
+    { "title": "Webpack Concepts — Official", "url": "https://webpack.js.org/concepts/", "type": "docs" }
+  ],
+  "databases": [
+    { "title": "SQLBolt — Interactive SQL", "url": "https://sqlbolt.com/", "type": "course" },
+    { "title": "PostgreSQL Tutorial — Official", "url": "https://www.postgresql.org/docs/current/tutorial.html", "type": "docs" }
+  ],
+  "apis-design": [
+    { "title": "RESTful API Design Best Practices", "url": "https://restfulapi.net/resource-naming/", "type": "docs" },
+    { "title": "API Design Patterns — Google Cloud", "url": "https://cloud.google.com/apis/design", "type": "docs" }
+  ],
+  "architecture": [
+    { "title": "System Design Primer — GitHub", "url": "https://github.com/donnemartin/system-design-primer", "type": "course" },
+    { "title": "Patterns of Enterprise Architecture — Martin Fowler", "url": "https://martinfowler.com/eaaCatalog/", "type": "docs" }
+  ],
+  "caching": [
+    { "title": "Caching Strategies — AWS", "url": "https://aws.amazon.com/caching/best-practices/", "type": "docs" },
+    { "title": "Redis University — Free Courses", "url": "https://university.redis.com/", "type": "course" }
+  ],
+  "messaging": [
+    { "title": "RabbitMQ Tutorials — Official", "url": "https://www.rabbitmq.com/tutorials", "type": "docs" },
+    { "title": "Event-Driven Architecture — Martin Fowler", "url": "https://martinfowler.com/articles/201701-event-driven.html", "type": "docs" }
+  ],
+  "concurrency": [
+    { "title": "Concurrency in Go — Free Book", "url": "https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/", "type": "book" },
+    { "title": "Java Concurrency — Baeldung", "url": "https://www.baeldung.com/java-concurrency", "type": "docs" }
+  ],
+  "observability": [
+    { "title": "OpenTelemetry Docs — Getting Started", "url": "https://opentelemetry.io/docs/getting-started/", "type": "docs" },
+    { "title": "Observability Engineering — Free O'Reilly", "url": "https://info.honeycomb.io/observability-engineering-oreilly-book-2022", "type": "book" }
+  ],
+  "deployment": [
+    { "title": "12 Factor App — Best Practices", "url": "https://12factor.net/", "type": "docs" },
+    { "title": "Docker + CI/CD Deployment — DigitalOcean", "url": "https://www.digitalocean.com/community/tutorial-series/ci-cd-tooling", "type": "course" }
+  ],
+  "test-strategy": [
+    { "title": "Test Pyramid — Martin Fowler", "url": "https://martinfowler.com/bliki/TestPyramid.html", "type": "docs" },
+    { "title": "ISTQB Foundation — Free Syllabus", "url": "https://www.istqb.org/certifications/certified-tester-foundation-level", "type": "course" }
+  ],
+  "manual-testing": [
+    { "title": "Manual Testing Tutorial — Guru99", "url": "https://www.guru99.com/manual-testing.html", "type": "course" },
+    { "title": "Exploratory Testing — Ministry of Testing", "url": "https://www.ministryoftesting.com/articles/what-is-exploratory-testing", "type": "docs" }
+  ],
+  "automation": [
+    { "title": "Playwright Getting Started — Official", "url": "https://playwright.dev/docs/intro", "type": "docs" },
+    { "title": "Selenium Tutorial — Official", "url": "https://www.selenium.dev/documentation/", "type": "docs" }
+  ],
+  "api-testing": [
+    { "title": "Postman Learning Center", "url": "https://learning.postman.com/docs/getting-started/introduction/", "type": "docs" },
+    { "title": "API Testing Best Practices — SmartBear", "url": "https://smartbear.com/learn/api-testing/api-testing-best-practices/", "type": "docs" }
+  ],
+  "performance-testing": [
+    { "title": "k6 Getting Started — Official", "url": "https://k6.io/docs/getting-started/", "type": "docs" },
+    { "title": "JMeter Tutorial — Guru99", "url": "https://www.guru99.com/jmeter-tutorials.html", "type": "course" }
+  ],
+  "mobile-testing": [
+    { "title": "Appium Getting Started", "url": "https://appium.io/docs/en/latest/quickstart/", "type": "docs" },
+    { "title": "Mobile Testing Guide — BrowserStack", "url": "https://www.browserstack.com/guide/mobile-testing-guide", "type": "docs" }
+  ],
+  "security-testing": [
+    { "title": "OWASP Testing Guide", "url": "https://owasp.org/www-project-web-security-testing-guide/", "type": "docs" },
+    { "title": "Burp Suite Community — Free", "url": "https://portswigger.net/burp/communitydownload", "type": "tool" }
+  ],
+  "test-data": [
+    { "title": "Test Data Management — SmartBear", "url": "https://smartbear.com/learn/automated-testing/test-data-management/", "type": "docs" },
+    { "title": "Faker.js — Generate Test Data", "url": "https://fakerjs.dev/guide/", "type": "docs" }
+  ],
+  "bug-tracking": [
+    { "title": "Bug Report Writing — Atlassian", "url": "https://www.atlassian.com/software/jira/guides/bugs-issues/overview", "type": "docs" },
+    { "title": "Effective Bug Reporting — Ministry of Testing", "url": "https://www.ministryoftesting.com/articles/the-art-of-the-bug-report", "type": "docs" }
+  ],
+  "ci-cd-testing": [
+    { "title": "Testing in CI/CD — GitLab", "url": "https://docs.gitlab.com/ee/ci/testing/", "type": "docs" },
+    { "title": "GitHub Actions Testing — Official", "url": "https://docs.github.com/en/actions/automating-builds-and-tests", "type": "docs" }
+  ]
+}

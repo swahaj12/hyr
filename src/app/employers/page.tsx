@@ -63,6 +63,7 @@ export default function EmployersPage() {
 
   const [error, setError] = useState<string | null>(null)
   const [sessionToken, setSessionToken] = useState("")
+  const [savedCandidates, setSavedCandidates] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     async function load() {
@@ -105,6 +106,17 @@ export default function EmployersPage() {
         setAuthorized(true)
 
         if (token) setSessionToken(token)
+
+        // Load saved/shortlisted candidates
+        try {
+          const slRes = await fetch("/api/shortlists", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          const slData = await slRes.json()
+          if (slData.shortlists) {
+            setSavedCandidates(new Set(slData.shortlists.map((s: { candidate_id: string }) => s.candidate_id)))
+          }
+        } catch { /* ignore */ }
 
         const { data: assessments, error: fetchError } = await supabase
           .from("assessments")
@@ -251,6 +263,19 @@ export default function EmployersPage() {
           <p className="text-muted-foreground">Verified skill profiles — click any candidate to see their full breakdown.</p>
         </div>
 
+        {/* Quick links */}
+        <div className="flex gap-2 flex-wrap">
+          <Link href="/employers/pipeline">
+            <Button variant="outline" size="sm">📋 Hiring Pipeline</Button>
+          </Link>
+          <Link href="/employers/hiring-needs">
+            <Button variant="outline" size="sm">🎯 Hiring Needs</Button>
+          </Link>
+          {savedCandidates.size > 0 && (
+            <Badge variant="secondary">{savedCandidates.size} saved</Badge>
+          )}
+        </div>
+
         {/* Filters */}
         <Card>
           <CardContent className="pt-6">
@@ -385,7 +410,43 @@ export default function EmployersPage() {
                           )}
                           <span>{c.totalAssessments} assessment{c.totalAssessments > 1 ? "s" : ""}</span>
                         </div>
-                        <span>{new Date(c.lastDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              const isSaved = savedCandidates.has(c.candidateId)
+                              if (isSaved) {
+                                setSavedCandidates(prev => { const next = new Set(prev); next.delete(c.candidateId); return next })
+                                fetch(`/api/shortlists?candidateId=${c.candidateId}`, {
+                                  method: "DELETE",
+                                  headers: { Authorization: `Bearer ${sessionToken}` },
+                                }).catch(() => {})
+                              } else {
+                                setSavedCandidates(prev => new Set(prev).add(c.candidateId))
+                                fetch("/api/shortlists", {
+                                  method: "POST",
+                                  headers: { Authorization: `Bearer ${sessionToken}`, "Content-Type": "application/json" },
+                                  body: JSON.stringify({ candidateId: c.candidateId }),
+                                }).catch(() => {})
+                                // Also add to pipeline as "discovered"
+                                fetch("/api/pipeline", {
+                                  method: "POST",
+                                  headers: { Authorization: `Bearer ${sessionToken}`, "Content-Type": "application/json" },
+                                  body: JSON.stringify({ candidateId: c.candidateId, stage: "discovered" }),
+                                }).catch(() => {})
+                              }
+                            }}
+                            className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                              savedCandidates.has(c.candidateId)
+                                ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                            }`}
+                          >
+                            {savedCandidates.has(c.candidateId) ? "★ Saved" : "☆ Save"}
+                          </button>
+                          <span>{new Date(c.lastDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
