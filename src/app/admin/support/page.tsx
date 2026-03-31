@@ -139,7 +139,7 @@ export default function AdminSupportPage() {
 
   if (!authorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center space-y-4">
             <p className="text-lg font-semibold">Access Denied</p>
@@ -153,11 +153,11 @@ export default function AdminSupportPage() {
   const openTickets = tickets.filter(t => t.status === "open")
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-8">
         <div className="flex items-center gap-3">
-          <Link href="/admin" className="text-muted-foreground hover:text-gray-950 transition-colors">
+          <Link href="/admin" className="text-muted-foreground hover:text-gray-950 dark:text-white transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           </Link>
           <div>
@@ -204,7 +204,7 @@ export default function AdminSupportPage() {
                 const ticketMessages = messages.filter(m => m.ticket_id === ticket.id)
                 const isExpanded = expandedTicket === ticket.id
                 return (
-                  <Card key={ticket.id} className={ticket.status === "open" ? "border-amber-200" : ""}>
+                  <Card key={ticket.id} className={ticket.status === "open" ? "border-amber-200 dark:border-amber-800" : ""}>
                     <CardContent className="pt-5 pb-4">
                       <div
                         className="flex items-start justify-between gap-3 cursor-pointer"
@@ -217,8 +217,8 @@ export default function AdminSupportPage() {
                               variant="outline"
                               className={`text-[10px] ${
                                 ticket.status === "open"
-                                  ? "bg-amber-50 text-amber-700 border-amber-200"
-                                  : "bg-green-50 text-green-700 border-green-200"
+                                  ? "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                                  : "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800"
                               }`}
                             >
                               {ticket.status}
@@ -247,7 +247,7 @@ export default function AdminSupportPage() {
                         <div className="mt-4 space-y-3">
                           <div className="border-t pt-3 space-y-2 max-h-64 overflow-y-auto">
                             {ticketMessages.map(msg => (
-                              <div key={msg.id} className={`rounded-lg p-3 text-sm ${msg.is_admin ? "bg-blue-50 border border-blue-100 ml-4" : "bg-gray-50 border border-gray-100 mr-4"}`}>
+                              <div key={msg.id} className={`rounded-lg p-3 text-sm ${msg.is_admin ? "bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800 ml-4" : "bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-800 mr-4"}`}>
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                                     {msg.is_admin ? "Admin" : ticket.user_email}

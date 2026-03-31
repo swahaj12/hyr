@@ -103,7 +103,7 @@ export default function AuthPage() {
   const ease = [0.16, 1, 0.3, 1] as const
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ export default function AuthPage() {
       >
       <Card>
         <CardHeader>
-          <Link href="/" className="text-xl font-bold tracking-tight text-gray-950 hover:opacity-80 transition-opacity">
+          <Link href="/" className="text-xl font-bold tracking-tight text-gray-950 dark:text-white hover:opacity-80 transition-opacity">
             Hyr
           </Link>
           <CardTitle className="text-lg">
@@ -175,7 +175,7 @@ export default function AuthPage() {
                       className={`rounded-lg border p-3 text-center text-sm font-medium transition-colors ${
                         role === "candidate"
                           ? "border-primary bg-primary/5 ring-1 ring-primary"
-                          : "border-border hover:border-gray-400"
+                          : "border-border hover:border-gray-400 dark:border-gray-500"
                       }`}
                     >
                       🎓 Candidate
@@ -188,7 +188,7 @@ export default function AuthPage() {
                       className={`rounded-lg border p-3 text-center text-sm font-medium transition-colors ${
                         role === "employer"
                           ? "border-primary bg-primary/5 ring-1 ring-primary"
-                          : "border-border hover:border-gray-400"
+                          : "border-border hover:border-gray-400 dark:border-gray-500"
                       }`}
                     >
                       🏢 Employer
@@ -252,9 +252,9 @@ export default function AuthPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25 }}
-                className="rounded-md bg-red-50 border border-red-200 p-3"
+                className="rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-3"
               >
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
               </motion.div>
             )}
             {success && (
@@ -263,9 +263,9 @@ export default function AuthPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.25 }}
-                className="rounded-md bg-green-50 border border-green-200 p-3"
+                className="rounded-md bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-3"
               >
-                <p className="text-sm text-green-700">{success}</p>
+                <p className="text-sm text-green-700 dark:text-green-300">{success}</p>
               </motion.div>
             )}
 

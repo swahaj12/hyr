@@ -23,12 +23,12 @@ type PipelineEntry = {
 }
 
 const STAGES = [
-  { key: "discovered", label: "Discovered", color: "bg-gray-100 text-gray-700 border-gray-200", emoji: "🔍" },
-  { key: "contacted", label: "Contacted", color: "bg-blue-50 text-blue-700 border-blue-200", emoji: "💬" },
-  { key: "interviewing", label: "Interviewing", color: "bg-violet-50 text-violet-700 border-violet-200", emoji: "🎯" },
-  { key: "offered", label: "Offered", color: "bg-amber-50 text-amber-700 border-amber-200", emoji: "📋" },
-  { key: "hired", label: "Hired", color: "bg-emerald-50 text-emerald-700 border-emerald-200", emoji: "✅" },
-  { key: "rejected", label: "Passed", color: "bg-red-50 text-red-700 border-red-200", emoji: "✗" },
+  { key: "discovered", label: "Discovered", color: "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700", emoji: "🔍" },
+  { key: "contacted", label: "Contacted", color: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800", emoji: "💬" },
+  { key: "interviewing", label: "Interviewing", color: "bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800", emoji: "🎯" },
+  { key: "offered", label: "Offered", color: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800", emoji: "📋" },
+  { key: "hired", label: "Hired", color: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800", emoji: "✅" },
+  { key: "rejected", label: "Passed", color: "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800", emoji: "✗" },
 ]
 
 export default function PipelinePage() {
@@ -81,13 +81,13 @@ export default function PipelinePage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-gray-50 pt-24 pb-16">
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-16">
           <div className="max-w-7xl mx-auto px-4">
             <div className="animate-pulse space-y-6">
-              <div className="h-8 bg-gray-200 rounded w-64" />
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64" />
               <div className="grid grid-cols-6 gap-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-48 bg-gray-200 rounded-xl" />
+                  <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-xl" />
                 ))}
               </div>
             </div>
@@ -103,14 +103,14 @@ export default function PipelinePage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-50 pt-24 pb-16">
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-16">
         <PageTransition>
           <div className="max-w-7xl mx-auto px-4">
             <FadeIn>
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">Hiring Pipeline</h1>
-                  <p className="text-gray-500 mt-1">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Hiring Pipeline</h1>
+                  <p className="text-gray-500 dark:text-gray-400 mt-1">
                     {total} candidate{total !== 1 ? "s" : ""} in pipeline
                     {hiredCount > 0 && ` · ${hiredCount} hired`}
                   </p>
@@ -151,11 +151,11 @@ export default function PipelinePage() {
                         </div>
                         <Badge variant="secondary" className="text-xs">{stageEntries.length}</Badge>
                       </div>
-                      <div className="bg-white rounded-b-xl border border-t-0 min-h-[200px] p-2 space-y-2">
+                      <div className="bg-white dark:bg-gray-900 rounded-b-xl border border-t-0 min-h-[200px] p-2 space-y-2">
                         {stageEntries.map(entry => (
                           <div
                             key={entry.id}
-                            className="bg-gray-50 rounded-lg p-3 border border-gray-100 hover:shadow-sm transition-shadow"
+                            className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 border border-gray-100 dark:border-gray-800 hover:shadow-sm transition-shadow"
                           >
                             <Link href={`/profile/${entry.candidate_id}`}>
                               <p className="font-medium text-sm hover:text-blue-600 transition-colors">
@@ -175,7 +175,7 @@ export default function PipelinePage() {
                                 <button
                                   key={s.key}
                                   onClick={() => moveStage(entry.id, s.key)}
-                                  className="text-[10px] px-2 py-0.5 rounded-full border hover:bg-gray-100 transition-colors"
+                                  className="text-[10px] px-2 py-0.5 rounded-full border hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   title={`Move to ${s.label}`}
                                 >
                                   {s.emoji} {s.label}

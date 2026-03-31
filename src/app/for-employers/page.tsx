@@ -113,19 +113,19 @@ export default function ForEmployersPage() {
               >
                 <div className="text-center rounded-xl border border-emerald-800/50 bg-emerald-950/30 backdrop-blur-sm px-4 py-4">
                   <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{totalCandidates}</p>
-                  <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Verified Engineers</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">Verified Engineers</p>
                 </div>
                 <div className="text-center rounded-xl border border-gray-800 bg-gray-900/50 backdrop-blur-sm px-4 py-4">
                   <p className="text-2xl sm:text-3xl font-bold text-white">{totalAssessments}</p>
-                  <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Assessments Done</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">Assessments Done</p>
                 </div>
                 <div className="text-center rounded-xl border border-gray-800 bg-gray-900/50 backdrop-blur-sm px-4 py-4">
                   <p className="text-2xl sm:text-3xl font-bold text-white">{stats.trackDistribution.length}</p>
-                  <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Tech Tracks</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">Tech Tracks</p>
                 </div>
                 <div className="text-center rounded-xl border border-gray-800 bg-gray-900/50 backdrop-blur-sm px-4 py-4">
                   <p className="text-2xl sm:text-3xl font-bold text-white">48h</p>
-                  <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Avg Match Time</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">Avg Match Time</p>
                 </div>
               </motion.div>
             )}
@@ -134,13 +134,13 @@ export default function ForEmployersPage() {
       </section>
 
       {/* THE PROBLEM */}
-      <section className="bg-white py-24 sm:py-32">
+      <section className="bg-white dark:bg-gray-900 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center"
           >
             <p className="text-sm font-semibold uppercase tracking-wider text-red-500">The Problem</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
               Hiring in Pakistan is broken
             </h2>
           </motion.div>
@@ -172,11 +172,11 @@ export default function ForEmployersPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="rounded-2xl border border-gray-200 p-8"
+                className="rounded-2xl border border-gray-200 dark:border-gray-700 p-8"
               >
                 <p className={`text-4xl font-bold ${item.color}`}>{item.stat}</p>
-                <p className="text-sm font-medium text-gray-950 mt-1 uppercase tracking-wider">{item.label}</p>
-                <p className="text-gray-600 mt-4 leading-relaxed">{item.desc}</p>
+                <p className="text-sm font-medium text-gray-950 dark:text-white mt-1 uppercase tracking-wider">{item.label}</p>
+                <p className="text-gray-600 dark:text-gray-400 mt-4 leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -184,16 +184,16 @@ export default function ForEmployersPage() {
       </section>
 
       {/* THE SOLUTION — Active Talent Marketplace */}
-      <section id="how-it-works" className="bg-gray-50 py-24 sm:py-32">
+      <section id="how-it-works" className="bg-gray-50 dark:bg-gray-900 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center"
           >
             <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">The Solution</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
               Hyr doesn&apos;t just match — it develops talent for your role
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-gray-600 text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-gray-400 text-lg">
               Post your hiring need. We instantly match verified engineers. And we notify near-match candidates to prepare — so your pipeline grows in real time.
             </p>
           </motion.div>
@@ -225,13 +225,13 @@ export default function ForEmployersPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12 }}
-                className="group relative rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
+                className="group relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-8 shadow-sm"
               >
                 <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${step.accent} text-white text-sm font-bold mb-5`}>
                   {step.n}
                 </div>
-                <h3 className="text-xl font-bold text-gray-950 mb-3">{step.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{step.body}</p>
+                <h3 className="text-xl font-bold text-gray-950 dark:text-white mb-3">{step.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{step.body}</p>
               </motion.div>
             ))}
           </div>
@@ -239,15 +239,15 @@ export default function ForEmployersPage() {
       </section>
 
       {/* WHAT YOU GET */}
-      <section className="bg-white py-24 sm:py-32">
+      <section className="bg-white dark:bg-gray-900 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">What You Get</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
                 More than a job board. It&apos;s a hiring engine.
               </h2>
-              <p className="mt-4 text-gray-600 text-lg leading-relaxed">
+              <p className="mt-4 text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
                 Every candidate on Hyr has been through a timed, anti-cheat assessment. You see their actual skill DNA — not their resume writing ability.
               </p>
 
@@ -268,8 +268,8 @@ export default function ForEmployersPage() {
                     transition={{ delay: 0.2 + i * 0.08 }}
                     className="flex items-start gap-3"
                   >
-                    <span className="shrink-0 w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs mt-0.5">&#10003;</span>
-                    <span className="text-gray-700">{item}</span>
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 flex items-center justify-center text-xs mt-0.5">&#10003;</span>
+                    <span className="text-gray-700 dark:text-gray-300">{item}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -281,44 +281,44 @@ export default function ForEmployersPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="rounded-2xl border border-gray-200 bg-white shadow-xl p-6 space-y-4"
+              className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl p-6 space-y-4"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold text-sm text-gray-950">Senior Backend Engineer</p>
+                  <p className="font-semibold text-sm text-gray-950 dark:text-white">Senior Backend Engineer</p>
                   <p className="text-xs text-muted-foreground">Posted 2 hours ago</p>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">Active</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-medium">Active</span>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                <div className="text-center p-3 rounded-lg bg-emerald-50 border border-emerald-100">
-                  <p className="text-xl font-bold text-emerald-700">3</p>
+                <div className="text-center p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800">
+                  <p className="text-xl font-bold text-emerald-700 dark:text-emerald-300">3</p>
                   <p className="text-[10px] text-emerald-600">Ready Now</p>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-blue-50 border border-blue-100">
-                  <p className="text-xl font-bold text-blue-700">8</p>
+                <div className="text-center p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800">
+                  <p className="text-xl font-bold text-blue-700 dark:text-blue-300">8</p>
                   <p className="text-[10px] text-blue-600">Almost There</p>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-amber-50 border border-amber-100">
-                  <p className="text-xl font-bold text-amber-700">12</p>
+                <div className="text-center p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-100">
+                  <p className="text-xl font-bold text-amber-700 dark:text-amber-300">12</p>
                   <p className="text-[10px] text-amber-600">Notified</p>
                 </div>
               </div>
 
-              <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-                <p className="text-xs text-blue-800">
+              <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 p-3">
+                <p className="text-xs text-blue-800 dark:text-blue-200">
                   <strong>8 candidates</strong> have been notified to prepare for your requirements.
                   Expect updated matches within 48 hours.
                 </p>
               </div>
 
               {[
-                { name: "Sarah K.", match: 95, score: 82, tier: "Ready Now", badge: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-                { name: "Ahmed R.", match: 88, score: 76, tier: "Almost There", badge: "bg-blue-50 text-blue-700 border-blue-200" },
-                { name: "Fatima A.", match: 75, score: 71, tier: "Almost There", badge: "bg-blue-50 text-blue-700 border-blue-200" },
+                { name: "Sarah K.", match: 95, score: 82, tier: "Ready Now", badge: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800" },
+                { name: "Ahmed R.", match: 88, score: 76, tier: "Almost There", badge: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800" },
+                { name: "Fatima A.", match: 75, score: 71, tier: "Almost There", badge: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800" },
               ].map(c => (
-                <div key={c.name} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                <div key={c.name} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-800 last:border-0">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-gray-950 text-white flex items-center justify-center text-xs font-bold">
                       {c.name.charAt(0)}
@@ -405,16 +405,16 @@ export default function ForEmployersPage() {
 
       {/* LIVE TALENT POOL */}
       {stats && stats.trackDistribution.length > 0 && (
-        <section className="bg-white py-24 sm:py-32">
+        <section className="bg-white dark:bg-gray-900 py-24 sm:py-32">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="text-center"
             >
               <p className="text-sm font-semibold uppercase tracking-wider text-blue-600">Live Talent Pool</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
                 Real engineers. Real data. Right now.
               </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-gray-600 text-lg">
+              <p className="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-gray-400 text-lg">
                 These numbers are live from our platform — not marketing fluff.
               </p>
             </motion.div>
@@ -427,9 +427,9 @@ export default function ForEmployersPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="rounded-2xl border border-gray-200 p-6 text-center hover:shadow-md transition-shadow"
+                  className="rounded-2xl border border-gray-200 dark:border-gray-700 p-6 text-center hover:shadow-md transition-shadow"
                 >
-                  <p className="text-4xl font-bold text-gray-950">{t.count}</p>
+                  <p className="text-4xl font-bold text-gray-950 dark:text-white">{t.count}</p>
                   <p className="font-semibold text-sm mt-1">{t.label} Engineers</p>
                   <p className="text-xs text-muted-foreground mt-2">Avg score: {t.avgScore}%</p>
                 </motion.div>
@@ -443,14 +443,14 @@ export default function ForEmployersPage() {
                 viewport={{ once: true }}
                 className="mt-12 max-w-lg mx-auto"
               >
-                <p className="text-sm font-medium text-center text-gray-950 mb-4">Level Distribution</p>
+                <p className="text-sm font-medium text-center text-gray-950 dark:text-white mb-4">Level Distribution</p>
                 <div className="space-y-2">
                   {stats.levelDistribution.map(l => {
                     const pct = totalCandidates > 0 ? Math.round((l.count / totalCandidates) * 100) : 0
                     return (
                       <div key={l.level} className="flex items-center gap-3">
-                        <span className="text-sm w-24 text-right text-gray-600">{l.level}</span>
-                        <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
+                        <span className="text-sm w-24 text-right text-gray-600 dark:text-gray-400">{l.level}</span>
+                        <div className="flex-1 h-6 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                           <motion.div
                             className="h-full bg-gray-950 rounded-full"
                             initial={{ width: 0 }}
@@ -459,7 +459,7 @@ export default function ForEmployersPage() {
                             transition={{ duration: 0.8, delay: 0.2 }}
                           />
                         </div>
-                        <span className="text-sm w-12 text-gray-600">{l.count}</span>
+                        <span className="text-sm w-12 text-gray-600 dark:text-gray-400">{l.count}</span>
                       </div>
                     )
                   })}
@@ -468,7 +468,7 @@ export default function ForEmployersPage() {
             )}
 
             <div className="mt-8 text-center">
-              <Link href="/talent-market" className="text-sm text-blue-600 hover:text-blue-800 font-medium underline underline-offset-4 transition-colors">
+              <Link href="/talent-market" className="text-sm text-blue-600 hover:text-blue-800 dark:hover:text-blue-200 font-medium underline underline-offset-4 transition-colors">
                 View full Talent Market Report &rarr;
               </Link>
             </div>
@@ -513,15 +513,15 @@ export default function ForEmployersPage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <span className="text-white font-bold text-lg">Hyr</span>
-              <span className="text-gray-600 text-sm">&middot; Where companies discover verified engineers</span>
+              <span className="text-gray-600 dark:text-gray-400 text-sm">&middot; Where companies discover verified engineers</span>
             </div>
             <div className="flex items-center gap-6">
-              <Link href="/" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Home</Link>
-              <Link href="/talent-market" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Talent Market</Link>
-              <Link href="/pricing" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">Pricing</Link>
-              <Link href="/about" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">About</Link>
+              <Link href="/" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Home</Link>
+              <Link href="/talent-market" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Talent Market</Link>
+              <Link href="/pricing" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Pricing</Link>
+              <Link href="/about" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">About</Link>
             </div>
-            <p className="text-xs text-gray-600">&copy; 2026 Hyr</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">&copy; 2026 Hyr</p>
           </div>
         </div>
       </footer>

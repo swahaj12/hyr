@@ -57,11 +57,11 @@ export function SupportButton({ sessionToken }: SupportDialogProps) {
 
   return (
     <div className="fixed bottom-20 sm:bottom-6 right-4 z-30 w-80">
-      <Card className="shadow-xl border-gray-200">
+      <Card className="shadow-xl border-gray-200 dark:border-gray-700">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm">Contact Support</CardTitle>
-            <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-gray-950">
+            <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-gray-950 dark:text-white">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
           </div>

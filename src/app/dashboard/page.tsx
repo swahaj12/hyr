@@ -170,13 +170,13 @@ export default function DashboardPage() {
   const latest = assessments[0]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <PageTransition>
       <StaggerList stagger={0.1} className="max-w-5xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
         {error && (
-          <motion.div variants={staggerItem} className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <motion.div variants={staggerItem} className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-4 text-sm text-red-700 dark:text-red-300">
             {error}
           </motion.div>
         )}
@@ -206,7 +206,7 @@ export default function DashboardPage() {
                   }`}
                 >
                   <span
-                    className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+                    className={`inline-block h-4 w-4 rounded-full bg-white dark:bg-gray-900 transition-transform ${
                       profileVisible ? "translate-x-4" : "translate-x-0"
                     }`}
                   />
@@ -231,12 +231,12 @@ export default function DashboardPage() {
 
         {/* Profile Status */}
         {assessments.length > 0 && userId && (
-          <motion.div variants={staggerItem} className={`rounded-xl border-2 p-5 ${profileVisible ? "border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50" : "border-gray-200 bg-gray-50"}`}>
+          <motion.div variants={staggerItem} className={`rounded-xl border-2 p-5 ${profileVisible ? "border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-green-50" : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"}`}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className={`w-3 h-3 rounded-full ${profileVisible ? "bg-emerald-500 animate-pulse" : "bg-gray-400"}`} />
                 <div>
-                  <p className={`font-semibold text-sm ${profileVisible ? "text-emerald-900" : "text-gray-700"}`}>
+                  <p className={`font-semibold text-sm ${profileVisible ? "text-emerald-900 dark:text-emerald-200" : "text-gray-700 dark:text-gray-300"}`}>
                     {profileVisible ? "Your profile is live — employers can discover you" : "Your profile is hidden from employers"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
@@ -279,7 +279,7 @@ export default function DashboardPage() {
         {/* Opportunity Notifications */}
         {notifications.length > 0 && (
           <motion.div variants={staggerItem}>
-          <Card className="border-violet-200 bg-gradient-to-br from-violet-50 to-blue-50">
+          <Card className="border-violet-200 dark:border-violet-800 bg-gradient-to-br from-violet-50 to-blue-50">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2">
                 Opportunities for You
@@ -298,8 +298,8 @@ export default function DashboardPage() {
                     key={n.id}
                     className={`rounded-xl border p-4 transition-all ${
                       !n.read
-                        ? "bg-white border-violet-200 shadow-sm"
-                        : "bg-white/50 border-gray-200"
+                        ? "bg-white dark:bg-gray-900 border-violet-200 dark:border-violet-800 shadow-sm"
+                        : "bg-white/50 border-gray-200 dark:border-gray-700"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -312,7 +312,7 @@ export default function DashboardPage() {
                         {n.skill_gaps && n.skill_gaps.length > 0 && (
                           <div className="flex flex-wrap gap-1.5 mt-2">
                             {n.skill_gaps.map(s => (
-                              <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                              <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                                 {DOMAIN_LABELS[s] || s}
                               </span>
                             ))}
@@ -320,7 +320,7 @@ export default function DashboardPage() {
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="text-lg font-bold text-violet-700">{n.match_pct}%</p>
+                        <p className="text-lg font-bold text-violet-700 dark:text-violet-300">{n.match_pct}%</p>
                         <p className="text-[10px] text-muted-foreground">match</p>
                       </div>
                     </div>
@@ -350,16 +350,16 @@ export default function DashboardPage() {
         {assessments.length > 0 && unreadMessages > 0 && (
           <motion.div variants={staggerItem}>
           <Link href="/messages">
-            <Card className="border-blue-200 bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
+            <Card className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
               <CardContent className="pt-4 pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-lg">💬</span>
                     <div>
-                      <p className="font-semibold text-blue-900 text-sm">
+                      <p className="font-semibold text-blue-900 dark:text-blue-200 text-sm">
                         {unreadMessages} unread message{unreadMessages !== 1 ? "s" : ""}
                       </p>
-                      <p className="text-xs text-blue-700">From employers interested in your profile</p>
+                      <p className="text-xs text-blue-700 dark:text-blue-300">From employers interested in your profile</p>
                     </div>
                   </div>
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><path d="m9 18 6-6-6-6"/></svg>
@@ -384,7 +384,7 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-3">
                 {hiringCompanies.map((company, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 bg-gray-50">
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
                     <div className="w-10 h-10 rounded-lg bg-gray-950 text-white flex items-center justify-center text-sm font-bold shrink-0">
                       {company.company_name.charAt(0).toUpperCase()}
                     </div>
@@ -401,7 +401,7 @@ export default function DashboardPage() {
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{company.hiring_description}</p>
                       )}
                     </div>
-                    <Badge className="text-[10px] bg-emerald-100 text-emerald-700 border-emerald-200 shrink-0">
+                    <Badge className="text-[10px] bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800 shrink-0">
                       Hiring
                     </Badge>
                   </div>
@@ -423,23 +423,23 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {profileViews > 0 && (
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border border-blue-100">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-800">
                     <span className="text-lg">👀</span>
-                    <p className="text-sm text-blue-800">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
                       Your profile has been viewed <strong>{profileViews}</strong> time{profileViews !== 1 ? "s" : ""} by employers
                     </p>
                   </div>
                 )}
                 {interests.length > 0 && (
                   <div className="space-y-3">
-                    <p className="text-sm font-medium text-gray-700">{interests.length} employer{interests.length !== 1 ? "s" : ""} interested</p>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{interests.length} employer{interests.length !== 1 ? "s" : ""} interested</p>
                     {interests.map((interest, i) => (
-                      <div key={i} className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                      <div key={i} className="rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-4">
                         <div className="flex items-start justify-between gap-3">
                           <div>
-                            <p className="font-semibold text-emerald-900 text-sm">{interest.employer_name || "A company"}</p>
+                            <p className="font-semibold text-emerald-900 dark:text-emerald-200 text-sm">{interest.employer_name || "A company"}</p>
                             {interest.message && (
-                              <p className="text-sm text-emerald-700 mt-1">&ldquo;{interest.message}&rdquo;</p>
+                              <p className="text-sm text-emerald-700 dark:text-emerald-300 mt-1">&ldquo;{interest.message}&rdquo;</p>
                             )}
                             <p className="text-xs text-emerald-600 mt-1">
                               {new Date(interest.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
@@ -448,7 +448,7 @@ export default function DashboardPage() {
                           {interest.employer_email && (
                             <a
                               href={`mailto:${interest.employer_email}`}
-                              className="shrink-0 text-xs font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg transition-colors"
+                              className="shrink-0 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40 hover:bg-emerald-200 px-3 py-1.5 rounded-lg transition-colors"
                             >
                               Reply
                             </a>
@@ -474,14 +474,14 @@ export default function DashboardPage() {
             <motion.div
               variants={staggerItem}
               className={`rounded-xl border p-4 flex items-center gap-3 ${
-                delta > 0 ? "border-green-200 bg-green-50" : "border-amber-200 bg-amber-50"
+                delta > 0 ? "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30" : "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30"
               }`}
             >
-              <span className={`text-2xl font-bold ${delta > 0 ? "text-green-700" : "text-amber-700"}`}>
+              <span className={`text-2xl font-bold ${delta > 0 ? "text-green-700 dark:text-green-300" : "text-amber-700 dark:text-amber-300"}`}>
                 {delta > 0 ? "+" : ""}{delta}%
               </span>
               <div>
-                <p className={`text-sm font-medium ${delta > 0 ? "text-green-800" : "text-amber-800"}`}>
+                <p className={`text-sm font-medium ${delta > 0 ? "text-green-800 dark:text-green-200" : "text-amber-800 dark:text-amber-200"}`}>
                   {delta > 0 ? "Score improved since last assessment" : "Score dropped since last assessment"}
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -518,15 +518,15 @@ export default function DashboardPage() {
               const hasOpportunities = notifications.length > 0
               return (
                 <motion.div variants={staggerItem}>
-                  <div className="rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-5">
+                  <div className="rounded-xl border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-50 p-5">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">🔄</span>
                         <div>
-                          <p className="font-semibold text-blue-900 text-sm">
+                          <p className="font-semibold text-blue-900 dark:text-blue-200 text-sm">
                             Time to refresh your profile
                           </p>
-                          <p className="text-xs text-blue-700 mt-0.5">
+                          <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5">
                             Your last assessment was {daysSinceLastAssessment} days ago.
                             {hasOpportunities
                               ? ` Retake to improve your match with ${notifications.length} active opportunity${notifications.length > 1 ? "ies" : ""}.`
@@ -571,12 +571,12 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex gap-3">
                         {latest.assessed_level && (
-                          <div className="text-center px-3 py-1.5 rounded-md bg-gray-100 border border-gray-200">
+                          <div className="text-center px-3 py-1.5 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Took</p>
                             <p className="text-sm font-semibold">{LEVEL_LABELS[latest.assessed_level] || latest.assessed_level}</p>
                           </div>
                         )}
-                        <div className="text-center px-3 py-1.5 rounded-md bg-gray-100 border border-gray-200">
+                        <div className="text-center px-3 py-1.5 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                           <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Your Level</p>
                           <p className="text-sm font-semibold">{displayLevel(latest.overall_level)}</p>
                         </div>
@@ -601,13 +601,13 @@ export default function DashboardPage() {
                         return (
                           <div
                             key={d.domain}
-                            className="bg-gray-50 rounded-lg p-3 space-y-1"
+                            className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 space-y-1"
                           >
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-medium truncate">{d.domainLabel}</span>
                               <span className="text-xs text-muted-foreground">{d.pct}%</span>
                             </div>
-                            <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                               <div
                                 className={`h-full rounded-full transition-all duration-700 ${
                                   d.pct >= 70
@@ -624,7 +624,7 @@ export default function DashboardPage() {
                                 href={resources[0].url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[10px] text-blue-600 hover:text-blue-800 hover:underline block mt-1"
+                                className="text-[10px] text-blue-600 hover:text-blue-800 dark:hover:text-blue-200 hover:underline block mt-1"
                               >
                                 Improve this skill →
                               </a>
@@ -693,7 +693,7 @@ export default function DashboardPage() {
                         <div className="flex justify-between mt-1">
                           {points.map((p, i) => (
                             <div key={i} className="text-center" style={{ width: `${100 / points.length}%` }}>
-                              <p className="text-xs font-semibold text-gray-950">{p.pct}%</p>
+                              <p className="text-xs font-semibold text-gray-950 dark:text-white">{p.pct}%</p>
                               <p className="text-[10px] text-muted-foreground">{p.date}</p>
                             </div>
                           ))}
@@ -718,8 +718,8 @@ export default function DashboardPage() {
                     <Link
                       key={a.id}
                       href={`/results/${a.id}`}
-                      className={`flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 transition-colors ${
-                        i === 0 ? "border-gray-300 bg-gray-50" : ""
+                      className={`flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors ${
+                        i === 0 ? "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900" : ""
                       }`}
                     >
                       <div className="flex items-center gap-3">

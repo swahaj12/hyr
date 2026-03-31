@@ -269,7 +269,7 @@ function LiveTicker({ items }: { items: TickerItem[] }) {
             <span>
               Someone scored <strong className="text-white">{item.score}%</strong> on {item.track} ({item.level})
             </span>
-            <span className="text-gray-600">&middot; {item.timeAgo}</span>
+            <span className="text-gray-600 dark:text-gray-400">&middot; {item.timeAgo}</span>
           </div>
         ))}
       </div>
@@ -281,7 +281,7 @@ export default function Home() {
   const { items: tickerItems } = useRecentAssessments()
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-gray-900">
       {/* ═══════ HERO ═══════ */}
       <section className="relative bg-gray-950 text-white overflow-hidden">
         <div className="absolute inset-0 hero-grid" />
@@ -380,7 +380,7 @@ export default function Home() {
                   <p className="text-2xl sm:text-3xl font-bold text-white">
                     <AnimatedNumber value={stat.value} display={stat.display} suffix={stat.suffix} />
                   </p>
-                  <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{stat.label}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">{stat.label}</p>
                 </motion.div>
               ))}
             </StaggerContainer>
@@ -431,7 +431,7 @@ export default function Home() {
                   <p className="mt-2 text-sm text-gray-400 leading-relaxed">{track.tagline}</p>
 
                   {track.domains && (
-                    <div className="mt-4 flex gap-3 text-xs text-gray-500">
+                    <div className="mt-4 flex gap-3 text-xs text-gray-500 dark:text-gray-400">
                       <span>{track.domains} domains</span>
                       <span>&middot;</span>
                       <span>{track.questions} questions</span>
@@ -448,14 +448,14 @@ export default function Home() {
                       </span>
                     ))}
                     {track.skills.length > 6 && (
-                      <span className="text-[10px] px-2 py-0.5 text-gray-500">+{track.skills.length - 6} more</span>
+                      <span className="text-[10px] px-2 py-0.5 text-gray-500 dark:text-gray-400">+{track.skills.length - 6} more</span>
                     )}
                   </div>
 
                   <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="mt-5">
                     <Link
                       href={track.href}
-                      className="block w-full rounded-lg bg-white text-gray-950 text-center py-2.5 text-sm font-semibold hover:!bg-gray-200 hover:!text-gray-950 transition-colors"
+                      className="block w-full rounded-lg bg-white dark:bg-gray-900 text-gray-950 dark:text-white text-center py-2.5 text-sm font-semibold hover:!bg-gray-200 dark:hover:!bg-gray-700 hover:!text-gray-950 dark:hover:!text-white transition-colors"
                     >
                       Build Profile
                     </Link>
@@ -468,14 +468,14 @@ export default function Home() {
       </section>
 
       {/* ═══════ HOW IT WORKS ═══════ */}
-      <section id="how-it-works" className="bg-gray-50 py-24 sm:py-32">
+      <section id="how-it-works" className="bg-gray-50 dark:bg-gray-900 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-blue-600">How It Works</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
               From assessment to interview in three steps
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-gray-600 text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-gray-400 text-lg">
               No resumes. No applications. No waiting.
             </p>
           </Reveal>
@@ -486,13 +486,13 @@ export default function Home() {
                 key={step.n}
                 variants={staggerChild}
                 whileHover={{ y: -6, boxShadow: "0 20px 40px -12px rgba(0,0,0,0.1)" }}
-                className="group relative rounded-2xl border border-gray-200 bg-white p-8 shadow-sm transition-colors"
+                className="group relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-8 shadow-sm transition-colors"
               >
                 <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${step.accent} text-white text-sm font-bold mb-5`}>
                   {step.n}
                 </div>
-                <h3 className="text-xl font-bold text-gray-950 mb-3">{step.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{step.body}</p>
+                <h3 className="text-xl font-bold text-gray-950 dark:text-white mb-3">{step.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{step.body}</p>
                 <div className={`absolute bottom-0 left-8 right-8 h-0.5 bg-gradient-to-r ${step.accent} rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`} />
               </motion.div>
             ))}
@@ -501,15 +501,15 @@ export default function Home() {
       </section>
 
       {/* ═══════ RESULTS PREVIEW ═══════ */}
-      <section className="bg-white py-24 sm:py-32 overflow-hidden">
+      <section className="bg-white dark:bg-gray-900 py-24 sm:py-32 overflow-hidden">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
             <Reveal direction="left">
               <p className="text-sm font-semibold uppercase tracking-wider text-violet-600">Your Career Profile</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
                 The profile that gets you hired
               </h2>
-              <p className="mt-4 text-gray-600 text-lg leading-relaxed">
+              <p className="mt-4 text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
                 Employers on Hyr don&apos;t read resumes — they browse verified skill profiles. Your Hyr profile shows exactly what you can do, backed by anti-cheat monitoring and domain-level scoring.
               </p>
               <ul className="mt-8 space-y-4">
@@ -527,8 +527,8 @@ export default function Home() {
                     transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
                     className="flex items-start gap-3"
                   >
-                    <span className="shrink-0 w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs mt-0.5">&#10003;</span>
-                    <span className="text-gray-700">{item}</span>
+                    <span className="shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/40 text-green-600 flex items-center justify-center text-xs mt-0.5">&#10003;</span>
+                    <span className="text-gray-700 dark:text-gray-300">{item}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -550,7 +550,7 @@ export default function Home() {
             <Reveal direction="right" delay={0.2}>
               <motion.div
                 whileHover={{ y: -4, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)" }}
-                className="rounded-2xl border border-gray-200 bg-white shadow-xl p-6 sm:p-8 space-y-6 transition-shadow"
+                className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl p-6 sm:p-8 space-y-6 transition-shadow"
               >
                 <div className="text-center space-y-2">
                   <motion.div
@@ -564,12 +564,12 @@ export default function Home() {
                   </motion.div>
                   <p className="font-bold text-lg">Ahmad K.</p>
                   <div className="flex items-center justify-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-full px-3 py-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-full px-3 py-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
                       Verified
                     </span>
-                    <span className="text-xs text-gray-500">DevOps</span>
-                    <span className="text-sm font-semibold text-gray-950">Mid-Level</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">DevOps</span>
+                    <span className="text-sm font-semibold text-gray-950 dark:text-white">Mid-Level</span>
                   </div>
                 </div>
 
@@ -577,10 +577,10 @@ export default function Home() {
                   {sampleDomains.map((d, i) => (
                     <div key={d.name} className="space-y-1">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium text-gray-700">{d.name}</span>
-                        <span className="text-gray-500">{d.pct}%</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">{d.name}</span>
+                        <span className="text-gray-500 dark:text-gray-400">{d.pct}%</span>
                       </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                         <motion.div
                           className={`h-full rounded-full ${d.color}`}
                           initial={{ width: 0 }}
@@ -603,11 +603,11 @@ export default function Home() {
       </section>
 
       {/* ═══════ WHY HYR ═══════ */}
-      <section className="bg-white py-24 sm:py-32">
+      <section className="bg-white dark:bg-gray-900 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-emerald-600">Why Hyr</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-4xl">
               A career platform, not a testing tool
             </h2>
           </Reveal>
@@ -637,15 +637,15 @@ export default function Home() {
                 key={card.title}
                 variants={staggerChild}
                 whileHover={{ y: -6, boxShadow: "0 20px 40px -12px rgba(0,0,0,0.1)" }}
-                className="rounded-2xl border border-gray-200 bg-white p-8 transition-colors"
+                className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-8 transition-colors"
               >
                 <div className={`inline-block rounded-lg bg-gradient-to-r ${card.gradient} bg-clip-text text-transparent text-sm font-bold uppercase tracking-wider mb-4`}>
                   {card.title}
                 </div>
-                <p className="text-gray-600 leading-relaxed mb-6">{card.desc}</p>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">{card.desc}</p>
                 <ul className="space-y-2.5">
                   {card.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-sm text-gray-700">
+                    <li key={item} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                       <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
                       {item}
                     </li>
@@ -760,32 +760,32 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <span className="text-white font-bold text-lg">Hyr</span>
-              <span className="text-gray-600 text-sm">&middot; Where companies discover verified engineers</span>
+              <span className="text-gray-600 dark:text-gray-400 text-sm">&middot; Where companies discover verified engineers</span>
             </div>
             <div className="flex items-center gap-6">
-              <Link href="/auth" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              <Link href="/auth" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">
                 Sign In
               </Link>
-              <Link href="/assessment" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              <Link href="/assessment" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">
                 Build Profile
               </Link>
-              <Link href="/for-employers" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              <Link href="/for-employers" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">
                 For Employers
               </Link>
-              <Link href="/talent-market" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              <Link href="/talent-market" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">
                 Talent Market
               </Link>
-              <Link href="/about" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              <Link href="/about" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">
                 About
               </Link>
-              <Link href="/terms" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              <Link href="/terms" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">
                 Terms
               </Link>
-              <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              <Link href="/privacy" className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">
                 Privacy
               </Link>
             </div>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               &copy; {new Date().getFullYear()} Hyr. Built for engineers.
             </p>
           </div>

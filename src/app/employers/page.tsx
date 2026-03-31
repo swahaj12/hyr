@@ -217,13 +217,13 @@ export default function EmployersPage() {
 
   if (!authorized) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <main className="max-w-lg mx-auto px-4 py-16">
           <Card>
             <CardContent className="pt-8 pb-8 text-center space-y-5">
-              <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 dark:text-gray-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
               <div>
                 <h2 className="text-xl font-bold">For Employers Only</h2>
@@ -248,12 +248,12 @@ export default function EmployersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-0">
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-4 text-sm text-red-700 dark:text-red-300">
             {error}
           </div>
         )}
@@ -285,12 +285,12 @@ export default function EmployersPage() {
                 placeholder="Search by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full sm:flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full sm:flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
               />
               <select
                 value={domainFilter}
                 onChange={(e) => setDomainFilter(e.target.value)}
-                className="w-full sm:w-auto rounded-lg border border-gray-200 bg-white px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full sm:w-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
               >
                 {DOMAIN_FILTERS.map((d) => (
                   <option key={d} value={d}>{d}</option>
@@ -299,7 +299,7 @@ export default function EmployersPage() {
               <select
                 value={levelFilter}
                 onChange={(e) => setLevelFilter(e.target.value)}
-                className="w-full sm:w-auto rounded-lg border border-gray-200 bg-white px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full sm:w-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
               >
                 <option value="All">All Levels</option>
                 <option value="Senior">Senior</option>
@@ -310,7 +310,7 @@ export default function EmployersPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as "score" | "recent")}
-                className="w-full sm:w-auto rounded-lg border border-gray-200 bg-white px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                className="w-full sm:w-auto rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2 text-base sm:text-sm min-h-11 sm:min-h-9 focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
               >
                 <option value="score">Highest Score</option>
                 <option value="recent">Most Recent</option>
@@ -344,7 +344,7 @@ export default function EmployersPage() {
                   href={`/profile/${c.candidateId}`}
                   className="block group"
                 >
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-gray-300">
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-gray-300 dark:border-gray-600">
                     <CardContent className="pt-6">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
@@ -383,10 +383,10 @@ export default function EmployersPage() {
                             key={d.name}
                             className={`text-xs px-2 py-0.5 rounded-full border ${
                               d.pct >= 70
-                                ? "bg-green-50 text-green-700 border-green-200"
+                                ? "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800"
                                 : d.pct >= 50
                                   ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                                  : "bg-gray-50 text-gray-600 border-gray-200"
+                                  : "bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700"
                             }`}
                           >
                             {d.name} {d.pct}%
@@ -439,8 +439,8 @@ export default function EmployersPage() {
                             }}
                             className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
                               savedCandidates.has(c.candidateId)
-                                ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                ? "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 hover:bg-amber-200"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
                             }`}
                           >
                             {savedCandidates.has(c.candidateId) ? "★ Saved" : "☆ Save"}

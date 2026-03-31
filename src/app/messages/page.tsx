@@ -51,7 +51,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <PageTransition>
@@ -81,7 +81,7 @@ export default function MessagesPage() {
                 href={`/messages/${conv.id}`}
                 className="block"
               >
-                <Card className={`hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 ${conv.unreadCount > 0 ? "border-blue-200 bg-blue-50/50 animate-glow-pulse" : ""}`}>
+                <Card className={`hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 ${conv.unreadCount > 0 ? "border-blue-200 dark:border-blue-800 bg-blue-50/50 animate-glow-pulse" : ""}`}>
                   <CardContent className="pt-4 pb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gray-950 text-white flex items-center justify-center text-sm font-bold shrink-0">
@@ -90,7 +90,7 @@ export default function MessagesPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <p className={`font-semibold text-sm ${conv.unreadCount > 0 ? "text-gray-950" : "text-gray-700"}`}>
+                            <p className={`font-semibold text-sm ${conv.unreadCount > 0 ? "text-gray-950 dark:text-white" : "text-gray-700 dark:text-gray-300"}`}>
                               {conv.otherName}
                             </p>
                             <Badge variant="outline" className="text-[10px]">
@@ -102,7 +102,7 @@ export default function MessagesPage() {
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-2 mt-0.5">
-                          <p className={`text-sm truncate ${conv.unreadCount > 0 ? "text-gray-900 font-medium" : "text-muted-foreground"}`}>
+                          <p className={`text-sm truncate ${conv.unreadCount > 0 ? "text-gray-900 dark:text-white font-medium" : "text-muted-foreground"}`}>
                             {conv.lastMessage || "No messages yet"}
                           </p>
                           {conv.unreadCount > 0 && (

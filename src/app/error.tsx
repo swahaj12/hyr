@@ -18,7 +18,7 @@ export default function Error({
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="text-center space-y-6 max-w-md animate-fade-up">
           <div className="space-y-2">
-            <p className="text-6xl font-bold text-gray-800">Oops</p>
+            <p className="text-6xl font-bold text-gray-800 dark:text-gray-200">Oops</p>
             <h1 className="text-2xl sm:text-3xl font-bold">Something went wrong</h1>
             <p className="text-gray-400 text-lg">
               An unexpected error occurred. Please try again.
@@ -29,7 +29,7 @@ export default function Error({
             <Button
               size="lg"
               onClick={reset}
-              className="bg-white text-gray-950 hover:bg-gray-200 hover:text-gray-950"
+              className="bg-white dark:bg-gray-900 text-gray-950 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-950 dark:text-white"
             >
               Try Again
             </Button>
@@ -47,7 +47,7 @@ export default function Error({
       </div>
 
       <footer className="text-center py-6">
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-gray-600 dark:text-gray-400">
           &copy; {new Date().getFullYear()} Hyr. Tech skills verification.
         </p>
       </footer>

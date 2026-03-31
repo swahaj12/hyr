@@ -11,16 +11,16 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 py-12 sm:py-20 space-y-16 pb-20 sm:pb-0">
         {/* Hero */}
         <div className="text-center space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-950">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white">
             Bridging the tech skills gap
           </h1>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
             Hyr is a skills verification platform that helps engineers prove what they know
             and helps companies find the talent they need — without wasting weeks on screening.
           </p>
@@ -28,12 +28,12 @@ export default function AboutPage() {
 
         {/* The Problem */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-gray-950">The Problem</h2>
+          <h2 className="text-2xl font-bold text-gray-950 dark:text-white">The Problem</h2>
           <div className="grid sm:grid-cols-2 gap-6">
             <Card>
               <CardContent className="pt-6 space-y-2">
-                <p className="font-semibold text-gray-950">For Candidates</p>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="font-semibold text-gray-950 dark:text-white">For Candidates</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                   You repeat the same screening calls for every company. You answer the same basic questions.
                   Your resume doesn&apos;t show what you actually know. There&apos;s no way to prove your skills once
                   and share it everywhere.
@@ -42,8 +42,8 @@ export default function AboutPage() {
             </Card>
             <Card>
               <CardContent className="pt-6 space-y-2">
-                <p className="font-semibold text-gray-950">For Employers</p>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="font-semibold text-gray-950 dark:text-white">For Employers</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                   Screening takes weeks. Resumes are unreliable. Technical interviews are expensive.
                   You need to know if someone can actually do the job before investing hours of your
                   engineering team&apos;s time.
@@ -55,13 +55,13 @@ export default function AboutPage() {
 
         {/* The Solution */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-gray-950">How Hyr Works</h2>
-          <p className="text-gray-600 text-lg leading-relaxed">
+          <h2 className="text-2xl font-bold text-gray-950 dark:text-white">How Hyr Works</h2>
+          <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
             Candidates pick an engineering track — DevOps, Frontend, Backend, or QA — and take a free
             15-minute assessment. Questions are scenario-based, timed, and designed to test real working
             knowledge, not textbook theory.
           </p>
-          <p className="text-gray-600 text-lg leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
             The result is a verified skill profile that candidates can share with any employer.
             Anti-cheat measures (tab tracking, copy blocking, time pressure) ensure results are trustworthy.
             Employers can browse candidates, see domain-level breakdowns, and go straight to the final interview.
@@ -70,29 +70,29 @@ export default function AboutPage() {
 
         {/* Built in Pakistan */}
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-gray-950">Built for Pakistan&apos;s Tech Industry</h2>
-          <p className="text-gray-600 text-lg leading-relaxed">
+          <h2 className="text-2xl font-bold text-gray-950 dark:text-white">Built for Pakistan&apos;s Tech Industry</h2>
+          <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
             Pakistan&apos;s tech sector is growing fast, but the skills gap between what universities
             teach and what companies need remains wide. Hyr is built to close that gap — with
             DevOps, Frontend, Backend, and QA tracks all live today.
           </p>
-          <p className="text-gray-600 text-lg leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
             Whether you&apos;re a fresh graduate building your first career profile or a senior engineer
             looking for your next role, Hyr connects you with companies that value verified skills over resumes.
           </p>
         </div>
 
         {/* Contact */}
-        <Card className="border-gray-200">
+        <Card className="border-gray-200 dark:border-gray-700">
           <CardContent className="pt-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <div className="space-y-2">
-                <h2 className="text-xl font-bold text-gray-950">Get in Touch</h2>
-                <p className="text-gray-600">
+                <h2 className="text-xl font-bold text-gray-950 dark:text-white">Get in Touch</h2>
+                <p className="text-gray-600 dark:text-gray-400">
                   Questions, partnerships, or feedback — we&apos;d love to hear from you.
                 </p>
-                <p className="text-sm text-gray-500">
-                  Email: <a href="mailto:hello@hyr.pk" className="text-gray-950 font-medium hover:underline">hello@hyr.pk</a>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Email: <a href="mailto:hello@hyr.pk" className="text-gray-950 dark:text-white font-medium hover:underline">hello@hyr.pk</a>
                 </p>
               </div>
               <div className="flex gap-3">

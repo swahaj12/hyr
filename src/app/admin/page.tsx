@@ -155,7 +155,7 @@ export default function AdminPage() {
 
   if (!authorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center space-y-4">
             <p className="text-lg font-semibold">Access Denied</p>
@@ -250,7 +250,7 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-8">
@@ -260,7 +260,7 @@ export default function AdminPage() {
         </div>
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>
+          <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-4 text-sm text-red-700 dark:text-red-300">{error}</div>
         )}
 
         {/* Tab Switcher */}
@@ -289,7 +289,7 @@ export default function AdminPage() {
             {/* Top KPI Row */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {[
-                { label: "Total Assessments", value: candidates.length, color: "text-gray-950" },
+                { label: "Total Assessments", value: candidates.length, color: "text-gray-950 dark:text-white" },
                 { label: "Unique Candidates", value: uniqueCandidates, color: "text-blue-600" },
                 { label: "Avg Score", value: `${avgScore}%`, color: "text-emerald-600" },
                 { label: "Active Employers", value: activeEmployers, color: "text-purple-600" },
@@ -320,7 +320,7 @@ export default function AdminPage() {
                           <span className="font-medium">{TRACK_LABELS[track] || track}</span>
                           <span className="text-muted-foreground">{count} ({Math.round((count / candidates.length) * 100)}%)</span>
                         </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                           <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(count / maxTrackCount) * 100}%` }} />
                         </div>
                       </div>
@@ -346,7 +346,7 @@ export default function AdminPage() {
                           </div>
                           <span className="text-muted-foreground">{count} ({Math.round((count / candidates.length) * 100)}%)</span>
                         </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${LEVEL_COLORS[level] || "bg-gray-400"}`} style={{ width: `${(count / maxLevelCount) * 100}%` }} />
                         </div>
                       </div>
@@ -400,10 +400,10 @@ export default function AdminPage() {
                             </span>
                           </div>
                           <div className="flex gap-1 h-2">
-                            <div className="flex-1 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                               <div className="h-full bg-blue-400 rounded-full" style={{ width: `${(supply / maxVal) * 100}%` }} />
                             </div>
-                            <div className="flex-1 bg-gray-100 rounded-full overflow-hidden">
+                            <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                               <div className="h-full bg-purple-400 rounded-full" style={{ width: `${(demand / maxVal) * 100}%` }} />
                             </div>
                           </div>
@@ -519,7 +519,7 @@ export default function AdminPage() {
               <Link href="/admin/support">
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="pt-5 pb-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center shrink-0">
                       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
                     <div>
@@ -531,7 +531,7 @@ export default function AdminPage() {
               </Link>
               <Card className="border-dashed">
                 <CardContent className="pt-5 pb-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
                   </div>
                   <div>
@@ -566,7 +566,7 @@ export default function AdminPage() {
                             {d.avgPct}%
                           </span>
                         </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${d.avgPct >= 70 ? "bg-emerald-500" : d.avgPct >= 45 ? "bg-amber-500" : "bg-red-400"}`}
                             style={{ width: `${d.avgPct}%` }}
@@ -595,7 +595,7 @@ export default function AdminPage() {
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-muted-foreground">Flagged (3+ tab switches)</span>
-                      <Badge variant="outline" className={`text-[10px] ${flaggedAssessments > 0 ? "bg-red-50 text-red-700 border-red-200" : ""}`}>
+                      <Badge variant="outline" className={`text-[10px] ${flaggedAssessments > 0 ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800" : ""}`}>
                         {flaggedAssessments}
                       </Badge>
                     </div>
@@ -620,7 +620,7 @@ export default function AdminPage() {
                         .sort((a, b) => (b.total_score / b.total_questions) - (a.total_score / a.total_questions))
                         .slice(0, 5)
                         .map((c, i) => (
-                          <Link key={c.id} href={`/results/${c.id}`} className="flex items-center justify-between text-xs hover:bg-gray-50 rounded p-1.5 -mx-1.5 transition-colors">
+                          <Link key={c.id} href={`/results/${c.id}`} className="flex items-center justify-between text-xs hover:bg-gray-50 dark:hover:bg-gray-900 rounded p-1.5 -mx-1.5 transition-colors">
                             <div className="flex items-center gap-2">
                               <span className="text-muted-foreground w-4">{i + 1}.</span>
                               <span className="font-medium">{c.candidate_name || c.candidate_email || c.candidate_id.slice(0, 8)}</span>
@@ -650,7 +650,7 @@ export default function AdminPage() {
                 <select
                   value={levelFilter}
                   onChange={(e) => setLevelFilter(e.target.value)}
-                  className="border rounded-md px-3 py-2 text-base sm:text-sm bg-white min-h-11 sm:min-h-9"
+                  className="border rounded-md px-3 py-2 text-base sm:text-sm bg-white dark:bg-gray-900 min-h-11 sm:min-h-9"
                 >
                   <option value="">All Levels</option>
                   {levels.map((l) => <option key={l} value={l}>{l}</option>)}
@@ -682,7 +682,7 @@ export default function AdminPage() {
                           const pct = Math.round((c.total_score / c.total_questions) * 100)
                           const topDomains = [...(c.domain_scores || [])].sort((a, b) => b.pct - a.pct).slice(0, 3)
                           return (
-                            <tr key={c.id} className="border-b hover:bg-gray-50">
+                            <tr key={c.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-900">
                               <td className="py-3 px-2">
                                 <div>
                                   <p className="font-medium">{c.candidate_name || "—"}</p>
@@ -693,7 +693,7 @@ export default function AdminPage() {
                                 <span className="font-semibold">{pct}%</span>
                                 <span className="text-xs text-muted-foreground ml-1">({c.total_score}/{c.total_questions})</span>
                                 {c.tab_switches > 3 && (
-                                  <Badge variant="outline" className="ml-1 text-[9px] bg-red-50 text-red-600 border-red-200">!</Badge>
+                                  <Badge variant="outline" className="ml-1 text-[9px] bg-red-50 dark:bg-red-950/30 text-red-600 border-red-200 dark:border-red-800">!</Badge>
                                 )}
                               </td>
                               <td className="py-3 px-2 hidden sm:table-cell">
@@ -737,7 +737,7 @@ export default function AdminPage() {
             {/* Employer KPI Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "Total Employers", value: employers.length, color: "text-gray-950" },
+                { label: "Total Employers", value: employers.length, color: "text-gray-950 dark:text-white" },
                 { label: "Active", value: activeEmployers, color: "text-emerald-600" },
                 { label: "Pending Review", value: pendingEmployers.length, color: pendingEmployers.length > 0 ? "text-amber-600" : "text-gray-400" },
                 { label: "Rejected", value: rejectedEmployers, color: rejectedEmployers > 0 ? "text-red-500" : "text-gray-400" },
@@ -769,7 +769,7 @@ export default function AdminPage() {
                             <span className="font-medium">{TRACK_LABELS[track] || track}</span>
                             <span className="text-muted-foreground">{count} employer{count !== 1 ? "s" : ""}</span>
                           </div>
-                          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                             <div className="h-full bg-purple-500 rounded-full" style={{ width: `${(count / maxHiringCount) * 100}%` }} />
                           </div>
                         </div>

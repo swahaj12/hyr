@@ -33,10 +33,10 @@ const URGENCY_LABELS: Record<string, string> = {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  active: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  paused: "bg-amber-50 text-amber-700 border-amber-200",
-  filled: "bg-blue-50 text-blue-700 border-blue-200",
-  expired: "bg-gray-50 text-gray-500 border-gray-200",
+  active: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+  paused: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+  filled: "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+  expired: "bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700",
 }
 
 export default function HiringNeedsPage() {
@@ -78,7 +78,7 @@ export default function HiringNeedsPage() {
   if (loading) return <><Navbar /><PageLoading /></>
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -97,7 +97,7 @@ export default function HiringNeedsPage() {
         {needs.length === 0 ? (
           <Card>
             <CardContent className="pt-8 pb-8 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
               </div>
               <div>
@@ -118,7 +118,7 @@ export default function HiringNeedsPage() {
               const effectiveStatus = isExpired && need.status === "active" ? "expired" : need.status
               return (
                 <Link key={need.id} href={`/employers/hiring-needs/${need.id}`} className="block group">
-                  <Card className="hover:shadow-md transition-all group-hover:-translate-y-0.5 group-hover:border-gray-300">
+                  <Card className="hover:shadow-md transition-all group-hover:-translate-y-0.5 group-hover:border-gray-300 dark:border-gray-600">
                     <CardContent className="pt-6">
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                         <div className="flex-1 min-w-0">
@@ -137,7 +137,7 @@ export default function HiringNeedsPage() {
                           </div>
                           <div className="flex gap-1.5 mt-3 flex-wrap">
                             {need.required_skills.slice(0, 5).map(s => (
-                              <span key={s} className="text-[10px] px-2 py-0.5 rounded-full border border-gray-200 text-gray-600 bg-gray-50">
+                              <span key={s} className="text-[10px] px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900">
                                 {s}
                               </span>
                             ))}

@@ -166,13 +166,13 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       <Navbar />
 
       {/* Chat Header */}
-      <div className="border-b border-gray-200 bg-white">
+      <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/messages" className="text-gray-500 hover:text-gray-900 transition-colors">
+          <Link href="/messages" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           </Link>
           <div className="w-9 h-9 rounded-full bg-gray-950 text-white flex items-center justify-center text-sm font-bold shrink-0">
@@ -207,7 +207,7 @@ export default function ChatPage() {
                   className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
                     isMine
                       ? "bg-gray-950 text-white rounded-br-md"
-                      : "bg-white border border-gray-200 text-gray-900 rounded-bl-md"
+                      : "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-bl-md"
                   }`}
                 >
                   <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
@@ -223,7 +223,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-200 bg-white pb-safe">
+      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 pb-safe">
         <form onSubmit={handleSend} className="max-w-2xl mx-auto px-4 py-3 flex gap-2">
           <textarea
             ref={inputRef}
@@ -232,7 +232,7 @@ export default function ChatPage() {
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             rows={1}
-            className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gray-300 focus:bg-white"
+            className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 focus:bg-white dark:bg-gray-900"
           />
           <Button
             type="submit"

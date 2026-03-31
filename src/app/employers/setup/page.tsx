@@ -148,15 +148,15 @@ export default function EmployerSetupPage() {
 
   if (status === "active") {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <main className="max-w-lg mx-auto px-4 py-16">
           <Card>
             <CardContent className="pt-8 pb-8 text-center space-y-4">
-              <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
+              <div className="w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center mx-auto">
                 <span className="text-2xl">&#10003;</span>
               </div>
-              <h2 className="text-xl font-bold text-emerald-900">Account Activated</h2>
+              <h2 className="text-xl font-bold text-emerald-900 dark:text-emerald-200">Account Activated</h2>
               <p className="text-muted-foreground text-sm">
                 Your employer account is active. You can browse candidates and connect with them through messaging.
               </p>
@@ -172,12 +172,12 @@ export default function EmployerSetupPage() {
 
   if (status === "pending") {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <main className="max-w-lg mx-auto px-4 py-16">
           <Card>
             <CardContent className="pt-8 pb-8 text-center space-y-4">
-              <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mx-auto">
+              <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center mx-auto">
                 <span className="text-2xl">&#9203;</span>
               </div>
               <h2 className="text-xl font-bold">Request Under Review</h2>
@@ -202,7 +202,7 @@ export default function EmployerSetupPage() {
 
   if (status === "rejected") {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <main className="max-w-lg mx-auto px-4 py-16">
           <Card>
@@ -210,7 +210,7 @@ export default function EmployerSetupPage() {
               <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto">
                 <span className="text-2xl">&#10007;</span>
               </div>
-              <h2 className="text-xl font-bold text-red-900">Request Not Approved</h2>
+              <h2 className="text-xl font-bold text-red-900 dark:text-red-200">Request Not Approved</h2>
               <p className="text-muted-foreground text-sm">
                 Your request was not approved at this time. Please contact support if you believe this is an error.
               </p>
@@ -222,7 +222,7 @@ export default function EmployerSetupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <main className="max-w-lg mx-auto px-4 py-12">
         <Card>
@@ -267,7 +267,7 @@ export default function EmployerSetupPage() {
                       className={`rounded-lg border p-3 text-center text-sm font-medium transition-all ${
                         hiringTracks.includes(track.id)
                           ? "border-primary bg-primary/5 ring-1 ring-primary"
-                          : "border-border hover:border-gray-400"
+                          : "border-border hover:border-gray-400 dark:border-gray-500"
                       }`}
                     >
                       {track.label}
@@ -288,8 +288,8 @@ export default function EmployerSetupPage() {
               </div>
 
               {error && (
-                <div className="rounded-md bg-red-50 border border-red-200 p-3">
-                  <p className="text-sm text-red-700">{error}</p>
+                <div className="rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-3">
+                  <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
                 </div>
               )}
 

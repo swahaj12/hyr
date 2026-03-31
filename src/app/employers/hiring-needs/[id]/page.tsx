@@ -46,10 +46,10 @@ type HiringNeed = {
 }
 
 const TIER_CONFIG = {
-  ready: { label: "Ready Now", color: "text-emerald-700", bg: "bg-emerald-50", border: "border-emerald-200", dot: "bg-emerald-500" },
-  almost: { label: "Almost There", color: "text-blue-700", bg: "bg-blue-50", border: "border-blue-200", dot: "bg-blue-500" },
-  growing: { label: "Growing", color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-200", dot: "bg-amber-500" },
-  low: { label: "Exploring", color: "text-gray-500", bg: "bg-gray-50", border: "border-gray-200", dot: "bg-gray-400" },
+  ready: { label: "Ready Now", color: "text-emerald-700 dark:text-emerald-300", bg: "bg-emerald-50 dark:bg-emerald-950/30", border: "border-emerald-200 dark:border-emerald-800", dot: "bg-emerald-500" },
+  almost: { label: "Almost There", color: "text-blue-700 dark:text-blue-300", bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800", dot: "bg-blue-500" },
+  growing: { label: "Growing", color: "text-amber-700 dark:text-amber-300", bg: "bg-amber-50 dark:bg-amber-950/30", border: "border-amber-200 dark:border-amber-800", dot: "bg-amber-500" },
+  low: { label: "Exploring", color: "text-gray-500 dark:text-gray-400", bg: "bg-gray-50 dark:bg-gray-900", border: "border-gray-200 dark:border-gray-700", dot: "bg-gray-400" },
 }
 
 const URGENCY_LABELS: Record<string, string> = {
@@ -107,13 +107,13 @@ export default function HiringNeedMatchesPage() {
     : matches.filter(m => m.tier === activeFilter)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <button onClick={() => router.push("/employers/hiring-needs")} className="text-sm text-muted-foreground hover:text-gray-950 transition-colors">&larr; All Needs</button>
+              <button onClick={() => router.push("/employers/hiring-needs")} className="text-sm text-muted-foreground hover:text-gray-950 dark:text-white transition-colors">&larr; All Needs</button>
             </div>
             <h1 className="text-2xl font-bold">{need.title}</h1>
             <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground flex-wrap">
@@ -124,7 +124,7 @@ export default function HiringNeedMatchesPage() {
               <span>{URGENCY_LABELS[need.urgency] || need.urgency}</span>
             </div>
           </div>
-          <Badge className={`shrink-0 ${need.status === "active" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-gray-100 text-gray-500"}`}>
+          <Badge className={`shrink-0 ${need.status === "active" ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800" : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"}`}>
             {need.status.charAt(0).toUpperCase() + need.status.slice(1)}
           </Badge>
         </div>
@@ -135,7 +135,7 @@ export default function HiringNeedMatchesPage() {
             <p className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-3">Required Skills</p>
             <div className="flex flex-wrap gap-2">
               {need.required_skills.map(skill => (
-                <span key={skill} className="px-3 py-1 rounded-full text-sm border border-gray-200 bg-white text-gray-700">
+                <span key={skill} className="px-3 py-1 rounded-full text-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300">
                   {DOMAIN_LABELS[skill] || skill}
                 </span>
               ))}
@@ -145,27 +145,27 @@ export default function HiringNeedMatchesPage() {
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <button onClick={() => setActiveFilter("all")} className={`text-center p-4 rounded-xl border transition-all ${activeFilter === "all" ? "border-gray-950 bg-gray-950 text-white" : "border-gray-200 bg-white hover:border-gray-300"}`}>
+          <button onClick={() => setActiveFilter("all")} className={`text-center p-4 rounded-xl border transition-all ${activeFilter === "all" ? "border-gray-950 bg-gray-950 text-white" : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-300 dark:border-gray-600"}`}>
             <p className="text-2xl font-bold">{matches.length}</p>
             <p className="text-xs mt-1 opacity-70">Total Matches</p>
           </button>
-          <button onClick={() => setActiveFilter("ready")} className={`text-center p-4 rounded-xl border transition-all ${activeFilter === "ready" ? "border-emerald-500 bg-emerald-500 text-white" : "border-emerald-200 bg-emerald-50 hover:border-emerald-300"}`}>
-            <p className={`text-2xl font-bold ${activeFilter === "ready" ? "" : "text-emerald-700"}`}>{readyMatches.length}</p>
+          <button onClick={() => setActiveFilter("ready")} className={`text-center p-4 rounded-xl border transition-all ${activeFilter === "ready" ? "border-emerald-500 bg-emerald-500 text-white" : "border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 hover:border-emerald-300"}`}>
+            <p className={`text-2xl font-bold ${activeFilter === "ready" ? "" : "text-emerald-700 dark:text-emerald-300"}`}>{readyMatches.length}</p>
             <p className={`text-xs mt-1 ${activeFilter === "ready" ? "opacity-70" : "text-emerald-600"}`}>Ready Now</p>
           </button>
-          <button onClick={() => setActiveFilter("almost")} className={`text-center p-4 rounded-xl border transition-all ${activeFilter === "almost" ? "border-blue-500 bg-blue-500 text-white" : "border-blue-200 bg-blue-50 hover:border-blue-300"}`}>
-            <p className={`text-2xl font-bold ${activeFilter === "almost" ? "" : "text-blue-700"}`}>{almostMatches.length}</p>
+          <button onClick={() => setActiveFilter("almost")} className={`text-center p-4 rounded-xl border transition-all ${activeFilter === "almost" ? "border-blue-500 bg-blue-500 text-white" : "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 hover:border-blue-300"}`}>
+            <p className={`text-2xl font-bold ${activeFilter === "almost" ? "" : "text-blue-700 dark:text-blue-300"}`}>{almostMatches.length}</p>
             <p className={`text-xs mt-1 ${activeFilter === "almost" ? "opacity-70" : "text-blue-600"}`}>Almost There</p>
           </button>
-          <button onClick={() => setActiveFilter("growing")} className={`text-center p-4 rounded-xl border transition-all ${activeFilter === "growing" ? "border-amber-500 bg-amber-500 text-white" : "border-amber-200 bg-amber-50 hover:border-amber-300"}`}>
-            <p className={`text-2xl font-bold ${activeFilter === "growing" ? "" : "text-amber-700"}`}>{growingMatches.length}</p>
+          <button onClick={() => setActiveFilter("growing")} className={`text-center p-4 rounded-xl border transition-all ${activeFilter === "growing" ? "border-amber-500 bg-amber-500 text-white" : "border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 hover:border-amber-300"}`}>
+            <p className={`text-2xl font-bold ${activeFilter === "growing" ? "" : "text-amber-700 dark:text-amber-300"}`}>{growingMatches.length}</p>
             <p className={`text-xs mt-1 ${activeFilter === "growing" ? "opacity-70" : "text-amber-600"}`}>Growing</p>
           </button>
         </div>
 
         {almostMatches.length > 0 && (
-          <div className="rounded-xl bg-blue-50 border border-blue-200 p-4">
-            <p className="text-sm text-blue-800">
+          <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
               <strong>{almostMatches.length} near-match candidate{almostMatches.length !== 1 ? "s have" : " has"}</strong> been notified to prepare for your requirements. Updated matches typically appear within 48 hours.
             </p>
           </div>
@@ -234,12 +234,12 @@ export default function HiringNeedMatchesPage() {
                     {/* Skill breakdown */}
                     <div className="mt-4 flex flex-wrap gap-1.5">
                       {match.matchedSkills.map(s => (
-                        <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                           {DOMAIN_LABELS[s] || s} &#10003;
                         </span>
                       ))}
                       {match.missingSkills.map(s => (
-                        <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-200">
+                        <span key={s} className="text-[10px] px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/30 text-red-600 border border-red-200 dark:border-red-800">
                           {DOMAIN_LABELS[s] || s} &#10007;
                         </span>
                       ))}

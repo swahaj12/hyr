@@ -32,8 +32,8 @@ function ScoreBar({ label, pct, delay = 0 }: { label: string; pct: number; delay
   const color = pct >= 70 ? "bg-emerald-500" : pct >= 50 ? "bg-blue-500" : pct >= 30 ? "bg-amber-500" : "bg-red-500"
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm w-32 text-right text-gray-600 truncate">{label}</span>
-      <div className="flex-1 h-5 bg-gray-100 rounded-full overflow-hidden">
+      <span className="text-sm w-32 text-right text-gray-600 dark:text-gray-400 truncate">{label}</span>
+      <div className="flex-1 h-5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
         <motion.div
           className={`h-full ${color} rounded-full`}
           initial={{ width: 0 }}
@@ -42,7 +42,7 @@ function ScoreBar({ label, pct, delay = 0 }: { label: string; pct: number; delay
           transition={{ duration: 0.8, delay }}
         />
       </div>
-      <span className="text-sm w-10 text-gray-600 font-medium">{pct}%</span>
+      <span className="text-sm w-10 text-gray-600 dark:text-gray-400 font-medium">{pct}%</span>
     </div>
   )
 }
@@ -67,10 +67,10 @@ export default function TalentMarketPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <div className="flex items-center justify-center py-32">
-          <div className="w-8 h-8 border-2 border-gray-300 border-t-gray-950 rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-gray-300 dark:border-gray-600 border-t-gray-950 rounded-full animate-spin" />
         </div>
       </div>
     )
@@ -78,7 +78,7 @@ export default function TalentMarketPage() {
 
   if (!stats) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <main className="max-w-lg mx-auto px-4 py-16 text-center">
           <p className="text-muted-foreground">Could not load talent market data. Please try again later.</p>
@@ -91,14 +91,14 @@ export default function TalentMarketPage() {
   const trackSkills = activeTrack && stats.skillsByTrack ? stats.skillsByTrack[activeTrack] || [] : []
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 sm:py-12 space-y-12">
         {/* Header */}
         <div className="text-center space-y-3">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-medium text-blue-700">
+            <span className="inline-flex items-center gap-2 rounded-full border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30 px-4 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-300">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
               Live Data
             </span>
@@ -107,7 +107,7 @@ export default function TalentMarketPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-950"
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-950 dark:text-white"
           >
             Pakistan&apos;s Tech Talent Report
           </motion.h1>
@@ -115,7 +115,7 @@ export default function TalentMarketPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-gray-600 text-lg max-w-2xl mx-auto"
+            className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto"
           >
             Real-time intelligence on Pakistan&apos;s verified tech talent pool, powered by Hyr assessments. Updated live.
           </motion.p>
@@ -157,10 +157,10 @@ export default function TalentMarketPage() {
                 return (
                   <div key={t.track}>
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="font-medium text-gray-950">{t.label}</span>
+                      <span className="font-medium text-gray-950 dark:text-white">{t.label}</span>
                       <span className="text-muted-foreground">{t.count} engineers ({pct}%)</span>
                     </div>
-                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                       <motion.div
                         className={`h-full ${TRACK_COLORS[t.track] || "bg-gray-500"} rounded-full`}
                         initial={{ width: 0 }}
@@ -185,8 +185,8 @@ export default function TalentMarketPage() {
                 const pct = totalCandidates > 0 ? Math.round((l.count / totalCandidates) * 100) : 0
                 return (
                   <div key={l.level} className="flex items-center gap-3">
-                    <span className="text-sm w-24 text-right text-gray-600">{l.level}</span>
-                    <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
+                    <span className="text-sm w-24 text-right text-gray-600 dark:text-gray-400">{l.level}</span>
+                    <div className="flex-1 h-6 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                       <motion.div
                         className="h-full bg-gray-950 rounded-full"
                         initial={{ width: 0 }}
@@ -195,7 +195,7 @@ export default function TalentMarketPage() {
                         transition={{ duration: 0.8, delay: i * 0.1 }}
                       />
                     </div>
-                    <span className="text-sm w-14 text-gray-600">{l.count} ({pct}%)</span>
+                    <span className="text-sm w-14 text-gray-600 dark:text-gray-400">{l.count} ({pct}%)</span>
                   </div>
                 )
               })}
@@ -217,7 +217,7 @@ export default function TalentMarketPage() {
                       className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
                         activeTrack === t.track
                           ? "bg-gray-950 text-white border-gray-950"
-                          : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                          : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:border-gray-500"
                       }`}
                     >
                       {t.label}
@@ -251,8 +251,8 @@ export default function TalentMarketPage() {
                 {Object.entries(stats.topPercentileThreshold).map(([track, threshold]) => {
                   const label = stats.trackDistribution.find(t => t.track === track)?.label || track
                   return (
-                    <div key={track} className="text-center p-4 rounded-xl border border-gray-200 bg-white">
-                      <p className="text-3xl font-bold text-gray-950">{threshold}%</p>
+                    <div key={track} className="text-center p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                      <p className="text-3xl font-bold text-gray-950 dark:text-white">{threshold}%</p>
                       <p className="text-xs text-muted-foreground mt-1">{label}</p>
                     </div>
                   )
@@ -274,7 +274,7 @@ export default function TalentMarketPage() {
                 <p className="text-xs text-muted-foreground mt-1">Avg Tab Switches</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-gray-950">{stats.totalAssessments}</p>
+                <p className="text-3xl font-bold text-gray-950 dark:text-white">{stats.totalAssessments}</p>
                 <p className="text-xs text-muted-foreground mt-1">Anti-Cheat Monitored</p>
               </div>
               <div className="text-center">

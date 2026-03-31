@@ -106,7 +106,7 @@ export default function AdminLoginPage() {
             </Button>
           </form>
 
-          <p className="text-center text-xs text-gray-500">
+          <p className="text-center text-xs text-gray-500 dark:text-gray-400">
             Only authorized admin emails can access this page.
           </p>
         </CardContent>

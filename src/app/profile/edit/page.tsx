@@ -266,12 +266,12 @@ export default function ProfileEditPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-screen bg-gray-50 pt-24 pb-16">
+        <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-16">
           <div className="max-w-2xl mx-auto px-4">
             <div className="animate-pulse space-y-6">
-              <div className="h-8 bg-gray-200 rounded w-64" />
-              <div className="h-48 bg-gray-200 rounded-xl" />
-              <div className="h-48 bg-gray-200 rounded-xl" />
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64" />
+              <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+              <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-xl" />
             </div>
           </div>
         </main>
@@ -284,16 +284,16 @@ export default function ProfileEditPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-gray-50 pt-24 pb-16">
+      <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-16">
         <PageTransition>
           <div className="max-w-2xl mx-auto px-4">
             <FadeIn>
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
+                  <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                     {hasExistingProfile ? "Edit Profile" : "Create Profile"}
                   </h1>
-                  <p className="text-gray-500 mt-1">
+                  <p className="text-gray-500 dark:text-gray-400 mt-1">
                     This information is visible to hiring companies alongside your assessment results.
                   </p>
                 </div>
@@ -354,8 +354,8 @@ export default function ProfileEditPage() {
                             onClick={() => setForm(prev => ({ ...prev, track: t.value, skills: [] }))}
                             className={`p-3 rounded-lg border text-left transition-all ${
                               form.track === t.value
-                                ? "border-gray-900 bg-gray-900 text-white"
-                                : "border-gray-200 hover:border-gray-400"
+                                ? "border-gray-900 bg-gray-900 text-white dark:bg-white dark:text-gray-900 dark:border-white"
+                                : "border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:border-gray-500"
                             }`}
                           >
                             <span className="text-lg mr-2">{t.icon}</span>
@@ -373,8 +373,8 @@ export default function ProfileEditPage() {
                             onClick={() => setForm(prev => ({ ...prev, experience: exp.value }))}
                             className={`p-3 rounded-lg border text-left transition-all text-sm ${
                               form.experience === exp.value
-                                ? "border-gray-900 bg-gray-900 text-white"
-                                : "border-gray-200 hover:border-gray-400"
+                                ? "border-gray-900 bg-gray-900 text-white dark:bg-white dark:text-gray-900 dark:border-white"
+                                : "border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:border-gray-500"
                             }`}
                           >
                             {exp.label}
@@ -402,8 +402,8 @@ export default function ProfileEditPage() {
                             onClick={() => toggleSkill(skill.key)}
                             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                               form.skills.includes(skill.key)
-                                ? "bg-gray-900 text-white"
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                             }`}
                           >
                             {skill.label}
@@ -446,10 +446,10 @@ export default function ProfileEditPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {form.resume_url && (
-                      <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                      <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
                         <span className="text-green-600 text-lg">📄</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-green-800">Resume uploaded</p>
+                          <p className="text-sm font-medium text-green-800 dark:text-green-200">Resume uploaded</p>
                           <a
                             href={form.resume_url}
                             target="_blank"
@@ -473,9 +473,9 @@ export default function ProfileEditPage() {
                         accept=".pdf"
                         onChange={handleResumeUpload}
                         disabled={uploading}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 disabled:opacity-50"
+                        className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gray-100 dark:bg-gray-800 file:text-gray-700 dark:text-gray-300 hover:file:bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
                       />
-                      {uploading && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
+                      {uploading && <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Uploading...</p>}
                     </div>
                   </CardContent>
                 </Card>
@@ -492,7 +492,7 @@ export default function ProfileEditPage() {
                     {saving ? "Saving..." : hasExistingProfile ? "Save Changes" : "Create Profile"}
                   </Button>
                   {saved && (
-                    <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
+                    <Badge variant="secondary" className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800">
                       ✓ Saved
                     </Badge>
                   )}

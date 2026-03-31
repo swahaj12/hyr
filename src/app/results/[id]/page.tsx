@@ -229,11 +229,11 @@ export default function ResultsPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
-            <p className="text-gray-500">{error || "Assessment not found."}</p>
+            <p className="text-gray-500 dark:text-gray-400">{error || "Assessment not found."}</p>
             <Link href="/dashboard">
               <Button>Go to Career Hub</Button>
             </Link>
@@ -259,7 +259,7 @@ export default function ResultsPage() {
   const possessive = isOwner ? "Your" : `${displayName}'s`
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 py-8 space-y-8 pb-20 sm:pb-0">
@@ -273,7 +273,7 @@ export default function ResultsPage() {
             <CardContent className="pt-8 pb-8">
               <div className="text-center space-y-5">
                 <motion.h1
-                  className="text-2xl sm:text-3xl font-bold text-gray-950"
+                  className="text-2xl sm:text-3xl font-bold text-gray-950 dark:text-white"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.3 }}
@@ -308,7 +308,7 @@ export default function ResultsPage() {
                     className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2"
                   >
                     {assessedLevel && (
-                      <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+                      <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-2">
                         <span className="text-xs text-muted-foreground uppercase tracking-wide">Assessment Taken</span>
                         <span className="text-sm font-semibold">{LEVEL_LABELS[assessedLevel] || assessedLevel}</span>
                       </div>
@@ -333,7 +333,7 @@ export default function ResultsPage() {
                     className="flex items-center justify-center gap-2 pt-1"
                   >
                     {isTrusted ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-full px-3 py-1">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-full px-3 py-1">
                         <span className="w-2 h-2 rounded-full bg-green-500" />
                         Verified — no tab switches detected
                       </span>
@@ -351,9 +351,9 @@ export default function ResultsPage() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-2 inline-block"
+                    className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-4 py-2 inline-block"
                   >
-                    <p className="text-sm text-blue-800">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
                       {isOwner ? "You scored" : `${displayName} scored`} higher than <strong>{percentile}%</strong> of all candidates
                     </p>
                   </motion.div>
@@ -382,9 +382,9 @@ export default function ResultsPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="rounded-xl border border-green-200 bg-green-50 p-5">
-                  <p className="text-sm font-semibold text-green-800 mb-1">{isOwner ? "Your" : `${displayName}'s`} strengths</p>
-                  <p className="text-green-700">
+                <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30 p-5">
+                  <p className="text-sm font-semibold text-green-800 dark:text-green-200 mb-1">{isOwner ? "Your" : `${displayName}'s`} strengths</p>
+                  <p className="text-green-700 dark:text-green-300">
                     {isOwner ? "You crushed" : `${displayName} crushed`}{" "}
                     <strong>{topStrengthNames.join(" and ")}</strong>
                   </p>
@@ -397,9 +397,9 @@ export default function ResultsPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
-                  <p className="text-sm font-semibold text-amber-800 mb-1">Growth areas</p>
-                  <p className="text-amber-700">
+                <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-5">
+                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-1">Growth areas</p>
+                  <p className="text-amber-700 dark:text-amber-300">
                     <strong>{topGapNames.join(" and ")}</strong>{" "}
                     {topGapNames.length === 1 ? "is" : "are"} {isOwner ? "your" : "their"} next frontier — most engineers score below 50% here
                   </p>
@@ -416,18 +416,18 @@ export default function ResultsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="rounded-xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50 p-6">
+            <div className="rounded-xl border-2 border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-green-50 p-6">
               <div className="flex items-start gap-4">
-                <div className="shrink-0 w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center">
                   <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-emerald-900 text-lg">Your profile is now live</h3>
-                  <p className="text-emerald-700 text-sm mt-1 leading-relaxed">
+                  <h3 className="font-bold text-emerald-900 dark:text-emerald-200 text-lg">Your profile is now live</h3>
+                  <p className="text-emerald-700 dark:text-emerald-300 text-sm mt-1 leading-relaxed">
                     Employers browsing Hyr can now discover you based on your verified skills. Your domain scores, trust indicators, and engineering type are all visible to hiring companies.
                   </p>
                   <div className="flex flex-wrap items-center gap-3 mt-3">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 bg-emerald-100 rounded-full px-3 py-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/40 rounded-full px-3 py-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       Visible to employers
                     </span>
@@ -493,7 +493,7 @@ export default function ResultsPage() {
                         {d.correct}/{d.total} ({d.pct}%)
                       </span>
                     </div>
-                    <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                       <motion.div
                         className={`h-full rounded-full ${barColor(d.pct)}`}
                         initial={{ width: 0 }}
@@ -518,7 +518,7 @@ export default function ResultsPage() {
           >
             <Card>
               <CardHeader>
-                <CardTitle className="text-green-700">Strengths</CardTitle>
+                <CardTitle className="text-green-700 dark:text-green-300">Strengths</CardTitle>
               </CardHeader>
               <CardContent>
                 {strongDomains.length === 0 ? (
@@ -543,7 +543,7 @@ export default function ResultsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-amber-700">Areas to Improve</CardTitle>
+                <CardTitle className="text-amber-700 dark:text-amber-300">Areas to Improve</CardTitle>
               </CardHeader>
               <CardContent>
                 {gapDomains.length === 0 ? (
@@ -556,7 +556,7 @@ export default function ResultsPage() {
                       <li key={d.domain} className="flex items-center gap-2 text-sm">
                         <span className="text-amber-600">&#9650;</span>
                         <span className="font-medium">{d.domainLabel}</span>
-                        <Badge variant="outline" className="text-xs text-amber-700">
+                        <Badge variant="outline" className="text-xs text-amber-700 dark:text-amber-300">
                           {d.pct}%
                         </Badge>
                       </li>
@@ -575,7 +575,7 @@ export default function ResultsPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="rounded-2xl border-2 border-gray-200 bg-white shadow-lg p-6 sm:p-8 space-y-5">
+            <div className="rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg p-6 sm:p-8 space-y-5">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Shareable Card</p>
                 <span className="text-[10px] text-gray-400 uppercase tracking-wider">hyr.pk</span>
@@ -586,8 +586,8 @@ export default function ResultsPage() {
                   {(candidateName || "?").charAt(0).toUpperCase()}
                 </div>
                 <div className="text-center sm:text-left flex-1">
-                  <p className="text-lg font-bold text-gray-950">{candidateName || "Candidate"}</p>
-                  <p className="text-sm text-gray-500">{personality.title}</p>
+                  <p className="text-lg font-bold text-gray-950 dark:text-white">{candidateName || "Candidate"}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{personality.title}</p>
                 </div>
                 <div className="text-center">
                   <p className={`text-4xl font-bold ${scoreColor(overallPct)}`}>{overallPct}%</p>
@@ -597,15 +597,15 @@ export default function ResultsPage() {
 
               <div className="grid grid-cols-3 gap-3">
                 {strongDomains.slice(0, 3).map(d => (
-                  <div key={d.domain} className="text-center rounded-lg border border-gray-100 bg-gray-50 p-3">
-                    <p className="text-lg font-bold text-gray-950">{d.pct}%</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{d.domainLabel}</p>
+                  <div key={d.domain} className="text-center rounded-lg border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-3">
+                    <p className="text-lg font-bold text-gray-950 dark:text-white">{d.pct}%</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{d.domainLabel}</p>
                   </div>
                 ))}
               </div>
 
               {isTrusted && (
-                <div className="flex items-center justify-center gap-1.5 text-xs text-green-700">
+                <div className="flex items-center justify-center gap-1.5 text-xs text-green-700 dark:text-green-300">
                   <span className="w-2 h-2 rounded-full bg-green-500" />
                   Verified Assessment
                 </div>

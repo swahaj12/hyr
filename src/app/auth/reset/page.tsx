@@ -69,10 +69,10 @@ export default function ResetPasswordPage() {
 
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Card className="mx-4 w-full max-w-md">
           <CardContent className="pt-6 text-center space-y-4">
-            <div className="animate-spin h-6 w-6 border-2 border-gray-400 border-t-transparent rounded-full mx-auto" />
+            <div className="animate-spin h-6 w-6 border-2 border-gray-400 dark:border-gray-500 border-t-transparent rounded-full mx-auto" />
             <p className="text-sm text-muted-foreground">Verifying reset link...</p>
             <p className="text-xs text-muted-foreground">
               If this takes too long, your link may have expired.{" "}
@@ -87,18 +87,18 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
       <Card className="mx-4 w-full max-w-md">
         <CardHeader>
-          <Link href="/" className="text-xl font-bold tracking-tight text-gray-950 hover:opacity-80 transition-opacity">
+          <Link href="/" className="text-xl font-bold tracking-tight text-gray-950 dark:text-white hover:opacity-80 transition-opacity">
             Hyr
           </Link>
           <CardDescription>Set a new password for your account</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {success ? (
-            <div className="rounded-md bg-green-50 border border-green-200 p-4 text-center space-y-2">
-              <p className="text-sm text-green-700 font-medium">Password updated successfully!</p>
+            <div className="rounded-md bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 p-4 text-center space-y-2">
+              <p className="text-sm text-green-700 dark:text-green-300 font-medium">Password updated successfully!</p>
               <p className="text-xs text-green-600">Redirecting to dashboard...</p>
             </div>
           ) : (
@@ -129,8 +129,8 @@ export default function ResetPasswordPage() {
               </div>
 
               {error && (
-                <div className="rounded-md bg-red-50 border border-red-200 p-3">
-                  <p className="text-sm text-red-700">{error}</p>
+                <div className="rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-3">
+                  <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
                 </div>
               )}
 

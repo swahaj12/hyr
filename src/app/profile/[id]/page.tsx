@@ -196,11 +196,11 @@ export default function ProfilePage() {
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <div className="flex items-center justify-center py-20">
           <div className="text-center space-y-4">
-            <p className="text-gray-500 text-lg">{error || "Profile not found"}</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">{error || "Profile not found"}</p>
             {!error && (
               <p className="text-sm text-muted-foreground">This candidate hasn&apos;t completed any assessments yet.</p>
             )}
@@ -230,7 +230,7 @@ export default function ProfilePage() {
   const personalityIcon = PERSONALITY_ICONS[personality.title] || "🎯"
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <PageTransition>
@@ -249,16 +249,16 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-2">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">Best Score</span>
                   <span className="text-lg font-bold">{bestPct}%</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-2">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">Level</span>
                   <Badge className="text-sm">{displayLevel(best.overall_level)}</Badge>
                 </div>
                 {best.assessed_level && (
-                  <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+                  <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 px-4 py-2">
                     <span className="text-xs text-muted-foreground uppercase tracking-wide">Assessment</span>
                     <span className="text-sm font-semibold">{LEVEL_LABELS[best.assessed_level] || best.assessed_level}</span>
                   </div>
@@ -276,12 +276,12 @@ export default function ProfilePage() {
                   )
                 })()}
                 {percentile !== null && viewerRole === "employer" && (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-700 bg-violet-50 border border-violet-200 rounded-full px-3 py-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-violet-700 dark:text-violet-300 bg-violet-50 dark:bg-violet-950/30 border border-violet-200 dark:border-violet-800 rounded-full px-3 py-1">
                     Top {100 - percentile}%
                   </span>
                 )}
                 {isTrusted ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-full px-3 py-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-full px-3 py-1">
                     <span className="w-2 h-2 rounded-full bg-green-500" />
                     Verified
                   </span>
@@ -338,7 +338,7 @@ export default function ProfilePage() {
                     {d.correct}/{d.total} ({d.pct}%)
                   </span>
                 </div>
-                <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-700 ${barColor(d.pct)}`}
                     style={{ width: `${d.pct}%` }}
@@ -355,14 +355,14 @@ export default function ProfilePage() {
           <motion.div variants={staggerItem}>
           <Card>
             <CardHeader>
-              <CardTitle className="text-green-700">Top Skills</CardTitle>
+              <CardTitle className="text-green-700 dark:text-green-300">Top Skills</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
                 {strongDomains.map((d) => (
                   <span
                     key={d.domain}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium bg-green-50 text-green-800 border border-green-200 rounded-full px-3 py-1"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium bg-green-50 dark:bg-green-950/30 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800 rounded-full px-3 py-1"
                   >
                     {d.domainLabel}
                     <span className="text-xs text-green-600">{d.pct}%</span>
@@ -421,14 +421,14 @@ export default function ProfilePage() {
 
         {/* Employer Action — Paywall or Message */}
         {viewerRole === "employer" && viewerData && params.id !== viewerData.id && (
-          <Card className={employerStatus === "active" ? "border-blue-200 bg-blue-50" : "border-gray-200 bg-gray-50"}>
+          <Card className={employerStatus === "active" ? "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/30" : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"}>
             <CardContent className="pt-6">
               {employerStatus === "active" ? (
                 existingConversationId ? (
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                      <p className="font-semibold text-blue-900">You have an active conversation</p>
-                      <p className="text-sm text-blue-700">Continue your conversation with {profile.candidateName}.</p>
+                      <p className="font-semibold text-blue-900 dark:text-blue-200">You have an active conversation</p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">Continue your conversation with {profile.candidateName}.</p>
                     </div>
                     <Link href={`/messages/${existingConversationId}`}>
                       <Button className="bg-blue-600 hover:bg-blue-700 text-white shrink-0">
@@ -439,14 +439,14 @@ export default function ProfilePage() {
                 ) : showFirstMessage ? (
                   <div className="space-y-3">
                     <div>
-                      <p className="font-semibold text-blue-900">Start a conversation with {profile.candidateName}</p>
-                      <p className="text-sm text-blue-700">Your message will be delivered through Hyr&apos;s secure messaging.</p>
+                      <p className="font-semibold text-blue-900 dark:text-blue-200">Start a conversation with {profile.candidateName}</p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">Your message will be delivered through Hyr&apos;s secure messaging.</p>
                     </div>
                     <textarea
                       value={firstMessage}
                       onChange={(e) => setFirstMessage(e.target.value)}
                       placeholder="Hi, we're looking for someone with your skills. Would love to chat about an opportunity..."
-                      className="w-full rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full rounded-lg border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 px-3 py-2 text-sm min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <div className="flex gap-2">
                       <Button
@@ -487,8 +487,8 @@ export default function ProfilePage() {
                 ) : (
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                      <p className="font-semibold text-blue-900">Interested in {profile.candidateName}?</p>
-                      <p className="text-sm text-blue-700">Start a secure conversation through Hyr messaging.</p>
+                      <p className="font-semibold text-blue-900 dark:text-blue-200">Interested in {profile.candidateName}?</p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">Start a secure conversation through Hyr messaging.</p>
                     </div>
                     <Button
                       onClick={() => setShowFirstMessage(true)}
@@ -501,7 +501,7 @@ export default function ProfilePage() {
               ) : employerStatus === "pending" ? (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
-                    <p className="font-semibold text-gray-900">Account Under Review</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">Account Under Review</p>
                     <p className="text-sm text-muted-foreground">Your employer account is being reviewed. Once activated, you can message candidates directly.</p>
                   </div>
                   <Link href="/employers/setup">
@@ -511,7 +511,7 @@ export default function ProfilePage() {
               ) : (
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div>
-                    <p className="font-semibold text-gray-900">Connect with {profile.candidateName}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">Connect with {profile.candidateName}</p>
                     <p className="text-sm text-muted-foreground">
                       Set up your company profile to start messaging verified candidates.
                     </p>

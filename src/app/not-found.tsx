@@ -10,7 +10,7 @@ export default function NotFound() {
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="text-center space-y-6 max-w-md animate-fade-up">
           <div className="space-y-2">
-            <p className="text-7xl sm:text-8xl font-bold text-gray-800">404</p>
+            <p className="text-7xl sm:text-8xl font-bold text-gray-800 dark:text-gray-200">404</p>
             <h1 className="text-2xl sm:text-3xl font-bold">Page not found</h1>
             <p className="text-gray-400 text-lg">
               The page you&apos;re looking for doesn&apos;t exist or has been moved.
@@ -21,7 +21,7 @@ export default function NotFound() {
             <Link href="/">
               <Button
                 size="lg"
-                className="bg-white text-gray-950 hover:bg-gray-200 hover:text-gray-950"
+                className="bg-white dark:bg-gray-900 text-gray-950 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-950 dark:text-white"
               >
                 Go Home
               </Button>
@@ -40,7 +40,7 @@ export default function NotFound() {
       </div>
 
       <footer className="text-center py-6">
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-gray-600 dark:text-gray-400">
           &copy; {new Date().getFullYear()} Hyr. Tech skills verification.
         </p>
       </footer>

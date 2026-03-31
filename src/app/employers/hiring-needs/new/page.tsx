@@ -93,12 +93,12 @@ export default function NewHiringNeedPage() {
 
   if (result) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <main className="max-w-2xl mx-auto px-4 py-12">
-          <Card className="border-2 border-emerald-200">
+          <Card className="border-2 border-emerald-200 dark:border-emerald-800">
             <CardContent className="pt-8 pb-8 text-center space-y-6">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center mx-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
               <div>
@@ -109,23 +109,23 @@ export default function NewHiringNeedPage() {
               </div>
 
               <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
-                <div className="text-center p-4 rounded-xl bg-emerald-50 border border-emerald-200">
-                  <p className="text-3xl font-bold text-emerald-700">{result.readyNow}</p>
+                <div className="text-center p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">{result.readyNow}</p>
                   <p className="text-xs text-emerald-600 mt-1 font-medium">Ready Now</p>
                 </div>
-                <div className="text-center p-4 rounded-xl bg-blue-50 border border-blue-200">
-                  <p className="text-3xl font-bold text-blue-700">{result.almostThere}</p>
+                <div className="text-center p-4 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
+                  <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{result.almostThere}</p>
                   <p className="text-xs text-blue-600 mt-1 font-medium">Almost There</p>
                 </div>
-                <div className="text-center p-4 rounded-xl bg-amber-50 border border-amber-200">
-                  <p className="text-3xl font-bold text-amber-700">{result.growing}</p>
+                <div className="text-center p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                  <p className="text-3xl font-bold text-amber-700 dark:text-amber-300">{result.growing}</p>
                   <p className="text-xs text-amber-600 mt-1 font-medium">Growing</p>
                 </div>
               </div>
 
               {result.notified > 0 && (
-                <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 max-w-md mx-auto">
-                  <p className="text-sm text-blue-800">
+                <div className="rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4 max-w-md mx-auto">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
                     <strong>{result.notified} candidates</strong> have been notified to prepare for your requirements.
                     Expect updated matches within 48 hours.
                   </p>
@@ -148,7 +148,7 @@ export default function NewHiringNeedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
         <div>
@@ -184,7 +184,7 @@ export default function NewHiringNeedPage() {
                     className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-all ${
                       track === key
                         ? "border-gray-950 bg-gray-950 text-white"
-                        : "border-gray-200 bg-white hover:border-gray-300"
+                        : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-300 dark:border-gray-600"
                     }`}
                   >
                     {label}
@@ -199,7 +199,7 @@ export default function NewHiringNeedPage() {
                 <select
                   value={minLevel}
                   onChange={e => setMinLevel(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
                 >
                   <option value="junior">Junior</option>
                   <option value="mid">Mid-Level</option>
@@ -211,7 +211,7 @@ export default function NewHiringNeedPage() {
                 <select
                   value={urgency}
                   onChange={e => setUrgency(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
                 >
                   <option value="immediate">Hiring Now</option>
                   <option value="2weeks">Within 2 Weeks</option>
@@ -240,7 +240,7 @@ export default function NewHiringNeedPage() {
                     className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                       isSelected
                         ? "bg-gray-950 text-white border-gray-950"
-                        : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
+                        : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:border-gray-500"
                     }`}
                   >
                     {DOMAIN_LABELS[skill] || skill}
@@ -270,7 +270,7 @@ export default function NewHiringNeedPage() {
               onChange={e => setDescription(e.target.value)}
               placeholder="Describe the role, team, or any specific requirements..."
               rows={4}
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 resize-none"
             />
           </CardContent>
         </Card>

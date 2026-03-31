@@ -105,7 +105,7 @@ export default function AdminEmployersPage() {
 
   if (!authorized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center space-y-4">
             <p className="text-lg font-semibold">Access Denied</p>
@@ -127,11 +127,11 @@ export default function AdminEmployersPage() {
   const pendingCount = employers.filter(e => e.status === "pending").length
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 pb-20 sm:pb-8">
         <div className="flex items-center gap-3">
-          <Link href="/admin" className="text-muted-foreground hover:text-gray-950 transition-colors">
+          <Link href="/admin" className="text-muted-foreground hover:text-gray-950 dark:text-white transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           </Link>
           <div>
@@ -141,11 +141,11 @@ export default function AdminEmployersPage() {
         </div>
 
         {pendingCount > 0 && (
-          <div className="rounded-lg border-2 border-amber-200 bg-amber-50 p-4">
-            <p className="font-semibold text-amber-900">
+          <div className="rounded-lg border-2 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4">
+            <p className="font-semibold text-amber-900 dark:text-amber-200">
               {pendingCount} employer{pendingCount !== 1 ? "s" : ""} awaiting approval
             </p>
-            <p className="text-xs text-amber-700 mt-0.5">Review and activate accounts to allow employer access to candidates</p>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">Review and activate accounts to allow employer access to candidates</p>
           </div>
         )}
 
@@ -160,7 +160,7 @@ export default function AdminEmployersPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border rounded-md px-3 py-2 text-base sm:text-sm bg-white min-h-11 sm:min-h-9"
+            className="border rounded-md px-3 py-2 text-base sm:text-sm bg-white dark:bg-gray-900 min-h-11 sm:min-h-9"
           >
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
@@ -181,7 +181,7 @@ export default function AdminEmployersPage() {
         ) : (
           <div className="space-y-3">
             {filtered.map(emp => (
-              <Card key={emp.id} className={emp.status === "pending" ? "border-amber-200" : ""}>
+              <Card key={emp.id} className={emp.status === "pending" ? "border-amber-200 dark:border-amber-800" : ""}>
                 <CardContent className="pt-5 pb-4">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -195,10 +195,10 @@ export default function AdminEmployersPage() {
                             variant="outline"
                             className={`text-[10px] ${
                               emp.status === "active"
-                                ? "bg-green-50 text-green-700 border-green-200"
+                                ? "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800"
                                 : emp.status === "pending"
-                                  ? "bg-amber-50 text-amber-700 border-amber-200"
-                                  : "bg-red-50 text-red-700 border-red-200"
+                                  ? "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                                  : "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
                             }`}
                           >
                             {emp.status}
@@ -261,7 +261,7 @@ export default function AdminEmployersPage() {
                           variant="outline"
                           disabled={activatingId === emp.id}
                           onClick={() => handleAction(emp.id, "reject")}
-                          className="text-red-600 hover:text-red-700"
+                          className="text-red-600 hover:text-red-700 dark:text-red-300"
                         >
                           Deactivate
                         </Button>

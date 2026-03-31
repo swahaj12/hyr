@@ -67,13 +67,13 @@ const PLANS = [
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
 
       <main className="max-w-5xl mx-auto px-4 py-16 space-y-12 pb-20 sm:pb-0">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-950">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-950 dark:text-white">
             Simple, transparent pricing
           </h1>
           <p className="text-muted-foreground max-w-lg mx-auto">
@@ -102,7 +102,7 @@ export default function PricingPage() {
               <CardHeader>
                 <CardTitle className="text-lg">{plan.name}</CardTitle>
                 <div className="pt-2">
-                  <span className="text-3xl font-bold text-gray-950">{plan.price}</span>
+                  <span className="text-3xl font-bold text-gray-950 dark:text-white">{plan.price}</span>
                   {plan.period && <span className="text-muted-foreground ml-1">{plan.period}</span>}
                 </div>
                 <p className="text-sm text-muted-foreground">{plan.description}</p>
